@@ -1,0 +1,1 @@
+ALTER TABLE "panel_config" ADD COLUMN "appearance_config" jsonb DEFAULT '{}'::jsonb;

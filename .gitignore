@@ -1,0 +1,34 @@
+# dependencies / build artifacts
+node_modules/
+dist/
+build/
+dist-release/
+
+# environment / secrets
+.env
+.env.local
+.env.production
+.env.development
+
+# logs
+*.log
+
+# OS / editor
+.DS_Store
+
+# runtime artifacts created by App Update flow
+.update-backups/
+.update-temp/
+
+# Replit / agent local state
+.cache/
+.upm/
+.breakpoints/
+.agents/
+.local/
+.config/
+attached_assets/
+
+uploads/
+
+docs/

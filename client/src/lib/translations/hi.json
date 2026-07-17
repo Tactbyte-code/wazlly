@@ -1,0 +1,4294 @@
+{
+    "common": {
+        "loading": "लोड हो रहा है...",
+        "error": "त्रुटि",
+        "success": "सफलता",
+        "cancel": "रद्द करें",
+        "save": "सहेजें",
+        "delete": "हटाएं",
+        "edit": "संपादित करें",
+        "create": "बनाएं",
+        "search": "खोजें",
+        "filter": "फ़िल्टर करें",
+        "export": "निर्यात करें",
+        "import": "आयात करें",
+        "refresh": "ताज़ा करें",
+        "back": "वापस",
+        "next": "अगला",
+        "previous": "पिछला",
+        "confirm": "पुष्टि करें",
+        "yes": "हाँ",
+        "no": "नहीं",
+        "close": "बंद करें",
+        "view": "देखें",
+        "actions": "कार्य",
+        "status": "स्थिति",
+        "date": "तिथि",
+        "time": "समय",
+        "name": "नाम",
+        "description": "विवरण",
+        "type": "प्रकार",
+        "all": "सभी",
+        "none": "कोई नहीं",
+        "select": "चुनें",
+        "selected": "चुना गया",
+        "noData": "कोई डेटा उपलब्ध नहीं है",
+        "logout": "लॉग आउट",
+        "profile": "प्रोफ़ाइल",
+        "settings": "सेटिंग्स",
+        "active": "सक्रिय",
+        "aiAssistant": "AI सहायक",
+        "aiSettings": "AI सेटिंग्स",
+        "user": "उपयोगकर्ता",
+        "viewDetails": "विवरण देखें",
+        "myAccount": "मेरा खाता",
+        "inactive": "निष्क्रिय",
+        "of": "का"
+    },
+    "auth": {
+        "login": "लॉगिन",
+        "logout": "लॉग आउट",
+        "username": "उपयोगकर्ता नाम",
+        "password": "पासवर्ड",
+        "loginButton": "साइन इन करें",
+        "loginError": "अमान्य उपयोगकर्ता नाम या पासवर्ड",
+        "loginSuccess": "लॉगिन सफल",
+        "welcomeBack": "वापसी पर आपका स्वागत है!",
+        "signIn": "अपने खाते में साइन इन करें",
+        "rememberMe": "मुझे याद रखें"
+    },
+    "navigation": {
+        "dashboard": "डैशबोर्ड",
+        "contacts": "संपर्क",
+        "campaigns": "कैंपेन",
+        "master_campaigns": "मास्टर कैंपेन",
+        "templates": "टेम्पलेट्स",
+        "master_templates": "मास्टर टेम्पलेट्स",
+        "inbox": "टीम इनबॉक्स",
+        "automations": "ऑटोमेशन",
+        "messageLogs": "संदेश लॉग",
+        "analytics": "एनालिटिक्स",
+        "settings": "सेटिंग्स",
+        "team": "टीम",
+        "groups": "ग्रुप्स",
+        "channels": "चैनल",
+        "webhooks": "वेबहुक",
+        "account": "अकाउंट",
+        "chatbotBuilder": "चैटबॉट बिल्डर",
+        "widgetBuilder": "विजेट बिल्डर",
+        "website": "वेबसाइट",
+        "tickets_support": "टिकट सपोर्ट",
+        "plan-upgrade": "बिलिंग और सदस्यता",
+        "billing": "बिलिंग और क्रेडिट",
+        "users": "यूज़र्स",
+        "master_contacts": "मास्टर संपर्क",
+        "notifications": "नोटिफिकेशन",
+        "subscription_plans": "सदस्यता योजनाएं",
+        "transactions_logs": "लेनदेन लॉग",
+        "payment_gateway": "पेमेंट गेटवे",
+        "support_tickets": "सपोर्ट टिकट",
+        "master_subscriptions": "सदस्यता डेटा",
+        "message_logs": "संदेश लॉग",
+        "apiDocs": "API दस्तावेज़",
+        "documentation": "दस्तावेज़ीकरण",
+        "app_update": "ऐप अपडेट",
+        "languages": "भाषाएँ",
+        "plans": "योजनाएं"
+    },
+    "widget": {
+        "title": "विजेट बिल्डर",
+        "subtitle": "अपने वेबसाइट विजेट को अनुकूलित और प्रबंधित करें",
+        "Content": {
+            "messagetitle": "Welcome Messages",
+            "messageSubtitle": "Customize your greeting text",
+            "Installation": {
+                "title": "Installation Code",
+                "subtitle": "Copy and paste this code into your website"
+            },
+            "Live_Preview": {
+                "title": "Live Preview",
+                "subtitle": "Interactive widget preview"
+            }
+        },
+        "Design": {
+            "Widget": {
+                "title": "Widget Style",
+                "subtitle": "Choose your widget appearance"
+            },
+            "Home_Screen": {
+                "title": "Home Screen Layout",
+                "subtitle": " Choose the default view when widget opens"
+            },
+            "Copy_and_paste ": {
+                "title": "Copy and paste",
+                "subtitle": "Copy and paste this code into your website"
+            }
+        },
+        "Layout": {
+            "messenger_layout": {
+                "title": "Messenger Layout",
+                "subtitle": "Customize chat-focused layout"
+            }
+        },
+        "features": {
+            "Widget_Features": {
+                "title": "Widget Features",
+                "subtitle": "Enable or disable functionality"
+            }
+        },
+        "team": {
+            "Widget_Features": {
+                "title": "Team Members",
+                "subtitle": "Configure your support team"
+            }
+        },
+        "ai": {
+            "Widget_Features": {
+                "title": "AI Training",
+                "subtitle": "Configure AI response behavior"
+            }
+        },
+        "advanced": {
+            "Widget_Features": {
+                "title": "Widget Features",
+                "subtitle": "Configure chat modes, fonts, and visual settings"
+            }
+        }
+    },
+    "dashboard": {
+        "uploadCSV": "CSV अपलोड करें",
+        "createAutomation": "स्वचालन बनाएं",
+        "detailedAnalytics": "विस्तृत विश्लेषण",
+        "loadingData": "डैशबोर्ड डेटा लोड हो रहा है...",
+        "loadingDashboard": "डैशबोर्ड लोड हो रहा है...",
+        "noRecentActivities": "कोई हाल की गतिविधियां नहीं",
+        "loadingActivities": "गतिविधियां लोड हो रही हैं...",
+        "activity": {
+            "login": "उपयोगकर्ता ने लॉगिन किया",
+            "logout": "उपयोगकर्ता ने लॉगआउट किया",
+            "user_created": "उपयोगकर्ता बनाया गया",
+            "user_updated": "उपयोगकर्ता अपडेट किया गया",
+            "default": "गतिविधि"
+        },
+        "createMessageTemplate": "संदेश टेम्पलेट बनाएं",
+        "newTemplate": "नया टेम्पलेट",
+        "buildFlow": "फ़्लो बनाएं",
+        "viewReports": "रिपोर्ट देखें",
+        "title": "डैशबोर्ड अवलोकन",
+        "subtitle": "वापसी पर आपका स्वागत है! आपके WhatsApp व्यवसाय के साथ क्या हो रहा है, यहां बताया गया है।",
+        "overview": "अवलोकन",
+        "totalContacts": "कुल संपर्क",
+        "activeCampaigns": "सक्रिय अभियान",
+        "messagesDelivered": "संदेश डिलीवर हुए",
+        "messagesFailed": "संदेश विफल हुए",
+        "messagesPending": "संदेश लंबित",
+        "messagesRead": "संदेश पढ़े गए",
+        "recentActivity": "हाल की गतिविधि",
+        "totalMessagesSent": "कुल भेजे गए संदेश",
+        "vsLastMonth": "बनाम पिछले महीने",
+        "vsLastWeek": "पिछले हफ्ते की तुलना में",
+        "runningNow": "अभी चल रहा है",
+        "deliveryRate": "डिलीवरी दर",
+        "contactGrowth": "संपर्क वृद्धि",
+        "otherStatus": "अन्य स्थिति",
+        "monthlyGrowth": "मासिक वृद्धि",
+        "newLeads": "नए लीड",
+        "thisWeek": "इस सप्ताह",
+        "messageAnalytics": "संदेश एनालिटिक्स",
+        "today": "आज",
+        "7Days": "7 दिन",
+        "30Days": "30 दिन",
+        "3Months": "3 महीने",
+        "sent": "भेजा गया",
+        "delivered": "डिलीवर हुआ",
+        "read": "पढ़ा गया",
+        "replied": "उत्तर दिया गया",
+        "failed": "विफल",
+        "recentActivities": "हाल की गतिविधियां",
+        "noRecentCampaigns": "कोई हाल का अभियान नहीं",
+        "createFirstCampaign": "गतिविधि देखने के लिए अपना पहला अभियान बनाएं",
+        "noContactsImported": "अभी तक कोई संपर्क आयात नहीं किया गया",
+        "importContactsToStart": "मैसेजिंग शुरू करने के लिए संपर्क आयात करें",
+        "noAutomationsActive": "कोई स्वचालन सक्रिय नहीं है",
+        "setupAutomationFlows": "ग्राहकों को जोड़ने के लिए स्वचालन प्रवाह सेट करें",
+        "viewAllActivities": "सभी गतिविधियां देखें",
+        "quickActions": "त्वरित कार्य",
+        "importContacts": "संपर्क आयात करें",
+        "createCampaign": "अभियान बनाएं",
+        "newCampaign": "नया अभियान",
+        "syncTemplates": "टेम्पलेट सिंक करें",
+        "viewAnalytics": "एनालिटिक्स देखें",
+        "apiStatusConnection": "API स्थिति और कनेक्शन",
+        "whatsAppCloudAPI": "WhatsApp क्लाउड API",
+        "noChannelSelected": "कोई चैनल नहीं चुना गया",
+        "connected": "जुड़ा हुआ",
+        "warning": "चेतावनी",
+        "error": "त्रुटि",
+        "noChannel": "कोई चैनल नहीं",
+        "channelQuality": "चैनल गुणवत्ता",
+        "rating": "रेटिंग",
+        "tier": "टियर",
+        "apiUptime": "API अपटाइम",
+        "avgResponse": "औसत प्रतिक्रिया",
+        "dailyMessageLimit": "दैनिक संदेश सीमा",
+        "totalCampaigns": "कुल अभियान",
+        "textLead": "नए लीड्स",
+        "apiStatusText": "स्वीकृत",
+        "apiStatusUpTime": "API अपटाइम",
+        "apiStatus": "स्थिति",
+        "healthDetails": "स्वास्थ्य विवरण",
+        "runChannelHealthCheck": "अपने मैसेजिंग टियर की पुष्टि करने के लिए चैनल हेल्थ चेक चलाएं।",
+        "dashboardStates": {
+            "Total_Contacts": "कुल संपर्क",
+            "Total_Channels": "कुल चैनल",
+            "Total_Messages": "कुल संदेश",
+            "Total_Users": "कुल उपयोगकर्ता",
+            "Total_Campaigns": "कुल अभियान",
+            "Total_Signups": "आज के पंजीकरण",
+            "Total_Templates": "कुल टेम्प्लेट",
+            "Total_Paid_Users": "कुल भुगतान किए गए उपयोगकर्ता"
+        },
+        "thisMonthVs": "इस महीने बनाम",
+        "lastMonth": "पिछले महीने",
+        "campaignOverview": "अभियान अवलोकन",
+        "campaigns": "अभियान",
+        "templates": "टेम्पलेट्स",
+        "of": "का",
+        "messages": "संदेश",
+        "by": "द्वारा",
+        "lastChecked": "अंतिम बार जांचा गया",
+        "unlimited": "असीमित",
+        "unconfirmed": "अपुष्ट",
+        "day": "दिन",
+        "readRate": "Read Rate",
+        "lastWeek": "last week",
+        "thisMonth": "this month",
+        "viewAll": "View All",
+        "campaignPerformance": "Campaign Performance",
+        "messageVolume": "Message Volume",
+        "last7Days": "Last 7 Days",
+        "last30Days": "Last 30 Days",
+        "conversationInsights": "Conversation Insights",
+        "activeConversations": "Active Conversations",
+        "avgResponseTime": "Average Response Time",
+        "unreadMessages": "Unread Messages",
+        "twoWayMessaging": "Two-way messaging & support"
+    },
+    "analytics": {
+        "title": "विश्लेषण और रिपोर्ट",
+        "subtitle": "अपने WhatsApp व्यवसाय के प्रदर्शन को वास्तविक समय डेटा के साथ ट्रैक करें",
+        "time_range": "समय श्रेणी",
+        "OverviewTab": {
+            "title": "सारांश",
+            "last": "पिछले",
+            "days": "दिन",
+            "Total_Messages": "कुल संदेश",
+            "Delivery": "डिलिवरी दर",
+            "read_rate": "पढ़ने की दर",
+            "reply_rate": "प्रतिक्रिया दर",
+            "Failure_rate": "विफलता दर",
+            "managePer": "संदेश प्रदर्शन रुझान",
+            "Message_Performance": "संदेश प्रदर्शन",
+            "Summary": "सारांश",
+            "Active_Campaigns": "सक्रिय अभियान",
+            "Total_Campaigns": "कुल अभियान",
+            "Unique_Contacts": "अद्वितीय संपर्क",
+            "Total_Recipients": "कुल प्राप्तकर्ता",
+            "pickDates": "तारीखें चुनें",
+            "custom": "कस्टम"
+        },
+        "messageTab": {
+            "title": "संदेश",
+            "Outbound_Messages": "आउटबाउंड संदेश",
+            "Inbound_Messages": "इनबाउंड संदेश",
+            "Average_Response": "औसत प्रतिक्रिया समय",
+            "Message_Activity": "घंटेवार संदेश गतिविधि"
+        },
+        "CampaignsTab": {
+            "title": "अभियान",
+            "Total_Sent": "कुल भेजा गया",
+            "Total_Delivered": "कुल डिलीवर हुआ",
+            "Total_Read": "कुल पढ़ा गया",
+            "Total_Failed": "कुल असफल",
+            "Campaign_Performance": "अभियान प्रदर्शन",
+            "table": {
+                "campaign": "अभियान",
+                "status": "स्थिति",
+                "recipients": "प्राप्तकर्ता",
+                "sent": "भेजे गए",
+                "delivered": "डिलीवर हुए",
+                "read": "पढ़े गए",
+                "rate": "दर",
+                "actions": "कार्य",
+                "deliveryRate": "डिलीवरी दर"
+            }
+        },
+        "messageActivityByHour": "घंटे के अनुसार संदेश गतिविधि",
+        "noCampaignsFound": "कोई अभियान नहीं मिला",
+        "startCreatingCampaigns": "यहां विश्लेषण देखने के लिए अभियान बनाना शुरू करें",
+        "createCampaign": "अभियान बनाएँ",
+        "MessagesTab": "Messages",
+        "toasts": {
+            "pickRange": "कृपया एक तिथि सीमा चुनें",
+            "pickRangeDesc": "डेटा फ़िल्टर करने के लिए आपको प्रारंभ और समाप्ति तिथि चुननी होगी।",
+            "exportSuccess": "एनालिटिक्स सफलतापूर्वक निर्यात किया गया",
+            "exportFailed": "निर्यात विफल",
+            "exportFailedDesc": "एनालिटिक्स डेटा निर्यात करते समय एक त्रुटि हुई।"
+        },
+        "export": {
+            "pdf": "PDF निर्यात करें",
+            "excel": "एक्सेल निर्यात करें",
+            "csv": "CSV निर्यात करें"
+        }
+    },
+    "contacts": {
+        "contact": "संपर्क",
+        "contacts": "संपर्क",
+        "addYourFirstContact": "नया संपर्क जोड़ें",
+        "selected": "चयनित",
+        "title": "संपर्क प्रबंधन",
+        "subtitle": "अपने WhatsApp संपर्क और समूह प्रबंधित करें",
+        "importContacts": "संपर्क आयात करें",
+        "downloadSampleExcel": "नमूना एक्सेल डाउनलोड करें",
+        "exportContacts": "संपर्क निर्यात करें",
+        "exportSelected": "चयनित निर्यात करें",
+        "deleteSelected": "चयनित हटाएँ",
+        "phoneNumber": "फ़ोन नंबर",
+        "email": "ईमेल",
+        "firstName": "पहला नाम",
+        "lastName": "अंतिम नाम",
+        "active": "सक्रिय",
+        "delete": "हटाएँ",
+        "stats": {
+            "totalContacts": "कुल संपर्क",
+            "uniquePhones": "यूनीक फ़ोन",
+            "activeCount": "सक्रिय संपर्क",
+            "blockedCount": "अवरुद्ध संपर्क",
+            "active": "सक्रिय",
+            "blocked": "अवरुद्ध",
+            "createdBy": "द्वारा बनाया गया"
+        },
+        "blocked": "अवरुद्ध",
+        "never": "कभी नहीं",
+        "phoneLabel": "फ़ोन",
+        "selectAll": "सभी चुनें",
+        "noContactsSelected": "कोई संपर्क नहीं चुना गया।",
+        "noContactsAvailable": "कोई संपर्क उपलब्ध नहीं है।",
+        "exportFailed": "संपर्क निर्यात करने में विफल। कृपया पुन: प्रयास करें।",
+        "noDataToExport": "निर्यात करने के लिए कोई डेटा नहीं है।",
+        "exportAllContacts": "सभी संपर्क निर्यात करें",
+        "tags": "टैग्स",
+        "groups": "समूह",
+        "allGroups": "सभी समूह",
+        "allStatuses": "सभी स्थिति",
+        "availableGroups": "उपलब्ध समूह",
+        "createdAt": "बनाया गया",
+        "lastMessageAt": "अंतिम संदेश",
+        "noContacts": "कोई संपर्क नहीं मिला",
+        "searchContacts": "संपर्क खोजें...",
+        "deleteConfirm": "क्या आप वाकई इस संपर्क को हटाना चाहते हैं?",
+        "importSuccess": "संपर्क सफलतापूर्वक आयात किए गए",
+        "importError": "संपर्क आयात करने में त्रुटि",
+        "duplicatesFound": "डुप्लिकेट मिले",
+        "contactsAdded": "संपर्क जोड़े गए",
+        "selectFile": "फ़ाइल चुनें",
+        "downloadTemplate": "टेम्पलेट डाउनलोड करें",
+        "importFromCSV": "CSV से आयात करें",
+        "manualEntry": "मैनुअल एंट्री",
+        "contactDetails": "संपर्क विवरण",
+        "conversationHistory": "वार्तालाप इतिहास",
+        "addToGroup": "समूह में जोड़ें",
+        "removeFromGroup": "समूह से हटाएँ",
+        "addTag": "टैग जोड़ें",
+        "removeTag": "टैग हटाएँ",
+        "uploadCSV": "CSV फ़ाइल अपलोड करें",
+        "newTemplate": "नया टेम्पलेट",
+        "createMessageTemplate": "संदेश टेम्पलेट बनाएँ",
+        "buildFlow": "फ़्लो बनाएँ",
+        "createAutomation": "स्वचालन बनाएँ",
+        "viewReports": "रिपोर्ट देखें",
+        "detailedAnalytics": "विस्तृत विश्लेषण",
+        "apiStatusConnection": "API स्थिति और कनेक्शन",
+        "whatsAppCloudAPI": "WhatsApp क्लाउड API",
+        "twoWayMessaging": "दो-तरफ़ा संदेश और समर्थन",
+        "connected": "कनेक्टेड",
+        "warning": "चेतावनी",
+        "error": "त्रुटि",
+        "noChannel": "कोई चैनल नहीं",
+        "blockContact": "संपर्क अवरुद्ध करें",
+        "unblockContact": "संपर्क अनब्लॉक करें",
+        "showing": "{{from}} से {{to}} तक {{total}} संपर्क दिखा रहा है",
+        "previous": "पिछला",
+        "next": "अगला",
+        "pageOf": "पृष्ठ {{page}} का {{totalPages}}",
+        "phone": "फ़ोन",
+        "status": "स्थिति",
+        "lastContact": "अंतिम संपर्क",
+        "actions": "क्रियाएँ",
+        "noGroups": "कोई समूह नहीं",
+        "notAvailable": "N/A",
+        "noChannelSelected": "कोई चैनल चयनित नहीं",
+        "noContactsFound": "कोई संपर्क नहीं मिला",
+        "noFilters": "आपके वर्तमान फ़िल्टर से कोई संपर्क मेल नहीं खाता। कृपया खोज मानदंड बदलें।",
+        "noContactsYet": "आपने अभी तक कोई संपर्क नहीं जोड़ा है। संपर्क आयात करें या उन्हें मैन्युअल रूप से जोड़ें।",
+        "channelQuality": "चैनल गुणवत्ता",
+        "addFirstContact": "पहला संपर्क जोड़ें",
+        "clearFilters": "फ़िल्टर साफ़ करें",
+        "rating": "रेटिंग",
+        "tier": "स्तर",
+        "apiUptime": "API अपटाइम",
+        "avgResponse": "औसत प्रतिक्रिया",
+        "dailyMessageLimit": "दैनिक संदेश सीमा",
+        "newCampaign": "नया अभियान",
+        "addContact": {
+            "title": "नया संपर्क जोड़ें",
+            "description": "अपने संपर्क सूची में नया WhatsApp संपर्क जोड़ें।",
+            "name": "नाम",
+            "nameDesc": "संपर्क का पूरा नाम",
+            "phone": "फ़ोन नंबर",
+            "phoneDesc": "देश कोड के साथ WhatsApp नंबर",
+            "email": "ईमेल (वैकल्पिक)",
+            "cancel": "रद्द करें",
+            "submit": "संपर्क जोड़ें",
+            "submitting": "जोड़ रहा है..."
+        },
+        "sendMessage": {
+            "title": "WhatsApp संदेश भेजें",
+            "description": "संदेश भेजें",
+            "activeChannel": "सक्रिय चैनल:",
+            "noChannel": "कोई सक्रिय चैनल चयनित नहीं। कृपया संदेश भेजने के लिए एक चैनल चुनें।",
+            "messageType": "संदेश प्रकार",
+            "textMessage": "साधारण टेक्स्ट संदेश",
+            "templateMessage": "WhatsApp टेम्पलेट",
+            "selectTemplate": "टेम्पलेट चुनें",
+            "templateVariables": "टेम्पलेट वेरिएबल",
+            "message": "संदेश",
+            "messagePlaceholder": "यहाँ अपना संदेश लिखें...",
+            "send": "संदेश भेजें",
+            "sending": "भेजा जा रहा है..."
+        },
+        "deleteContact": {
+            "title": "संपर्क हटाएँ",
+            "description": "क्या आप वाकई इस संपर्क को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+            "deleting": "हटा रहा है..."
+        },
+        "deleteContacts": {
+            "title": "संपर्क हटाएँ",
+            "description": "आप हटाने वाले हैं",
+            "confirmation": "यह क्रिया पूर्ववत नहीं की जा सकती।",
+            "deleting": "हटा रहा है..."
+        },
+        "editContact": {
+            "title": "संपर्क संपादित करें",
+            "description": "संपर्क जानकारी अपडेट करें",
+            "successTitle": "संपर्क अपडेट किया गया",
+            "updating": "अपडेट कर रहा है...",
+            "groupsPlaceholder": "समूहों को अल्पविराम से अलग करके दर्ज करें",
+            "successDesc": "संपर्क सफलतापूर्वक अपडेट किया गया है।"
+        },
+        "createGroup": {
+            "title": "संपर्क समूह बनाएँ",
+            "description": "अपने संपर्क व्यवस्थित करने के लिए नया समूह बनाएँ",
+            "groupName": "समूह का नाम",
+            "groupNamePlaceholder": "जैसे, VIP ग्राहक, मार्केटिंग सूची",
+            "groupDescription": "विवरण (वैकल्पिक)",
+            "groupDescriptionPlaceholder": "इस समूह का उद्देश्य वर्णन करें...",
+            "cancel": "रद्द करें",
+            "create": "समूह बनाएँ",
+            "successTitle": "समूह बनाया गया",
+            "successDesc": "समूह बनाया गया है। अब आप इसमें संपर्क जोड़ सकते हैं।",
+            "errorTitle": "त्रुटि",
+            "errorDesc": "कृपया समूह का नाम दर्ज करें"
+        }
+    },
+    "campaigns": {
+        "title": "अभियान",
+        "viewDetails": "विवरण देखें",
+        "pause": "रोकें",
+        "apiCampaigns": "API अभियान",
+        "resume": "फिर से शुरू करें",
+        "delete": "हटाएँ",
+        "subtitle": "अपने व्हाट्सएप मार्केटिंग अभियानों को बनाएं और प्रबंधित करें",
+        "createCampaign": "अभियान बनाएं",
+        "campaignName": "अभियान का नाम",
+        "campaignType": "अभियान प्रकार",
+        "template": "टेम्पलेट",
+        "recipients": "प्राप्तकर्ता",
+        "schedule": "अनुसूची",
+        "allCampaigns": "सभी अभियान",
+        "listDescription": "अपने अभियानों का प्रबंधन और निगरानी करें",
+        "activeCampaigns": "सक्रिय अभियान",
+        "totalCampaigns": "कुल अभियान",
+        "totalRecipients": "कुल प्राप्तकर्ता",
+        "completedCampaigns": "पूर्ण अभियान",
+        "draftCampaigns": "ड्राफ्ट अभियान",
+        "pausedCampaigns": "रुके हुए अभियान",
+        "searchCampaigns": "अभियान खोजें...",
+        "noCampaigns": "कोई अभियान नहीं मिला",
+        "status": "स्थिति",
+        "created": "बनाया गया",
+        "actions": "क्रियाएँ",
+        "sent": "भेजा गया",
+        "delivered": "डिलीवर किया गया",
+        "deliveryRate": "डिलीवरी दर",
+        "readRate": "पढ़ने की दर",
+        "read": "पढ़ा गया",
+        "failed": "विफल",
+        "failedMessages": "विफल संदेश",
+        "failedRate": "विफल दर",
+        "pending": "लंबित",
+        "active": "सक्रिय",
+        "completed": "पूर्ण",
+        "draft": "ड्राफ्ट",
+        "scheduled": "निर्धारित",
+        "sendNow": "अभी भेजें",
+        "scheduleFor": "निर्धारित करें",
+        "selectTemplate": "टेम्पलेट चुनें",
+        "selectContacts": "संपर्क चुनें",
+        "selectGroups": "समूह चुनें",
+        "uploadCSV": "CSV अपलोड करें",
+        "apiIntegration": "API एकीकरण",
+        "testCampaign": "परीक्षण अभियान",
+        "launchCampaign": "अभियान लॉन्च करें",
+        "pauseCampaign": "अभियान रोकें",
+        "resumeCampaign": "अभियान फिर शुरू करें",
+        "stopCampaign": "अभियान रोकें",
+        "campaignDetails": "अभियान विवरण",
+        "performance": "प्रदर्शन",
+        "recipientList": "प्राप्तकर्ता सूची",
+        "messagePreview": "संदेश पूर्वावलोकन",
+        "variableMapping": "चर मैपिंग",
+        "autoRetry": "स्वचालित पुनः प्रयास",
+        "marketingMessage": "मार्केटिंग संदेश",
+        "transactionalMessage": "लेन-देन संदेश",
+        "dialogTitle": "नया अभियान बनाएं",
+        "dialogDescription": "अपना अभियान प्रकार चुनें और विवरण कॉन्फ़िगर करें",
+        "contactsImport": "संपर्क आयात",
+        "csvImport": "CSV आयात",
+        "apiCampaign": "API अभियान",
+        "comingSoon": "जल्द आ रहा है",
+        "selectConatcts": "संपर्क चुनें",
+        "selectAll": "सभी चुनें",
+        "uploadCSVFile": "CSV फ़ाइल अपलोड करें",
+        "downloadSampleCSV": "नमूना CSV डाउनलोड करें",
+        "csvPreview": "CSV पूर्वावलोकन",
+        "rows": "पंक्तियाँ",
+        "tabContent": "API अभियान बाहरी अनुप्रयोगों को आपके टेम्पलेट का उपयोग करके संदेश ट्रिगर करने की अनुमति देते हैं। अभियान बनाने के बाद, आपको एक API एंडपॉइंट और कुंजी प्राप्त होगी।",
+        "campaignfilterlabel": "समूह द्वारा अभियान फ़िल्टर",
+        "allGroup": "सभी समूह",
+        "noContactsInGroup": "इस समूह में कोई संपर्क नहीं है"
+    },
+    "templates": {
+        "title": "टेम्प्लेट्स",
+        "createTemplate": "टेम्प्लेट बनाएं",
+        "superAdminSubTitle": "व्हाट्सएप संदेश टेम्प्लेट प्रबंधित करें",
+        "userSubTitle": "व्हाट्सएप संदेश टेम्प्लेट बनाएं और प्रबंधित करें",
+        "mess_Temp": "संदेश टेम्प्लेट",
+        "sync": "व्हाट्सएप से सिंक करें",
+        "templateName": "टेम्प्लेट का नाम",
+        "apiCampaigns": "एपीआई अभियान",
+        "category": "श्रेणी",
+        "language": "भाषा",
+        "header": "हेडर",
+        "body": "शरीर",
+        "footer": "फूटर",
+        "buttons": "बटन",
+        "media": "मीडिया",
+        "preview": "पूर्वावलोकन",
+        "approved": "स्वीकृत",
+        "pending": "लंबित",
+        "rejected": "अस्वीकृत",
+        "draft": "ड्राफ्ट",
+        "syncTemplates": "टेम्प्लेट सिंक करें",
+        "useTemplate": "टेम्प्लेट का उपयोग करें",
+        "duplicateTemplate": "टेम्प्लेट डुप्लिकेट करें",
+        "deleteTemplate": "टेम्प्लेट हटाएं",
+        "variables": "वेरिएबल्स",
+        "addVariable": "वेरिएबल जोड़ें",
+        "mediaType": "मीडिया प्रकार",
+        "image": "छवि",
+        "video": "वीडियो",
+        "document": "दस्तावेज़",
+        "location": "स्थान",
+        "quickReply": "त्वरित उत्तर",
+        "callToAction": "कार्यवाही के लिए कॉल",
+        "urlButton": "URL बटन",
+        "phoneButton": "फोन बटन",
+        "exampleValues": "उदाहरण मान",
+        "categories": {
+            "marketing": "Marketing",
+            "utility": "Utility",
+            "authentication": "Authentication"
+        },
+        "toast": {
+            "templateUpdated": "Template updated",
+            "templateUpdatedDesc": "Your template has been updated successfully.",
+            "templateCreated": "Template created",
+            "templateCreatedDesc": "Your template has been created and submitted for approval.",
+            "error": "Error",
+            "createFailed": "Failed to create template",
+            "templateDeleted": "Template deleted",
+            "templateDeletedDesc": "Template deleted successfully.",
+            "starterCreated": "Starter templates created",
+            "starterCreatedDesc": "{{succeeded}} starter template(s) submitted for approval. {{failedStr}} Status will update automatically via webhooks.",
+            "templatesSynced": "Templates synced",
+            "syncImportedUpdated": "Imported {{created}} new, updated {{updated}} existing ({{total}} total on WhatsApp)",
+            "syncImported": "Imported {{created}} new template(s) from WhatsApp ({{total}} total)",
+            "syncUpdated": "Updated {{updated}} template(s) ({{total}} total on WhatsApp)",
+            "syncEmpty": "No templates found on this WhatsApp Business Account. Create templates first or check your channel connection.",
+            "syncAlreadySynced": "All {{total}} template(s) already in sync",
+            "syncFailed": "Sync failed",
+            "syncFailedDesc": "Something went wrong while syncing templates."
+        },
+        "deleteConfirm": "Delete template \"{{name}}\"?",
+        "emptyState": {
+            "noChannel": "Please select or create a WhatsApp channel first",
+            "goSettings": "Go to Settings",
+            "noTemplates": "No templates yet",
+            "noTemplatesDesc": "Create your first WhatsApp message template to start sending messages"
+        },
+        "search": {
+            "placeholder": "Search templates...",
+            "noMatches": "No templates found matching \"{{query}}\""
+        },
+        "actions": {
+            "preview": "Preview",
+            "edit": "Edit",
+            "duplicate": "Duplicate",
+            "delete": "Delete"
+        },
+        "buttonCount": "{{count}} button",
+        "buttonsCount": "{{count}} buttons",
+        "drafts": {
+            "unsavedDrafts": "Unsaved Drafts",
+            "untitled": "Untitled template",
+            "noBody": "No body text",
+            "saved": "Saved {{date}}",
+            "resume": "Resume"
+        },
+        "table": {
+            "name": "Name",
+            "createdBy": "Created By",
+            "category": "Category",
+            "status": "Status",
+            "language": "Language",
+            "body": "Body",
+            "buttons": "Buttons",
+            "createdAt": "Created At",
+            "unknown": "Unknown"
+        },
+        "pagination": {
+            "showing": "Showing {{start}} to {{end}} of {{total}} templates",
+            "previous": "Previous",
+            "next": "Next"
+        }
+    },
+    "inbox": {
+        "title": "टीम इनबॉक्स",
+        "conversations": "बातचीत",
+        "unread": "अपठित",
+        "all": "सभी",
+        "assigned": "सौंपा गया",
+        "unassigned": "अनाधिकृत",
+        "open": "खुला",
+        "closed": "बंद",
+        "markAsRead": "पढ़ा हुआ चिह्नित करें",
+        "markAsUnread": "अपठित चिह्नित करें",
+        "assignTo": "को असाइन करें",
+        "unassign": "असाइनमेंट रद्द करें",
+        "closeConversation": "बातचीत बंद करें",
+        "reopenConversation": "बातचीत फिर से खोलें",
+        "typeMessage": "एक संदेश टाइप करें...",
+        "sendMessage": "संदेश भेजें",
+        "attachFile": "फ़ाइल संलग्न करें",
+        "emoji": "इमोजी",
+        "delivered": "डिलीवर हुआ",
+        "read": "पढ़ा गया",
+        "sent": "भेजा गया",
+        "failed": "विफल",
+        "sending": "भेजा जा रहा है...",
+        "searchConversations": "बातचीत खोजें",
+        "filterByStatus": "स्थिति के अनुसार फ़िल्टर करें",
+        "filterByAssignee": "असाइन किए गए व्यक्ति के अनुसार फ़िल्टर करें",
+        "customerInfo": "ग्राहक जानकारी",
+        "conversationHistory": "बातचीत का इतिहास",
+        "internalNotes": "आंतरिक नोट्स",
+        "addNote": "नोट जोड़ें",
+        "assignedTo": "को सौंपा गया",
+        "lastMessage": "अंतिम संदेश",
+        "startedAt": "शुरू हुआ",
+        "tags": "टैग",
+        "noConversations": "कोई बातचीत नहीं मिली",
+        "loadingMessages": "संदेश लोड हो रहे हैं...",
+        "endOfConversation": "बातचीत का अंत",
+        "businessHoursMessage": "व्यावसायिक घंटों के बाहर - उत्तर में देरी हो सकती है",
+        "toasts": {
+            "newAssigned": "New Conversation Assigned",
+            "newAssignedDesc": "A new conversation has been assigned to you",
+            "transferred": "Conversation Transferred",
+            "transferredTo": "Transferred to {{agent}}",
+            "statusChanged": "Conversation Status Changed",
+            "statusChangedTo": "Status changed to: {{status}}",
+            "statusUpdated": "Conversation status updated",
+            "mediaSent": "Media sent successfully",
+            "chatArchived": "Chat Archived",
+            "chatArchivedDesc": "This conversation has been archived",
+            "chatArchiveFailed": "Failed to archive chat",
+            "contactBlocked": "Contact Blocked",
+            "contactBlockedDesc": "This contact has been blocked",
+            "contactBlockFailed": "Failed to block contact",
+            "chatDeleted": "Chat Deleted",
+            "chatDeletedDesc": "This conversation has been deleted",
+            "chatDeleteFailed": "Failed to delete chat",
+            "conversationUpdated": "Conversation updated successfully",
+            "deleteConfirm": "Are you sure you want to delete this chat? This action cannot be undone.",
+            "templateSubmitted": "Template submitted",
+            "templateSubmittedDesc": "Your template message has been submitted for delivery.",
+            "messageFailed": "Message Failed",
+            "metaBillingIssue": "Meta Billing Issue",
+            "metaBillingDesc": "Message failed due to a payment issue. Please check your payment method in Meta Business Manager (business.facebook.com) → Billing & Payments.",
+            "templateSendFailed": "Failed to send template",
+            "metaBillingLongDesc": "Your WhatsApp Business account has a payment issue. Please check your payment method in Meta Business Manager (business.facebook.com) → Billing & Payments, then try again.",
+            "rateLimitReached": "Rate Limit Reached",
+            "rateLimitDesc": "You've hit WhatsApp's sending limit. Please wait a few minutes before trying again.",
+            "invalidRecipient": "Invalid Recipient",
+            "invalidRecipientDesc": "This phone number is not registered on WhatsApp. Please verify the number and try again."
+        },
+        "sections": {
+            "pinned": "पिन किए गए",
+            "awaitingReply": "उत्तर की प्रतीक्षा में",
+            "unread": "अपठित",
+            "all": "सभी वार्तालाप"
+        },
+        "pin": {
+            "pin": "चैट पिन करें",
+            "unpin": "चैट अनपिन करें",
+            "pinned": "पिन किया हुआ",
+            "capReachedTitle": "पिन सीमा पूरी हो गई",
+            "capReachedDesc": "आप प्रति चैनल अधिकतम {{cap}} चैट पिन कर सकते हैं। एक हटाकर दूसरी जोड़ें।"
+        }
+    },
+    "automations": {
+        "title": "स्वचालन",
+        "create_auto": "स्वचालन बनाएँ",
+        "Subtitle": "अपने ग्राहकों के साथ जुड़ने के लिए स्वचालित वर्कफ़्लो बनाएँ",
+        "empityAuto": {
+            "title": "अभी तक कोई स्वचालन नहीं",
+            "Subtitle": "अपना पहला स्वचालन बनाएँ और ग्राहकों के साथ स्वतः जुड़ना शुरू करें",
+            "buttonTitle": "अपना पहला स्वचालन बनाएँ"
+        },
+        "createAutomation": "स्वचालन बनाएँ",
+        "automationName": "स्वचालन का नाम",
+        "trigger": "ट्रिगर",
+        "conditions": "शर्तें",
+        "actions": "क्रियाएं",
+        "active": "सक्रिय",
+        "inactive": "निष्क्रिय",
+        "executions": "कार्यान्वयन",
+        "lastRun": "अंतिम रन",
+        "enable": "सक्षम करें",
+        "disable": "अक्षम करें",
+        "test": "परीक्षण",
+        "duplicate": "प्रतिलिपि बनाएँ",
+        "flowBuilder": "फ्लो बिल्डर",
+        "addNode": "नोड जोड़ें",
+        "deleteNode": "नोड हटाएं",
+        "userReply": "उपयोगकर्ता उत्तर",
+        "timeGap": "समय अंतराल",
+        "sendTemplate": "टेम्पलेट भेजें",
+        "customReply": "कस्टम उत्तर",
+        "keywordCatch": "कीवर्ड पकड़ो",
+        "waitFor": "इंतजार करें",
+        "timeout": "समय समाप्त",
+        "messageText": "संदेश पाठ",
+        "keywords": "कीवर्ड",
+        "dragToReorder": "पुन: क्रमबद्ध करने के लिए घसीटें",
+        "saveFlow": "फ्लो सहेजें",
+        "discardChanges": "परिवर्तन अस्वीकृत करें",
+        "executionLogs": "कार्यान्वयन लॉग्स",
+        "triggerType": "ट्रिगर प्रकार",
+        "messageReceived": "संदेश प्राप्त हुआ",
+        "keywordDetected": "कीवर्ड पहचाना गया",
+        "tagAdded": "टैग जोड़ दिया गया",
+        "flowCompleted": "फ्लो पूरा हुआ",
+        "flowFailed": "फ्लो विफल हुआ",
+        "updatedToast": "Automation updated",
+        "createdToast": "Automation created",
+        "savedDesc": "Your automation flow has been saved successfully.",
+        "saveFailedTitle": "Failed to save automation",
+        "saveFailedDesc": "An error occurred while saving.",
+        "checkDetails": "Check your details",
+        "reviewForm": "Please review the form.",
+        "nodes": {
+            "start": "Start",
+            "condition": "Condition",
+            "noConditions": "No conditions set",
+            "yes": "Yes",
+            "no": "No",
+            "match": "Match: {{type}}",
+            "sendMessage": "Send Message",
+            "noMessage": "No message set",
+            "noQuestion": "No question set",
+            "templateSelected": "Template selected",
+            "noTemplate": "No template selected",
+            "agentAssigned": "Agent assigned",
+            "noAgent": "No agent selected",
+            "noWebhook": "No webhook configured",
+            "noGroup": "No group selected",
+            "noField": "No field configured",
+            "noVariable": "No variable set",
+            "noLocation": "No location set",
+            "noBody": "No body text",
+            "noMedia": "No media URL set",
+            "sendReadReceipts": "Send read receipts"
+        }
+    },
+    "messageLogs": {
+        "title": "संदेश लॉग",
+        "messageId": "संदेश ID",
+        "recipient": "प्राप्तकर्ता",
+        "template": "टेम्पलेट",
+        "campaign": "अभियान",
+        "status": "स्थिति",
+        "sentAt": "पर भेजा गया",
+        "deliveredAt": "पर डिलीवर हुआ",
+        "readAt": "पर पढ़ा गया",
+        "failedAt": "पर विफल",
+        "errorDetails": "त्रुटि विवरण",
+        "retryCount": "पुनः प्रयास की संख्या",
+        "viewDetails": "विवरण देखें",
+        "retry": "पुनः प्रयास करें",
+        "filterByStatus": "स्थिति के अनुसार फ़िल्टर करें",
+        "filterByCampaign": "अभियान के अनुसार फ़िल्टर करें",
+        "filterByDate": "तिथि के अनुसार फ़िल्टर करें",
+        "exportLogs": "लॉग निर्यात करें",
+        "noLogs": "कोई संदेश लॉग नहीं मिला",
+        "errorCode": "त्रुटि कोड",
+        "errorMessage": "त्रुटि संदेश",
+        "subtitle": "सभी चैनलों के सभी संदेश देखें",
+        "allMessages": "सभी चैनलों के सभी संदेश",
+        "totalLabel": "कुल",
+        "searchPlaceholder": "फ़ोन, संपर्क या सामग्री खोजें...",
+        "allChannels": "सभी चैनल",
+        "allStatus": "सभी स्थिति",
+        "statusSent": "भेजा गया",
+        "statusDelivered": "वितरित",
+        "statusRead": "पढ़ा गया",
+        "statusFailed": "विफल",
+        "statusPending": "लंबित",
+        "statusReceived": "प्राप्त",
+        "last24h": "पिछले 24 घंटे",
+        "last7d": "पिछले 7 दिन",
+        "last30d": "पिछले 30 दिन",
+        "allTime": "सारा समय",
+        "channel": "चैनल",
+        "contact": "संपर्क",
+        "phone": "फ़ोन",
+        "direction": "दिशा",
+        "contentHeader": "सामग्री",
+        "statusHeader": "स्थिति",
+        "date": "तारीख",
+        "sent": "भेजा गया",
+        "received": "प्राप्त",
+        "adjustFilters": "अपने फ़िल्टर समायोजित करने का प्रयास करें",
+        "noMessagesSent": "अभी तक कोई संदेश नहीं भेजा गया है"
+    },
+    "team": {
+        "title": "टीम प्रबंधन",
+        "subtitle": "अपनी टीम के सदस्यों, भूमिकाओं और अनुमतियों का प्रबंधन करें",
+        "teamMember": "टीम के सदस्य",
+        "Activity_Logs": "गतिविधि लॉग्स",
+        "addMember": "टीम सदस्य जोड़ें",
+        "manage_Team": "टीम के सदस्यों और उनके अभिगम अनुमतियों का प्रबंधन करें",
+        "Activity_LogsTitle": "गतिविधि लॉग्स",
+        "Activity_LogsDes": "टीम सदस्यों की गतिविधियों को ट्रैक करें",
+        "editMember": "सदस्य संपादित करें",
+        "deleteMember": "सदस्य हटाएँ",
+        "firstName": "पहला नाम",
+        "lastName": "अंतिम नाम",
+        "email": "ईमेल",
+        "role": "भूमिका",
+        "permissions": "अनुमतियाँ",
+        "active": "सक्रिय",
+        "inactive": "निष्क्रिय",
+        "lastActive": "अंतिम सक्रिय",
+        "admin": "व्यवस्थापक",
+        "manager": "प्रबंधक",
+        "agent": "एजेंट",
+        "inviteMember": "सदस्य को आमंत्रित करें",
+        "resendInvite": "आमंत्रण पुनः भेजें",
+        "revokeAccess": "पहुँच रद्द करें",
+        "activityLog": "गतिविधि लॉग",
+        "assignedConversations": "सौंपी गई बातचीत",
+        "performance": "प्रदर्शन",
+        "responseTime": "प्रतिक्रिया समय",
+        "conversationsHandled": "संभाली गई बातचीत",
+        "customerSatisfaction": "ग्राहक संतुष्टि",
+        "sections": "अनुभाग",
+        "allSections": "सभी अनुभाग",
+        "selectSections": "अनुभाग चुनें"
+    },
+    "errors": {
+        "genericError": "कुछ गलत हो गया",
+        "networkError": "नेटवर्क त्रुटि",
+        "validationError": "मान्यकरण त्रुटि",
+        "unauthorized": "अनाधिकृत",
+        "forbidden": "निषिद्ध",
+        "notFound": "नहीं मिला",
+        "serverError": "सर्वर त्रुटि",
+        "badRequest": "खराब अनुरोध",
+        "conflict": "संघर्ष",
+        "tooManyRequests": "बहुत ज़्यादा अनुरोध",
+        "sessionExpired": "सत्र समाप्त हो गया",
+        "invalidCredentials": "अमान्य क्रेडेंशियल्स",
+        "requiredField": "यह फ़ील्ड आवश्यक है",
+        "invalidFormat": "अमान्य प्रारूप",
+        "minLength": "न्यूनतम लंबाई {min} है",
+        "maxLength": "अधिकतम लंबाई {max} है",
+        "minValue": "न्यूनतम मान {min} है",
+        "maxValue": "अधिकतम मान {max} है",
+        "invalidEmail": "अमान्य ईमेल पता",
+        "invalidPhone": "अमान्य फ़ोन नंबर",
+        "invalidUrl": "अमान्य URL",
+        "fileTooBig": "फ़ाइल का आकार बहुत बड़ा है",
+        "unsupportedFileType": "असमर्थित फ़ाइल प्रकार",
+        "uploadFailed": "अपलोड विफल",
+        "downloadFailed": "डाउनलोड विफल"
+    },
+    "success": {
+        "saved": "सफलतापूर्वक सहेजा गया",
+        "created": "सफलतापूर्वक बनाया गया",
+        "updated": "सफलतापूर्वक अपडेट किया गया",
+        "deleted": "सफलतापूर्वक हटाया गया",
+        "sent": "सफलतापूर्वक भेजा गया",
+        "imported": "सफलतापूर्वक आयात किया गया",
+        "exported": "सफलतापूर्वक निर्यात किया गया",
+        "connected": "सफलतापूर्वक कनेक्ट किया गया",
+        "disconnected": "सफलतापूर्वक डिस्कनेक्ट किया गया",
+        "enabled": "सफलतापूर्वक सक्षम किया गया",
+        "disabled": "सफलतापूर्वक अक्षम किया गया",
+        "completed": "सफलतापूर्वक पूरा हुआ",
+        "copied": "क्लिपबोर्ड पर कॉपी किया गया",
+        "uploaded": "सफलतापूर्वक अपलोड किया गया",
+        "downloaded": "सफलतापूर्वक डाउनलोड किया गया"
+    },
+    "groups": {
+        "title": "समूह",
+        "subtitle": "सभी समूहों का विवरण और प्रबंधन",
+        "createButton": "समूह बनाएँ"
+    },
+    "messageLog": {
+        "headerTitle": "संदेश लॉग",
+        "headerSubTitle": "सभी भेजे गए संदेशों और उनकी डिलीवरी स्थिति को ट्रैक करें",
+        "messageHis": {
+            "title": "संदेश इतिहास",
+            "subtitle": "सभी संदेशों के विस्तृत लॉग देखें"
+        },
+        "Refresh": "रीफ्रेश करें"
+    },
+    "support_tickets": {
+        "headTitle": "सपोर्ट टिकट",
+        "headTitleAdmin": "उपयोगकर्ताओं और श्रोताओं से सभी सपोर्ट टिकट प्रबंधित करें",
+        "headTitleuser": "अपने सपोर्ट टिकट देखें और प्रबंधित करें"
+    },
+    "Landing": {
+        "header": {
+            "getstart": "मुफ्त में शुरू करें",
+            "redystart": "शुरू करने के लिए तैयार हैं?",
+            "join": "{{appName}} के साथ पहले से बढ़ रही हजारों कंपनियों में शामिल हों",
+            "start": "मुफ्त ट्रायल शुरू करें",
+            "Learn": "और जानें",
+            "dash": "डैशबोर्ड",
+            "Settings": "सेटिंग्स",
+            "Account": "खाता",
+            "logout": "लॉगआउट",
+            "Language": "भाषा",
+            "megaMenuTitles": {
+                "about": "कंपनी",
+                "resources": "संसाधन"
+            },
+            "resourcesMenuItems": [
+                {
+                    "title": "टेम्पलेट्स",
+                    "description": "उपयोग के लिए तैयार संदेश टेम्पलेट"
+                },
+                {
+                    "title": "केस स्टडीज",
+                    "description": "हमारे ग्राहकों की सफलता की कहानियां"
+                },
+                {
+                    "title": "WhatsApp गाइड",
+                    "description": "संपूर्ण WhatsApp मार्केटिंग गाइड"
+                },
+                {
+                    "title": "API डॉक्यूमेंटेशन",
+                    "description": "डेवलपर संसाधन और API दस्तावेज़"
+                },
+                {
+                    "title": "सर्वोत्तम प्रथाएं",
+                    "description": "WhatsApp मार्केटिंग सफलता के लिए टिप्स"
+                },
+                {
+                    "title": "ROI कैलकुलेटर",
+                    "description": "अपने WhatsApp मार्केटिंग ROI की गणना करें"
+                }
+            ],
+            "aboutMenuItems": [
+                {
+                    "title": "हमारे बारे में",
+                    "description": "हमारे मिशन और टीम के बारे में जानें"
+                },
+                {
+                    "title": "संपर्क करें",
+                    "description": "हमारी टीम से संपर्क करें"
+                },
+                {
+                    "title": "करियर",
+                    "description": "हमारी बढ़ती टीम में शामिल हों"
+                },
+                {
+                    "title": "इंटीग्रेशन",
+                    "description": "1000+ ऐप्स से कनेक्ट करें"
+                }
+            ],
+            "Navlinks": [
+                "होम",
+                "हमारे बारे में",
+                "संसाधन",
+                "लॉगिन",
+                "डैशबोर्ड"
+            ],
+            "logoAlt": "Logo",
+            "ariaLabels": {
+                "toggleMenu": "Toggle menu",
+                "userAvatar": "User Profile"
+            }
+        },
+        "heroSec": {
+            "animatedBgGreenText": "मुफ्त WhatsApp मार्केटिंग प्लेटफ़ॉर्म - अपनी खुद की API लाएं",
+            "headline": "अपने व्यवसाय को स्केल करें",
+            "highlightText": "WhatsApp मार्केटिंग के साथ",
+            "subHeadline": "अपने Meta WhatsApp Business API को कनेक्ट करें और शक्तिशाली ऑटोमेशन, बल्क मैसेजिंग और उन्नत एनालिटिक्स अनलॉक करें। मुफ्त में शुरू करें, असीमित रूप से स्केल करें।",
+            "startTrialButton": "मुफ्त ट्रायल शुरू करें",
+            "watchDemoButton": "2-मिनट का डेमो देखें",
+            "trustedByText": "दुनिया भर में 10,000+ व्यवसायों द्वारा भरोसा किया गया",
+            "brands": [
+                "Shopify",
+                "WooCommerce",
+                "Salesforce",
+                "HubSpot",
+                "Zapier"
+            ],
+            "stats": [
+                {
+                    "label": "सक्रिय उपयोगकर्ता",
+                    "suffix": "+"
+                },
+                {
+                    "label": "डिलीवरी दर",
+                    "suffix": "%"
+                },
+                {
+                    "label": "उच्च एंगेजमेंट",
+                    "suffix": "x"
+                }
+            ],
+            "animationDelays": {
+                "delay1": "animation-delay-2000",
+                "delay2": "animation-delay-4000"
+            }
+        },
+        "featuresSec": {
+            "introTagline": "शक्तिशाली WhatsApp मार्केटिंग फीचर्स",
+            "headlinePre": "वह सब कुछ जो आपको चाहिए",
+            "whatsAppAPI": "व्हाट्सएप बिजनेस कैंपेन",
+            "headlineHighlight": "अपने व्यवसाय को स्केल करने के लिए",
+            "subHeadline": "बल्क मैसेजिंग से लेकर AI चैटबॉट तक, हमारा प्लेटफ़ॉर्म सफल WhatsApp मार्केटिंग अभियान बनाने के लिए आवश्यक सभी टूल्स प्रदान करता है",
+            "featureTabs": [
+                {
+                    "title": "बल्क मैसेजिंग",
+                    "description": "स्मार्ट डिलीवरी ऑप्टिमाइज़ेशन के साथ हजारों संपर्कों को तुरंत वैयक्तिकृत संदेश भेजें",
+                    "demo": {
+                        "title": "ब्रॉडकास्ट अभियान",
+                        "stats": "2 मिनट में 10,000 संदेश भेजे गए",
+                        "features": [
+                            "वैयक्तिकृत टेम्पलेट",
+                            "स्मार्ट शेड्यूलिंग",
+                            "डिलीवरी ऑप्टिमाइज़ेशन"
+                        ]
+                    }
+                },
+                {
+                    "title": "ऑटोमेशन वर्कफ़्लो",
+                    "description": "बुद्धिमान स्वचालित अनुक्रम बनाएं जो लीड्स का पोषण करते हैं और 24/7 ग्राहकों को एंगेज करते हैं",
+                    "demo": {
+                        "title": "वेलकम सीक्वेंस",
+                        "stats": "85% एंगेजमेंट दर",
+                        "features": [
+                            "ट्रिगर-आधारित फ्लो",
+                            "कंडीशनल लॉजिक",
+                            "मल्टी-स्टेप जर्नी"
+                        ]
+                    }
+                },
+                {
+                    "title": "उन्नत एनालिटिक्स",
+                    "description": "रीयल-टाइम इनसाइट्स, डिलीवरी रिपोर्ट्स और एंगेजमेंट मेट्रिक्स के साथ परफॉर्मेंस ट्रैक करें",
+                    "demo": {
+                        "title": "कैंपेन एनालिटिक्स",
+                        "stats": "98% डिलीवरी दर",
+                        "features": [
+                            "रीयल-टाइम ट्रैकिंग",
+                            "ROI विश्लेषण",
+                            "कस्टम रिपोर्ट्स"
+                        ]
+                    }
+                },
+                {
+                    "title": "कॉन्टैक्ट मैनेजमेंट",
+                    "description": "स्मार्ट टैगिंग और उन्नत फ़िल्टरिंग के साथ अपने ऑडियंस को व्यवस्थित और विभाजित करें",
+                    "demo": {
+                        "title": "स्मार्ट सेगमेंटेशन",
+                        "stats": "50+ कस्टम फील्ड्स",
+                        "features": [
+                            "ऑटो-टैगिंग",
+                            "व्यवहारिक सेगमेंट",
+                            "इम्पोर्ट/एक्सपोर्ट"
+                        ]
+                    }
+                },
+                {
+                    "title": "AI चैटबॉट्स",
+                    "description": "बुद्धिमान चैटबॉट्स तैनात करें जो ग्राहक प्रश्नों को संभालते हैं और स्वचालित रूप से लीड्स को क्वालिफाई करते हैं",
+                    "demo": {
+                        "title": "कस्टमर सपोर्ट बॉट",
+                        "stats": "24/7 उपलब्धता",
+                        "features": [
+                            "प्राकृतिक भाषा",
+                            "लीड क्वालिफिकेशन",
+                            "मनुष्यों को हैंडऑफ"
+                        ]
+                    }
+                },
+                {
+                    "title": "कैंपेन शेड्यूलर",
+                    "description": "इष्टतम डिलीवरी टाइमिंग के साथ टाइम ज़ोन में अभियानों की योजना बनाएं और शेड्यूल करें",
+                    "demo": {
+                        "title": "ग्लोबल कैंपेन्स",
+                        "stats": "मल्टी-टाइमज़ोन सपोर्ट",
+                        "features": [
+                            "स्मार्ट टाइमिंग",
+                            "आवर्ती अभियान",
+                            "A/B टेस्टिंग"
+                        ]
+                    }
+                }
+            ],
+            "additionalFeatures": [
+                {
+                    "title": "बहु-भाषा समर्थन",
+                    "desc": "वैश्विक दर्शकों को उनकी मूल भाषा में पहुंचें"
+                },
+                {
+                    "title": "स्मार्ट टार्गेटिंग",
+                    "desc": "व्यवहार और जनसांख्यिकी के आधार पर सटीक टार्गेटिंग"
+                },
+                {
+                    "title": "API इंटीग्रेशन",
+                    "desc": "आपके मौजूदा टूल्स और CRM के साथ सहज एकीकरण"
+                }
+            ],
+            "demo": "Demo",
+            "campaign_progress": "Campaign Progress"
+        },
+        "howItWorksSec": {
+            "introTagline": "सरल 4-चरण प्रक्रिया",
+            "headlinePre": "शुरू करें",
+            "headlineHighlight": "5 मिनट से कम में",
+            "subHeadline": "हमारी सुव्यवस्थित ऑनबोर्डिंग प्रक्रिया आपको किसी भी अन्य प्लेटफ़ॉर्म की तुलना में तेज़ी से WhatsApp मार्केटिंग के साथ चालू कर देती है",
+            "steps": [
+                {
+                    "title": "अपना Meta API कनेक्ट करें",
+                    "description": "Meta से अपना खुद का WhatsApp Business API लाएं और इसे सेकंड में हमारे प्लेटफ़ॉर्म से कनेक्ट करें",
+                    "details": [
+                        "सुरक्षित API एकीकरण",
+                        "वन-क्लिक सेटअप प्रक्रिया",
+                        "तकनीकी ज्ञान की आवश्यकता नहीं",
+                        "पूर्ण डेटा स्वामित्व"
+                    ]
+                },
+                {
+                    "title": "अपने कॉन्टैक्ट्स इम्पोर्ट करें",
+                    "description": "अपने ग्राहक डेटाबेस को अपलोड करें या अपने CRM और मौजूदा टूल्स से सीधे सिंक करें",
+                    "details": [
+                        "CSV/Excel इम्पोर्ट सपोर्ट",
+                        "CRM इंटीग्रेशन उपलब्ध",
+                        "स्मार्ट डुप्लिकेट डिटेक्शन",
+                        "स्वचालित डेटा सत्यापन"
+                    ]
+                },
+                {
+                    "title": "कैंपेन बनाएं और लॉन्च करें",
+                    "description": "हमारे ड्रैग-एंड-ड्रॉप बिल्डर से सुंदर संदेश डिज़ाइन करें और लक्षित अभियान लॉन्च करें",
+                    "details": [
+                        "विज़ुअल कैंपेन बिल्डर",
+                        "पूर्व-निर्मित टेम्पलेट",
+                        "वैयक्तिकरण विकल्प",
+                        "A/B टेस्टिंग क्षमताएं"
+                    ]
+                },
+                {
+                    "title": "ट्रैक करें और ऑप्टिमाइज़ करें",
+                    "description": "रीयल-टाइम में परफॉर्मेंस की निगरानी करें और बेहतर परिणामों के लिए अपने अभियानों को अनुकूलित करें",
+                    "details": [
+                        "रीयल-टाइम एनालिटिक्स",
+                        "डिलीवरी ट्रैकिंग",
+                        "एंगेजमेंट मेट्रिक्स",
+                        "ROI गणना"
+                    ]
+                }
+            ],
+            "progressBar": {
+                "previous": "पिछला",
+                "nextStep": "अगला कदम"
+            },
+            "visualDemo": {
+                "whatsAppBusinessDashboard": "WhatsApp बिजनेस डैशबोर्ड"
+            },
+            "cta": {
+                "readyToGetStarted": "शुरू करने के लिए तैयार हैं?",
+                "joinText": "हजारों व्यवसायों में शामिल हों जो पहले से ही अपने WhatsApp मार्केटिंग को स्केल करने के लिए हमारे प्लेटफ़ॉर्म का उपयोग कर रहे हैं",
+                "startFreeTrial": "अपना मुफ्त ट्रायल शुरू करें"
+            }
+        },
+        "useCasesSec": {
+            "introTagline": "उद्योग समाधान",
+            "headlinePre": "हर एक के लिए परफेक्ट",
+            "headlineHighlight": "उद्योग और व्यवसाय",
+            "subHeadline": "जानें कि विभिन्न उद्योगों में व्यवसाय विकास को बढ़ावा देने और ग्राहक एंगेजमेंट में सुधार के लिए WhatsApp मार्केटिंग का उपयोग कैसे कर रहे हैं",
+            "keyFeatures": "मुख्य विशेषताएँ",
+            "quickStatsTitle": "त्वरित आँकड़े",
+            "useCases": [
+                {
+                    "icon": "ShoppingCart",
+                    "title": "ई-कॉमर्स",
+                    "description": "छोड़ी गई कार्ट रिकवरी, ऑर्डर अपडेट और वैयक्तिकृत उत्पाद सिफारिशों के साथ बिक्री बढ़ाएं",
+                    "color": "from-green-500 to-green-600",
+                    "bgColor": "bg-green-50",
+                    "stats": {
+                        "increase": "300%",
+                        "metric": "बिक्री रिकवरी"
+                    },
+                    "features": [
+                        "छोड़ी गई कार्ट रिकवरी",
+                        "ऑर्डर स्टेटस अपडेट",
+                        "उत्पाद सिफारिशें",
+                        "फ्लैश सेल नोटिफिकेशन"
+                    ]
+                },
+                {
+                    "icon": "GraduationCap",
+                    "title": "शिक्षा",
+                    "description": "कोर्स अपडेट, असाइनमेंट रिमाइंडर और शैक्षिक सामग्री के साथ छात्रों और अभिभावकों को एंगेज करें",
+                    "color": "from-blue-500 to-blue-600",
+                    "bgColor": "bg-blue-50",
+                    "stats": {
+                        "increase": "85%",
+                        "metric": "छात्र एंगेजमेंट"
+                    },
+                    "features": [
+                        "असाइनमेंट रिमाइंडर",
+                        "कोर्स घोषणाएं",
+                        "अभिभावक संचार",
+                        "स्टडी मटेरियल शेयरिंग"
+                    ]
+                },
+                {
+                    "icon": "Heart",
+                    "title": "हेल्थकेयर",
+                    "description": "अपॉइंटमेंट रिमाइंडर, स्वास्थ्य टिप्स और दवा अलर्ट के साथ रोगी देखभाल में सुधार करें",
+                    "color": "from-red-500 to-red-600",
+                    "bgColor": "bg-red-50",
+                    "stats": {
+                        "increase": "60%",
+                        "metric": "अपॉइंटमेंट उपस्थिति"
+                    },
+                    "features": [
+                        "अपॉइंटमेंट रिमाइंडर",
+                        "दवा अलर्ट",
+                        "स्वास्थ्य टिप्स डिलीवरी",
+                        "टेस्ट रिज़ल्ट नोटिफिकेशन"
+                    ]
+                },
+                {
+                    "icon": "Building",
+                    "title": "रियल एस्टेट",
+                    "description": "प्रॉपर्टी अलर्ट, वर्चुअल टूर और बाजार अपडेट के माध्यम से संभावनाओं से जुड़ें",
+                    "color": "from-purple-500 to-purple-600",
+                    "bgColor": "bg-purple-50",
+                    "stats": {
+                        "increase": "45%",
+                        "metric": "लीड कन्वर्जन"
+                    },
+                    "features": [
+                        "प्रॉपर्टी अलर्ट",
+                        "वर्चुअल टूर शेड्यूलिंग",
+                        "मार्केट अपडेट",
+                        "लीड क्वालिफिकेशन"
+                    ]
+                },
+                {
+                    "icon": "Utensils",
+                    "title": "रेस्तरां",
+                    "description": "मेनू अपडेट, विशेष ऑफर और रिज़र्वेशन कन्फर्मेशन के साथ ऑर्डर बढ़ाएं",
+                    "color": "from-orange-500 to-orange-600",
+                    "bgColor": "bg-orange-50",
+                    "stats": {
+                        "increase": "120%",
+                        "metric": "ऑर्डर वॉल्यूम"
+                    },
+                    "features": [
+                        "मेनू अपडेट",
+                        "विशेष ऑफर",
+                        "रिज़र्वेशन कन्फर्मेशन",
+                        "लॉयल्टी प्रोग्राम"
+                    ]
+                },
+                {
+                    "icon": "Car",
+                    "title": "ऑटोमोटिव",
+                    "description": "सर्विस रिमाइंडर, अपॉइंटमेंट बुकिंग और वाहन अपडेट के साथ ग्राहक सेवा बढ़ाएं",
+                    "color": "from-indigo-500 to-indigo-600",
+                    "bgColor": "bg-indigo-50",
+                    "stats": {
+                        "increase": "75%",
+                        "metric": "सर्विस बुकिंग"
+                    },
+                    "features": [
+                        "सर्विस रिमाइंडर",
+                        "अपॉइंटमेंट बुकिंग",
+                        "वाहन अपडेट",
+                        "मेंटेनेंस टिप्स"
+                    ]
+                }
+            ],
+            "cta": {
+                "viewCaseStudyButton": "केस स्टडी देखें",
+                "customerSuccessQuote": "WhatsApp Pro ने हमें {industry} एंगेजमेंट को {increase} तक बढ़ाने में मदद की। ऑटोमेशन फीचर्स ने अनगिनत घंटे बचाए और ग्राहक संतुष्टि में सुधार किया।",
+                "testimonialName": "Sarah Johnson",
+                "testimonialPosition": "मार्केटिंग डायरेक्टर"
+            },
+            "quickStats": [
+                {
+                    "value": "98%",
+                    "label": "डिलीवरी दर"
+                },
+                {
+                    "value": "5x",
+                    "label": "उच्च एंगेजमेंट"
+                },
+                {
+                    "value": "24/7",
+                    "label": "ऑटोमेशन"
+                },
+                {
+                    "value": "50%",
+                    "label": "लागत में कमी"
+                }
+            ]
+        },
+        "testimonialsSec": {
+            "introTagline": "ग्राहक सफलता की कहानियां",
+            "headlinePre": "द्वारा पसंद किया गया",
+            "headlineHighlight": "10,000+ व्यवसाय",
+            "subHeadline": "देखें कि विभिन्न उद्योगों के व्यवसाय हमारे WhatsApp मार्केटिंग प्लेटफ़ॉर्म के साथ उल्लेखनीय परिणाम कैसे प्राप्त कर रहे हैं",
+            "testimonials": [
+                {
+                    "name": "Sarah Chen",
+                    "role": "ई-कॉमर्स डायरेक्टर",
+                    "company": "Fashion Forward",
+                    "image": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+                    "rating": 5,
+                    "text": "WhatsApp Pro ने हमारे ग्राहक एंगेजमेंट को बदल दिया। हमने कार्ट रिकवरी दरों में 300% की वृद्धि देखी और हमारे ग्राहकों को वैयक्तिकृत अनुभव पसंद है।",
+                    "results": "कार्ट रिकवरी में 300% वृद्धि"
+                },
+                {
+                    "name": "Michael Rodriguez",
+                    "role": "मार्केटिंग मैनेजर",
+                    "company": "TechStart Solutions",
+                    "image": "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+                    "rating": 5,
+                    "text": "ऑटोमेशन वर्कफ़्लो अविश्वसनीय हैं। अब हम बिना किसी मैनुअल हस्तक्षेप के 24/7 लीड्स का पोषण कर सकते हैं। हमारी कन्वर्जन दरें कभी भी इतनी अधिक नहीं रही हैं।",
+                    "results": "लीड कन्वर्जन में 85% सुधार"
+                },
+                {
+                    "name": "Emily Johnson",
+                    "role": "कस्टमर सक्सेस लीड",
+                    "company": "HealthCare Plus",
+                    "image": "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+                    "rating": 5,
+                    "text": "WhatsApp रिमाइंडर लागू करने के बाद रोगी अपॉइंटमेंट उपस्थिति में नाटकीय रूप से सुधार हुआ। प्लेटफ़ॉर्म सहज है और हमारी टीम ने इसे जल्दी अपना लिया।",
+                    "results": "नो-शो में 60% की कमी"
+                },
+                {
+                    "name": "David Park",
+                    "role": "रेस्तरां मालिक",
+                    "company": "Gourmet Bistro",
+                    "image": "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+                    "rating": 5,
+                    "text": "हमारी रिज़र्वेशन प्रणाली अब निर्बाध है। ग्राहकों को तुरंत कन्फर्मेशन मिलता है और हम उन्हें विशेष ऑफर भेज सकते हैं। केवल 3 महीनों में राजस्व में 40% की वृद्धि हुई।",
+                    "results": "40% राजस्व वृद्धि"
+                },
+                {
+                    "name": "Lisa Thompson",
+                    "role": "शिक्षा समन्वयक",
+                    "company": "Bright Future Academy",
+                    "image": "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+                    "rating": 5,
+                    "text": "अभिभावक एंगेजमेंट पहले कभी इतना अच्छा नहीं रहा। हम अपने बच्चों के बारे में तुरंत अपडेट साझा कर सकते हैं और महत्वपूर्ण स्कूल घोषणाएं सभी तक पहुंचती हैं।",
+                    "results": "90% अभिभावक एंगेजमेंट दर"
+                }
+            ],
+            "navButtons": {
+                "previous": "पिछला",
+                "next": "अगला"
+            },
+            "statsGrid": [
+                {
+                    "number": "10,000+",
+                    "label": "खुश ग्राहक"
+                },
+                {
+                    "number": "98%",
+                    "label": "संतुष्टि दर"
+                },
+                {
+                    "number": "5M+",
+                    "label": "संदेश भेजे गए"
+                },
+                {
+                    "number": "24/7",
+                    "label": "सपोर्ट उपलब्ध"
+                }
+            ]
+        },
+        "ctaSec": {
+            "introTagline": "पहले से बढ़ रहे 10,000+ व्यवसायों में शामिल हों",
+            "headline": "WhatsApp मार्केटिंग के साथ अपने व्यवसाय को स्केल करने के लिए तैयार हैं?",
+            "subHeadline": "आज ही अपना मुफ्त ट्रायल शुरू करें। क्रेडिट कार्ड की आवश्यकता नहीं। अपना Meta API कनेक्ट करें और 5 मिनट से कम में कैंपेन भेजना शुरू करें।",
+            "buttons": {
+                "startTrial": "मुफ्त ट्रायल शुरू करें",
+                "scheduleDemo": "डेमो शेड्यूल करें"
+            },
+            "trustIndicators": [
+                {
+                    "title": "तुरंत सेटअप",
+                    "desc": "5 मिनट में शुरू करें"
+                },
+                {
+                    "title": "सुरक्षित और अनुपालन",
+                    "desc": "एंटरप्राइज़-ग्रेड सुरक्षा"
+                },
+                {
+                    "title": "24/7 सपोर्ट",
+                    "desc": "मदद के लिए हमेशा यहां"
+                },
+                {
+                    "title": "हमेशा के लिए मुफ्त",
+                    "desc": "कोई छिपी हुई लागत नहीं"
+                }
+            ],
+            "stats": [
+                {
+                    "number": "10,000+",
+                    "label": "सक्रिय उपयोगकर्ता"
+                },
+                {
+                    "number": "98%",
+                    "label": "डिलीवरी दर"
+                },
+                {
+                    "number": "5M+",
+                    "label": "संदेश भेजे गए"
+                },
+                {
+                    "number": "24/7",
+                    "label": "सपोर्ट"
+                }
+            ]
+        },
+        "pricingSec": {
+            "introTagline": "सरल, पारदर्शी मूल्य निर्धारण",
+            "headlinePre": "अपना चुनें",
+            "headlineHighlight": "परफेक्ट प्लान",
+            "subHeadline": "मुफ्त में शुरू करें और अपने विकास के साथ स्केल करें। सभी प्लान में आपका खुद का Meta API इंटीग्रेशन और असीमित संदेश भेजना शामिल है।",
+            "billingToggle": {
+                "monthly": "मासिक",
+                "annual": "वार्षिक",
+                "saveLabel": "20% बचाएं"
+            },
+            "planCTA": {
+                "freeButton": "मुफ्त में शुरू करें",
+                "paidButton": "मुफ्त ट्रायल शुरू करें"
+            },
+            "pricing": {
+                "month": "महीना",
+                "year": "वर्ष",
+                "upTo": "तक",
+                "contacts": "संपर्क",
+                "channels": "WhatsApp चैनल",
+                "automation": "ऑटोमेशन"
+            },
+            "loading": "प्लान लोड हो रहे हैं...",
+            "noPlans": {
+                "title": "कोई प्लान उपलब्ध नहीं",
+                "description": "कृपया मूल्य निर्धारण विकल्पों के लिए बाद में फिर से देखें।"
+            },
+            "authRequired": {
+                "title": "प्रमाणीकरण आवश्यक",
+                "description": "कृपया प्लान खरीदने से पहले लॉगिन करें"
+            },
+            "faq": {
+                "title": "अक्सर पूछे जाने वाले प्रश्न",
+                "questions": [
+                    {
+                        "q": "क्या मुझे अपनी खुद की WhatsApp Business API की आवश्यकता है?",
+                        "a": "हां, आपको अपनी खुद की Meta WhatsApp Business API लानी होगी। यह सुनिश्चित करता है कि आपके पास अपने डेटा और संदेशों पर पूर्ण नियंत्रण है।"
+                    },
+                    {
+                        "q": "क्या कोई सेटअप शुल्क है?",
+                        "a": "कोई सेटअप शुल्क नहीं! आप अपने API को कनेक्ट करने के तुरंत बाद हमारे प्लेटफ़ॉर्म का उपयोग शुरू कर सकते हैं।"
+                    },
+                    {
+                        "q": "क्या मैं किसी भी समय प्लान बदल सकता हूं?",
+                        "a": "बिल्कुल! आप किसी भी समय अपने प्लान को अपग्रेड या डाउनग्रेड कर सकते हैं। परिवर्तन तुरंत प्रभावी होते हैं।"
+                    },
+                    {
+                        "q": "यदि मैं अपनी संपर्क सीमा पार कर जाता हूं तो क्या होगा?",
+                        "a": "हम आपको आपकी सीमा तक पहुंचने से पहले सूचित करेंगे। आप अपने प्लान को अपग्रेड कर सकते हैं या अतिरिक्त संपर्क खरीद सकते हैं।"
+                    }
+                ]
+            },
+            "enterprise": {
+                "title": "कस्टम समाधान की आवश्यकता है?",
+                "description": "कस्टम मूल्य निर्धारण, समर्पित सहायता और अनुकूलित सुविधाओं के लिए हमारी एंटरप्राइज़ टीम से संपर्क करें",
+                "button": "बिक्री से संपर्क करें"
+            }
+        },
+        "footerSec": {
+            "newsletter": {
+                "heading": "WhatsApp मार्केटिंग टिप्स के साथ अपडेट रहें",
+                "description": "नवीनतम रणनीतियां, केस स्टडी और प्लेटफ़ॉर्म अपडेट अपने इनबॉक्स में प्राप्त करें।",
+                "emailPlaceholder": "अपना ईमेल पता दर्ज करें",
+                "subscribeButton": "सदस्यता लें"
+            },
+            "brandSection": {
+                "brandNames": [
+                    "",
+                    ""
+                ],
+                "description": "सबसे शक्तिशाली WhatsApp मार्केटिंग प्लेटफ़ॉर्म। स्वचालित कैंपेन, उन्नत एनालिटिक्स और सहज API इंटीग्रेशन के साथ अपने व्यवसाय को स्केल करें।"
+            },
+            "socialLinks": {
+                "twitter": "Twitter",
+                "linkedin": "LinkedIn",
+                "github": "GitHub",
+                "mail": "मेल"
+            },
+            "links": {
+                "product": [
+                    "फीचर्स",
+                    "यह कैसे काम करता है",
+                    "उपयोग के मामले",
+                    "प्राइसिंग",
+                    "API डॉक्यूमेंटेशन"
+                ],
+                "company": [
+                    "हमारे बारे में",
+                    "संपर्क करें",
+                    "करियर",
+                    "प्रेस किट",
+                    "इंटीग्रेशन"
+                ],
+                "support": [
+                    "हेल्प सेंटर",
+                    "समुदाय",
+                    "स्टेटस",
+                    "सुरक्षा"
+                ],
+                "resources": [
+                    "टेम्पलेट्स",
+                    "केस स्टडीज",
+                    "WhatsApp गाइड",
+                    "सर्वोत्तम प्रथाएं",
+                    "ROI कैलकुलेटर"
+                ],
+                "legal": [
+                    "गोपनीयता नीति",
+                    "सेवा की शर्तें",
+                    "कुकी नीति",
+                    "GDPR"
+                ]
+            },
+            "bottomBar": {
+                "copyrightText": "© 2025 {{appName}}. सर्वाधिकार सुरक्षित।",
+                "termsLink": "सेवा की शर्तें",
+                "privacyLink": "गोपनीयता नीति",
+                "cookieLink": "कुकी नीति"
+            }
+        }
+    },
+    "billing_subscription": {
+        "title": "बिलिंग और सदस्यता",
+        "subtitle": "अपनी सदस्यता, क्रेडिट और बिलिंग प्रबंधित करें",
+        "loading": "सदस्यता लोड हो रही है...",
+        "noSubscription": {
+            "title": "कोई सक्रिय सदस्यता नहीं",
+            "description": "फिलहाल आपकी कोई भी सदस्यता सक्रिय नहीं है।",
+            "upgradePlan": "प्लान अपग्रेड करें"
+        },
+        "card": {
+            "billing": "बिलिंग:",
+            "starts": "शुरू:",
+            "renews": "नवीनीकरण:",
+            "pricing": "मूल्य निर्धारण",
+            "monthly": "मासिक:",
+            "annual": "वार्षिक:",
+            "details": "विवरण",
+            "features": "फीचर्स"
+        }
+    },
+    "plans": {
+        "title": "मूल्य योजनाएं",
+        "subtitle": "अपनी मूल्य योजनाएँ बनाएं और प्रबंधित करें",
+        "adminTitle": "सदस्यता योजना",
+        "adminSubTitle": "अपने बिलिंग और सदस्यता बनाएं और प्रबंधित करें",
+        "stats": {
+            "totalPlans": "कुल योजनाएं",
+            "featured": "फीचर्ड",
+            "active": "सक्रिय",
+            "billing": "बिलिंग",
+            "annual": "वार्षिक",
+            "monthly": "मासिक"
+        },
+        "billingToggle": {
+            "monthly": "मासिक",
+            "annual": "वार्षिक",
+            "discount": "-20%"
+        },
+        "buttons": {
+            "createPlan": "योजना बनाएं",
+            "cancel": "रद्द करें",
+            "edit": "संपादित करें",
+            "delete": "हटाएं",
+            "save": "सेव करें",
+            "updatePlan": "योजना अपडेट करें",
+            "addFeature": "फीचर जोड़ें",
+            "getStartedFree": "मुफ्त में शुरू करें",
+            "startFreeTrial": "मुफ्त ट्रायल शुरू करें",
+            "buy": "खरीदें"
+        },
+        "form": {
+            "createTitle": "नई योजना बनाएं",
+            "editTitle": "योजना संपादित करें",
+            "planName": "योजना का नाम *",
+            "planNamePlaceholder": "उदा., प्रोफेशनल",
+            "icon": "आइकन",
+            "iconOptions": {
+                "zap": "⚡ बिजली",
+                "crown": "👑 ताज",
+                "rocket": "🚀 रॉकेट",
+                "star": "⭐ सितारा"
+            },
+            "description": "विवरण",
+            "descriptionPlaceholder": "बढ़ती टीमों के लिए परफेक्ट...",
+            "monthlyPrice": "मासिक कीमत",
+            "monthlyPricePlaceholder": "29.99",
+            "annualPrice": "वार्षिक कीमत",
+            "annualPricePlaceholder": "299.99",
+            "badgeText": "बैज टेक्स्ट",
+            "badgePlaceholder": "सबसे लोकप्रिय",
+            "borderColor": "बॉर्डर रंग",
+            "borderOptions": {
+                "gray": "डिफ़ॉल्ट ग्रे",
+                "blue": "नीला",
+                "purple": "बैंगनी",
+                "green": "हरा",
+                "pink": "गुलाबी"
+            },
+            "permissions": {
+                "channels": "चैनल",
+                "channelsPlaceholder": "5",
+                "contacts": "संपर्क",
+                "contactsPlaceholder": "10,000",
+                "automation": "ऑटोमेशन",
+                "automationPlaceholder": "0",
+                "campaign": "कैम्पेन",
+                "campaignPlaceholder": "0",
+                "apiRequestsPerMonth": "API Requests / Month",
+                "apiRequestsPerMonthPlaceholder": "e.g. 10000 or unlimited",
+                "apiRateLimitPerMinute": "API Rate Limit / Minute",
+                "apiRateLimitPerMinutePlaceholder": "e.g. 60 or unlimited"
+            },
+            "popularToggle": "लोकप्रिय योजना के रूप में चिह्नित करें",
+            "features": "फीचर्स",
+            "featureName": "फीचर नाम",
+            "featureIncluded": "शामिल",
+            "noFeatures": "अभी तक कोई फीचर नहीं जोड़ा गया"
+        },
+        "empty": {
+            "title": "अभी तक कोई योजना नहीं बनाई गई",
+            "description": "अपनी पहली मूल्य योजना बनाकर शुरुआत करें",
+            "button": "अपनी पहली योजना बनाएं"
+        },
+        "card": {
+            "perMonth": "महीना",
+            "perYear": "वर्ष"
+        },
+        "toast": {
+            "authRequired": "प्रमाणीकरण आवश्यक",
+            "authRequiredDesc": "कृपया योजना खरीदने से पहले लॉगिन करें",
+            "error": "त्रुटि",
+            "fetchError": "योजनाएं प्राप्त करने में विफल",
+            "planCreated": "योजना बनाई गई",
+            "planCreatedDesc": "आपकी योजना सफलतापूर्वक बनाई गई है।",
+            "planUpdated": "योजना अपडेट हुई",
+            "planUpdatedDesc": "आपकी योजना सफलतापूर्वक अपडेट हो गई है।",
+            "saveError": "योजना सेव करने में विफल",
+            "planDeleted": "योजना हटाई गई",
+            "planDeletedDesc": "योजना सफलतापूर्वक हटा दी गई है।",
+            "deleteError": "योजना हटाने में विफल",
+            "deleteConfirm": "क्या आप वाकई इस योजना को हटाना चाहते हैं?"
+        }
+    },
+    "users": {
+        "title": "उपयोगकर्ता",
+        "subtitle": "सभी पंजीकृत उपयोगकर्ताओं का प्रबंधन करें",
+        "search": {
+            "placeholder": "उपयोगकर्ता नाम या ईमेल से खोजें...",
+            "button": "खोजें",
+            "clear": "साफ़ करें"
+        },
+        "stats": {
+            "showing": "दिखाया जा रहा है",
+            "of": "में से",
+            "users": "उपयोगकर्ता"
+        },
+        "table": {
+            "contact": "संपर्क",
+            "phone": "फ़ोन",
+            "groups": "समूह",
+            "status": "स्थिति",
+            "lastLogin": "अंतिम लॉगिन",
+            "actions": "कार्रवाई",
+            "noGroups": "कोई समूह नहीं",
+            "Channels": "Channels",
+            "Registered": "Registered"
+        },
+        "card": {
+            "phone": "फ़ोन:",
+            "groups": "समूह:",
+            "status": "स्थिति:",
+            "lastLogin": "अंतिम लॉगिन:"
+        },
+        "loading": "उपयोगकर्ता लोड हो रहे हैं...",
+        "noUsers": "कोई उपयोगकर्ता नहीं मिला",
+        "lastLoginNever": "कभी नहीं",
+        "phonePlaceholder": "—",
+        "actions": {
+            "blockUser": "उपयोगकर्ता को ब्लॉक करें",
+            "activateUser": "उपयोगकर्ता को सक्रिय करें"
+        },
+        "pagination": {
+            "showing": "दिखाया जा रहा है",
+            "to": "से",
+            "of": "में से",
+            "users": "उपयोगकर्ता",
+            "previous": "पिछला",
+            "next": "अगला"
+        },
+        "toast": {
+            "success": "सफलता",
+            "statusUpdated": "उपयोगकर्ता की स्थिति अपडेट हो गई",
+            "error": "त्रुटि",
+            "statusUpdateFailed": "स्थिति अपडेट करने में विफल",
+            "fetchFailed": "उपयोगकर्ता लाने में विफल",
+            "somethingWrong": "कुछ गलत हुआ"
+        },
+        "Export": "Export CSV",
+        "AddUser": "Add New User",
+        "status": {
+            "allStatus": "All Status",
+            "active": "Active",
+            "inactive": "InActive",
+            "banned": "Banned"
+        },
+        "user": {
+            "allUser": "All Users",
+            "hasCannells": "Has Channels",
+            "noCannells": "No Channels"
+        },
+        "Date": {
+            "alltime": "All Time",
+            "thisweek": "This Week",
+            "thismonth": "This Month"
+        },
+        "newUser": {
+            "adduser": "Add new User",
+            "username": "Username",
+            "password": "Password",
+            "email": "Email",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "cancel": "Cancel",
+            "create": "Create User",
+            "creating": "Creating..."
+        },
+        "edituser": {
+            "edit": "Edit User",
+            "username": "Username",
+            "email": "Email",
+            "savechanges": "Save Changes",
+            "Cancel": "Cancel",
+            "Saving...": "Saving..."
+        },
+        "select": {
+            "selected": "selected",
+            "blockselected": "selected-bloced",
+            "unblockselected": "Unblock Selected",
+            "clear Selection": "clear Selection"
+        },
+        "assignPlan": {
+            "assign": "Assign Plan to",
+            "assigning": "Assigning...",
+            "plan": "Plan",
+            "loadingSubs": "Loading user's subscriptions...",
+            "activePlans": "Active Plans:",
+            "unknown": "Unknown",
+            "till": "till",
+            "selectPlan": "Select Plan *",
+            "choosePlan": "Choose a plan",
+            "billingCycle": "Billing Cycle *",
+            "monthly": "Monthly",
+            "yearly": "Yearly",
+            "features": "Features:",
+            "cancel": "Cancel",
+            "assignPlan": "Assign Plan",
+            "assignPlanTo": "Assign Plan to",
+            "toast": {
+                "missingField": "Missing Field",
+                "selectPlanError": "Please select a plan.",
+                "planAssignedSuccess": "Plan assigned successfully!"
+            }
+        },
+        "userDetails": {
+            "userIdNotFound": "User ID not found in URL.",
+            "title": "User Details",
+            "subtitle": "All Details for a user",
+            "channels": "Channels",
+            "teamMembers": "Team Members",
+            "contacts": "Contacts",
+            "templates": "Templates",
+            "campaigns": "Campaigns",
+            "subscriptions": "Subscriptions"
+        },
+        "channels": {
+            "loading": "Loading channels...",
+            "failedToLoad": "Failed to Load Channels",
+            "errorLoading": "Something went wrong while fetching Channels.",
+            "tryAgain": "Try Again",
+            "noChannelsYet": "No Channels Yet",
+            "noChannelsDesc": "Start building your team by inviting members. They'll appear here once added.",
+            "inviteTeamMember": "Invite Team Member",
+            "name": "Name",
+            "phoneNumber": "Phone Number",
+            "status": "Status",
+            "health": "Health",
+            "lastHealthCheck": "Last Health Check",
+            "createdAt": "Created At",
+            "actions": "Actions",
+            "active": "Active",
+            "inactive": "Inactive",
+            "error": "Error",
+            "disconnect": "Disconnect",
+            "delete": "Delete",
+            "disconnectChannel": "Disconnect Channel",
+            "deleteChannel": "Delete Channel",
+            "disconnectDesc1": "Are you sure you want to disconnect",
+            "disconnectDesc2": "This will deactivate the channel and deregister it from WhatsApp. The user's data (contacts, conversations, templates) will be preserved and they can reconnect later.",
+            "deleteDesc1": "Are you sure you want to delete",
+            "deleteDesc2": "This will permanently delete the channel and ALL associated data including contacts, conversations, messages, templates, campaigns, and automations. This action cannot be undone.",
+            "cancel": "Cancel",
+            "processing": "Processing...",
+            "deletePermanently": "Delete Permanently",
+            "showing": "Showing",
+            "to": "to",
+            "of": "of",
+            "channelsCount": "channels",
+            "previous": "Previous",
+            "next": "Next",
+            "channelDisconnected": "Channel Disconnected",
+            "channelDisconnectedDesc": "has been disconnected. The user can reconnect later.",
+            "channelDeleted": "Channel Deleted",
+            "channelDeletedDesc": "and all associated data have been permanently deleted.",
+            "errorTitle": "Error",
+            "failedToDisconnect": "Failed to disconnect channel:",
+            "failedToDelete": "Failed to delete channel:",
+            "unknownError": "Unknown error"
+        },
+        "campaigns": {
+            "loading": "Loading campaigns...",
+            "failedToLoad": "Failed to Load Campaigns",
+            "errorLoading": "Something went wrong while fetching campaigns.",
+            "tryAgain": "Try Again",
+            "noCampaignsYet": "No Campaigns Yet",
+            "noCampaignsDesc": "This user hasn't created any campaigns yet. Campaigns will appear here once created.",
+            "name": "Name",
+            "type": "Type",
+            "status": "Status",
+            "scheduledAt": "Scheduled At",
+            "createdAt": "Created At",
+            "unknown": "unknown",
+            "showing": "Showing",
+            "to": "to",
+            "of": "of",
+            "campaignsCount": "campaigns",
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "contacts": {
+            "loading": "Loading contacts...",
+            "failedToLoad": "Failed to Load Channels",
+            "errorLoading": "Something went wrong while fetching Channels.",
+            "tryAgain": "Try Again",
+            "noContactsYet": "No Channels Yet",
+            "noContactsDesc": "Start building your team by inviting members. They'll appear here once added.",
+            "inviteTeamMember": "Invite Team Member",
+            "name": "Name",
+            "phone": "Phone",
+            "email": "Email",
+            "status": "Status",
+            "createdAt": "Created At",
+            "active": "Active",
+            "showing": "Showing",
+            "to": "to",
+            "of": "of",
+            "contactsCount": "contacts",
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "teamMembers": {
+            "loading": "Loading team members...",
+            "failedToLoad": "Failed to Load Team Members",
+            "errorLoading": "Something went wrong while fetching team members.",
+            "tryAgain": "Try Again",
+            "noTeamMembersYet": "No Team Members Yet",
+            "noTeamMembersDesc": "Start building your team by inviting members. They'll appear here once added.",
+            "inviteTeamMember": "Invite Team Member",
+            "name": "Name",
+            "email": "Email",
+            "role": "Role",
+            "status": "Status",
+            "createdAt": "Created At",
+            "active": "Active",
+            "inactive": "Inactive",
+            "showing": "Showing",
+            "to": "to",
+            "of": "of",
+            "membersCount": "team members",
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "templates": {
+            "loading": "Loading templates...",
+            "failedToLoad": "Failed to Load Channels",
+            "errorLoading": "Something went wrong while fetching Channels.",
+            "tryAgain": "Try Again",
+            "noTemplatesYet": "No Channels Yet",
+            "noTemplatesDesc": "Start building your team by inviting members. They'll appear here once added.",
+            "inviteTeamMember": "Invite Team Member",
+            "name": "Name",
+            "category": "Category",
+            "status": "Status",
+            "body": "Body",
+            "createdAt": "Created At",
+            "showing": "Showing",
+            "to": "to",
+            "of": "of",
+            "templatesCount": "templates",
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "subscriptions": {
+            "loading": "Loading subscriptions...",
+            "failedToLoad": "Failed to Load Channels",
+            "errorLoading": "Something went wrong while fetching Channels.",
+            "tryAgain": "Try Again",
+            "noSubscriptionsYet": "No Channels Yet",
+            "noSubscriptionsDesc": "Start building your team by inviting members. They'll appear here once added.",
+            "inviteTeamMember": "Invite Team Member",
+            "username": "Username",
+            "plan": "Plan",
+            "price": "Price",
+            "status": "Status",
+            "billingCycle": "Billing Cycle",
+            "startDate": "Start Date",
+            "endDate": "End Date",
+            "autoRenew": "Auto Renew",
+            "yes": "Yes",
+            "no": "No"
+        }
+    },
+    "subscriptions": {
+        "title": "मास्टर सब्सक्रिप्शन",
+        "subtitle": "सभी सब्सक्रिप्शन प्रबंधित करें",
+        "allSubscriptions": "सभी सब्सक्रिप्शन",
+        "totalSubscriptions": "कुल",
+        "subscription": "सब्सक्रिप्शन",
+        "subscriptions": "सब्सक्रिप्शन",
+        "loading": "सब्सक्रिप्शन लोड हो रहे हैं...",
+        "error": {
+            "title": "डेटा लोड करने में त्रुटि",
+            "message": "सब्सक्रिप्शन लोड करने में विफल"
+        },
+        "table": {
+            "username": "उपयोगकर्ता नाम",
+            "plan": "योजना",
+            "price": "कीमत",
+            "status": "स्थिति",
+            "startDate": "प्रारंभ तिथि",
+            "endDate": "समाप्ति तिथि",
+            "autoRenew": "ऑटो नवीनीकरण",
+            "yes": "हाँ",
+            "no": "नहीं"
+        },
+        "card": {
+            "price": "कीमत:",
+            "startDate": "प्रारंभ तिथि:",
+            "endDate": "समाप्ति तिथि:",
+            "autoRenew": "ऑटो नवीनीकरण:"
+        },
+        "pagination": {
+            "showing": "दिखाया जा रहा है",
+            "to": "से",
+            "of": "में से",
+            "perPage": "प्रति पृष्ठ",
+            "previous": "पिछला",
+            "next": "अगला",
+            "page": "पृष्ठ",
+            "pageOf": "में से"
+        }
+    },
+    "support": {
+        "title": "सपोर्ट टिकट्स",
+        "subtitleAdmin": "सभी उपयोगकर्ताओं और लिस्नर के सपोर्ट टिकट्स प्रबंधित करें",
+        "subtitleUser": "अपने सपोर्ट टिकट्स देखें और प्रबंधित करें",
+        "createTicket": "टिकट बनाएं",
+        "stats": {
+            "totalTickets": "कुल टिकट्स",
+            "openTickets": "खुले टिकट्स",
+            "inProgress": "प्रगति में",
+            "resolved": "सुलझाए गए"
+        },
+        "search": {
+            "placeholder": "टिकट खोजें...",
+            "allStatus": "सभी स्थिति",
+            "allPriority": "सभी प्राथमिकता",
+            "status": {
+                "open": "खुला",
+                "inProgress": "प्रगति में",
+                "resolved": "सुलझा",
+                "closed": "बंद"
+            },
+            "priority": {
+                "low": "निम्न",
+                "medium": "मध्यम",
+                "high": "उच्च",
+                "urgent": "अत्यावश्यक"
+            }
+        },
+        "ticket": {
+            "updated": "अपडेटेड",
+            "creator": "निर्माता:",
+            "contact": "संपर्क:",
+            "details": "विवरण:",
+            "status": "स्थिति",
+            "priority": "प्राथमिकता",
+            "assignTo": "आवंटित करें",
+            "unassigned": "असाइन न किया गया",
+            "description": "विवरण:",
+            "conversation": "संवाद",
+            "noMessages": "अभी कोई संदेश नहीं",
+            "internal": "आंतरिक",
+            "typeReply": "अपना उत्तर लिखें...",
+            "internalNote": "आंतरिक नोट (दिखाई नहीं देगा",
+            "resolveTicket": "टिकट हल करें"
+        },
+        "creatorType": {
+            "user": "उपयोगकर्ता",
+            "admin": "प्रशासक",
+            "superadmin": "सुपर एडमिन",
+            "listener": "लिस्नर"
+        },
+        "empty": {
+            "noTickets": "कोई टिकट नहीं मिला",
+            "adjustFilters": "अपने खोज या फ़िल्टर मानदंड को समायोजित करें",
+            "allResolved": "सभी सपोर्ट टिकट सुलझा दिए गए हैं!",
+            "noSelection": "कोई टिकट चयनित नहीं",
+            "selectTicket": "सूची से टिकट चुनें और विवरण देखें तथा उत्तर दें"
+        },
+        "loading": "टिकट्स लोड हो रहे हैं...",
+        "pagination": {
+            "page": "पृष्ठ",
+            "of": "में से",
+            "previous": "पिछला",
+            "next": "अगला"
+        }
+    },
+    "gateway": {
+        "title": "गेटवे सेटिंग्स",
+        "subtitle": "अपने एप्लिकेशन के लिए पेमेंट गेटवे कॉन्फ़िगर करें",
+        "loading": "लोड हो रहा है...",
+        "stats": {
+            "activeProvider": "सक्रिय प्रदाता",
+            "none": "कोई नहीं",
+            "provider": "प्रदाता",
+            "environment": "पर्यावरण",
+            "live": "लाइव",
+            "test": "परीक्षण",
+            "status": "स्थिति",
+            "active": "सक्रिय",
+            "inactive": "निष्क्रिय"
+        },
+        "card": {
+            "title": "पेमेंट गेटवे कॉन्फ़िगरेशन",
+            "configured": "कॉन्फ़िगर किया गया"
+        },
+        "form": {
+            "providerLabel": "भुगतान प्रदाता *",
+            "selectProvider": "प्रदाता चुनें",
+            "razorpay": "Razorpay",
+            "stripe": "Stripe",
+            "environmentLabel": "पर्यावरण मोड *",
+            "testMode": "टेस्ट मोड",
+            "liveMode": "लाइव मोड",
+            "testModeSafe": "टेस्ट मोड विकास व परीक्षण के लिए सुरक्षित है",
+            "liveModeWarning": "⚠️ लाइव मोड असली भुगतान करेगा",
+            "testCredentials": "टेस्ट क्रेडेंशियल्स",
+            "liveCredentials": "लाइव क्रेडेंशियल्स",
+            "testApiKey": "टेस्ट API की *",
+            "testApiKeyPlaceholderRazorpay": "rzp_test_xxxxxxxxxxxxx",
+            "testApiKeyPlaceholderStripe": "pk_test_xxxxxxxxxxxxx",
+            "testApiSecret": "टेस्ट API सीक्रेट *",
+            "testApiSecretPlaceholder": "टेस्ट सीक्रेट की डालें",
+            "liveApiKey": "लाइव API की *",
+            "liveApiKeyPlaceholderRazorpay": "rzp_live_xxxxxxxxxxxxx",
+            "liveApiKeyPlaceholderStripe": "pk_live_xxxxxxxxxxxxx",
+            "liveApiSecret": "लाइव API सीक्रेट *",
+            "liveApiSecretPlaceholder": "लाइव सीक्रेट की डालें",
+            "enableGateway": "पेमेंट गेटवे सक्षम करें",
+            "enableGatewayDesc": "अपने एप्लिकेशन के लिए भुगतान प्रसंस्करण सक्रिय करें",
+            "saving": "सेव हो रहा है...",
+            "updateSettings": "सेटिंग्स अपडेट करें",
+            "saveSettings": "सेटिंग सेव करें"
+        },
+        "razorpay": {
+            "title": "Razorpay कॉन्फ़िगरेशन",
+            "description": "Razorpay डैशबोर्ड से अपनी क्रेडेंशियल्स प्राप्त करें. दोनों टेस्ट और लाइव क्रेडेंशियल्स चाहिए.",
+            "testKeyInfo": "टेस्ट की शुरू होता है",
+            "liveKeyInfo": "लाइव की शुरू होता है",
+            "getKeys": "Razorpay API Keys प्राप्त करें →"
+        },
+        "stripe": {
+            "title": "Stripe कॉन्फ़िगरेशन",
+            "description": "Stripe डैशबोर्ड से अपनी क्रेडेंशियल्स प्राप्त करें. दोनों टेस्ट और लाइव क्रेडेंशियल्स चाहिए.",
+            "testKeyInfo": "टेस्ट की शुरू होता है",
+            "testKeyInfoOr": "या",
+            "liveKeyInfo": "लाइव की शुरू होता है",
+            "liveKeyInfoOr": "या",
+            "getKeys": "Stripe API Keys प्राप्त करें →"
+        },
+        "toast": {
+            "updated": "पेमेंट गेटवे अपडेट किया गया",
+            "created": "पेमेंट गेटवे बनाया गया",
+            "successDesc": "भुगतान प्रदाता सेटिंग्स सफलतापूर्वक सेव हो गई हैं.",
+            "error": "त्रुटि",
+            "errorDesc": "प्रदाता सेव करने में विफल"
+        },
+        "validation": {
+            "providerRequired": "भुगतान प्रदाता आवश्यक है",
+            "apiKeyRequired": "लाइव API की आवश्यक है",
+            "apiSecretRequired": "लाइव API सीक्रेट आवश्यक है",
+            "testApiKeyRequired": "टेस्ट API की आवश्यक है",
+            "testApiSecretRequired": "टेस्ट API सीक्रेट आवश्यक है"
+        }
+    },
+    "transactions": {
+        "title": "लेनदेन",
+        "subtitle": "सभी भुगतान लेनदेन का प्रबंधन और निगरानी करें",
+        "stats": {
+            "totalRevenue": "कुल राजस्व",
+            "completed": "पूर्ण",
+            "pending": "लंबित",
+            "failed": "विफल"
+        },
+        "search": {
+            "placeholder": "लेनदेन खोजें...",
+            "filters": "फिल्टर",
+            "export": "निर्यात करें"
+        },
+        "filters": {
+            "title": "उन्नत फ़िल्टर",
+            "status": "स्थिति",
+            "allStatuses": "सभी स्थितियां",
+            "statusOptions": {
+                "pending": "लंबित",
+                "completed": "पूर्ण",
+                "failed": "विफल",
+                "refunded": "रिफंड किया गया",
+                "cancelled": "रद्द किया गया",
+                "expired": "समाप्त"
+            },
+            "paymentMethod": "भुगतान विधि",
+            "allMethods": "सभी विधियां",
+            "paymentOptions": {
+                "card": "कार्ड",
+                "upi": "UPI",
+                "wallet": "वॉलेट",
+                "netbanking": "नेट बैंकिंग"
+            },
+            "billingCycle": "बिलिंग चक्र",
+            "allCycles": "सभी चक्र",
+            "cycleOptions": {
+                "monthly": "मासिक",
+                "annual": "वार्षिक"
+            },
+            "startDate": "प्रारंभ तिथि",
+            "endDate": "समाप्ति तिथि",
+            "minAmount": "न्यूनतम राशि",
+            "minAmountPlaceholder": "0.00",
+            "maxAmount": "अधिकतम राशि",
+            "maxAmountPlaceholder": "0.00",
+            "clearFilters": "फिल्टर साफ़ करें"
+        },
+        "table": {
+            "transactionId": "लेनदेन आईडी",
+            "user": "उपयोगकर्ता",
+            "plan": "योजना",
+            "amount": "राशि",
+            "status": "स्थिति",
+            "paymentBy": "भुगतान द्वारा",
+            "date": "तिथि"
+        },
+        "card": {
+            "user": "उपयोगकर्ता:",
+            "plan": "योजना:",
+            "cycle": "चक्र:",
+            "amount": "राशि:",
+            "payment": "भुगतान:",
+            "date": "तिथि:"
+        },
+        "status": {
+            "completed": "पूर्ण",
+            "failed": "विफल",
+            "pending": "लंबित",
+            "refunded": "रिफंड किया गया",
+            "cancelled": "रद्द किया गया",
+            "expired": "समाप्त"
+        },
+        "loading": "लेनदेन लोड हो रहे हैं...",
+        "empty": {
+            "title": "कोई लेनदेन नहीं मिला",
+            "description": "अपने फिल्टर समायोजित करने का प्रयास करें"
+        },
+        "pagination": {
+            "showing": "दिखाया जा रहा है",
+            "to": "से",
+            "of": "में से",
+            "perPage": "/पृष्ठ",
+            "previous": "पिछला",
+            "next": "अगला"
+        }
+    },
+    "notifications": {
+        "title": "सूचनाएं",
+        "subtitle": "उपयोगकर्ताओं, प्रशासकों या अपनी टीम को सूचनाएं भेजें।",
+        "refresh": "रिफ्रेश करें",
+        "createNotification": "सूचना बनाएँ",
+        "stats": {
+            "totalSent": "कुल भेजी गई",
+            "allNotifications": "सभी सूचनाएं",
+            "userTarget": "यूजर टार्गेट",
+            "usersOnly": "केवल उपयोगकर्ता",
+            "adminTeam": "एडमिन / टीम",
+            "staffNotifications": "स्टाफ सूचनाएं"
+        },
+        "table": {
+            "title": "सभी सूचनाएं",
+            "total": "कुल",
+            "id": "आईडी",
+            "titleColumn": "शीर्षक",
+            "message": "संदेश",
+            "target": "लक्ष्य",
+            "status": "स्थिति",
+            "sentAt": "भेजा गया",
+            "action": "एक्शन",
+            "send": "भेजें",
+            "sent": "भेजा गया"
+        },
+        "loading": "सूचनाएं लोड हो रही हैं...",
+        "empty": {
+            "title": "कोई सूचना नहीं मिली",
+            "description": "शुरू करने के लिए अपनी पहली सूचना बनाएँ",
+            "button": "सूचना बनाएँ"
+        },
+        "card": {
+            "sentAt": "भेजा गया:"
+        },
+        "dialog": {
+            "title": "सूचना बनाएँ और भेजें",
+            "description": "सूचना तुरंत चुने गए प्राप्तकर्ताओं को भेज दी जाएगी।",
+            "titleLabel": "शीर्षक",
+            "titlePlaceholder": "सूचना का शीर्षक डालें",
+            "messageLabel": "संदेश",
+            "messagePlaceholder": "सूचना संदेश डालें",
+            "targetLabel": "लक्ष्य ऑडियंस",
+            "targetOptions": {
+                "all": "सभी उपयोगकर्ता",
+                "users": "केवल उपयोगकर्ता",
+                "admins": "केवल एडमिन",
+                "team": "केवल टीम",
+                "specific": "विशिष्ट यूज़र (आईडी)"
+            },
+            "userIdsLabel": "यूज़र आईडी (कॉमा सेपरेटेड)",
+            "userIdsPlaceholder": "user1,user2,user3",
+            "cancel": "रद्द करें",
+            "sendNow": "अभी भेजें",
+            "sending": "भेजा जा रहा है...",
+            "required": "*"
+        },
+        "toast": {
+            "error": "त्रुटि",
+            "errorLoading": "सूचनाएं लोड करने में विफल",
+            "success": "सफल",
+            "notificationSent": "सूचना सफलतापूर्वक भेजी गई!",
+            "notificationSentShort": "भेजा गया!",
+            "refreshing": "रिफ्रेश",
+            "refreshingDesc": "नई सूचनाएं लोड हो रही हैं..."
+        },
+        "validation": {
+            "titleRequired": "शीर्षक आवश्यक है",
+            "messageRequired": "संदेश आवश्यक है"
+        }
+    },
+    "aboutUs": {
+        "hero": {
+            "badge": "{{appName}} के बारे में",
+            "title": "WhatsApp को बदल रहे हैं",
+            "titleHighlight": "Business के लिए Marketing",
+            "subtitle": "दुनिया भर के व्यवसायों को शक्तिशाली, स्केलेबल WhatsApp मार्केटिंग ऑटोमेशन के साथ सशक्त बनाना जो वास्तविक परिणाम देता है"
+        },
+        "mission": {
+            "badge": "हमारा मिशन",
+            "title": "WhatsApp Marketing को",
+            "titleHighlight": "हर किसी के लिए सुलभ बनाना",
+            "description1": "हम मानते हैं कि हर बिज़नेस, चाहे जितना भी छोटा क्यों न हो, को शक्तिशाली मार्केटिंग टूल्स तक पहुंच मिलनी चाहिए। हमारा मिशन है WhatsApp मार्केटिंग को डेमोक्रेटाइज करना, एक आसान और किफायती प्लेटफ़ॉर्म देकर जो एंटरप्राइज़-लेवल फीचर्स प्रदान करता है।",
+            "description2": "{{appName}} के साथ, व्यवसाय दुनिया के सबसे लोकप्रिय मैसेजिंग प्लेटफ़ॉर्म पर अपने ग्राहकों से जुड़ सकते हैं और पहले से कहीं अधिक एंगेजमेंट, सेल्स और लॉयल्टी बढ़ा सकते हैं।",
+            "stats": {
+                "businesses": "10K+",
+                "businessesLabel": "सक्रिय व्यवसाय",
+                "messages": "5M+",
+                "messagesLabel": "भेजे गए संदेश"
+            },
+            "card": {
+                "title": "इंडस्ट्री लीडर्स द्वारा Trusted",
+                "description": "हज़ारों व्यवसायों में शामिल हों जो पहले से ही {{appName}} के साथ Grow कर रहे हैं",
+                "count": "+10,000 व्यवसाय"
+            }
+        },
+        "story": {
+            "badge": "हमारी कहानी",
+            "title": "Marketers द्वारा बनाया गया,",
+            "titleHighlight": "Marketers के लिए",
+            "description1": "{{appName}} एक साधारण frustration से पैदा हुआ: मौजूदा WhatsApp मार्केटिंग टूल्स या तो बहुत महंगे थे, बहुत जटिल थे, या ज़रूरी फीचर्स की कमी थी। खुद marketers होने के नाते हमें पता था कि इससे बेहतर तरीका होना चाहिए।",
+            "description2": "हमने 2023 में {{appName}} बनाना शुरू किया, एक साफ़ vision के साथ: मार्केट में सबसे Powerful, User-friendly और Affordable WhatsApp Marketing प्लेटफ़ॉर्म बनाना। आज, हमें दुनिया भर में 10,000+ व्यवसायों को Serve करने पर गर्व है।",
+            "description3": "हमारी टीम मार्केटिंग ऑटोमेशन, Software Development और Customer Success में विशेषज्ञता को जोड़ती है ताकि लगातार Innovation हो और यूज़र्स को Value मिलती रहे।",
+            "globalPresence": "वैश्विक उपस्थिति",
+            "globalPresenceDesc": "50+ देशों में व्यवसायों को Support करते हैं",
+            "journey": {
+                "title": "हमारी Journey",
+                "milestones": [
+                    {
+                        "year": "2023",
+                        "label": "कंपनी की स्थापना"
+                    },
+                    {
+                        "year": "2024",
+                        "label": "10K+ Active Users"
+                    },
+                    {
+                        "year": "2025",
+                        "label": "Industry Recognition"
+                    }
+                ]
+            }
+        },
+        "values": {
+            "badge": "हमारे Values",
+            "title": "क्या चीज़ हमें Drive करती है",
+            "titleHighlight": "हर दिन",
+            "list": [
+                {
+                    "title": "Customer First",
+                    "description": "हमारा हर निर्णय हमारे ग्राहकों से शुरू होता है। आपका Success ही हमारा Success है।"
+                },
+                {
+                    "title": "Innovation",
+                    "description": "हम लगातार सीमाओं को Push करते हैं ताकि Cutting-edge Features और Capabilities दे सकें।"
+                },
+                {
+                    "title": "Trust & Security",
+                    "description": "आपके डेटा की सुरक्षा और गोपनीयता सर्वोच्च प्राथमिकता है। हम Enterprise-Grade Security Standards Follow करते हैं।"
+                },
+                {
+                    "title": "24/7 Support",
+                    "description": "हमारी Dedicated Support Team हमेशा आपकी सफलता में मदद के लिए तैयार रहती है।"
+                }
+            ],
+            "achievements": [
+                {
+                    "title": "98% Customer Satisfaction",
+                    "subtitle": "4.9/5 Stars Rated"
+                },
+                {
+                    "title": "300% Average ROI",
+                    "subtitle": "हमारे ग्राहकों के लिए"
+                },
+                {
+                    "title": "50+ Countries",
+                    "subtitle": "वैश्विक पहुंच"
+                }
+            ]
+        },
+        "cta": {
+            "title": "Ready हो अपने",
+            "titleHighlight": "WhatsApp Marketing को Transform करने के लिए?",
+            "subtitle": "हज़ारों व्यवसायों में शामिल हों जो पहले से ही {{appName}} के साथ Grow कर रहे हैं",
+            "button": "अपना Free Trial शुरू करें"
+        }
+    },
+    "contactUs": {
+        "hero": {
+            "title": "संपर्क",
+            "titleHighlight": "करें",
+            "subtitle": "क्या आपके पास WPSaaS से जुड़े सवाल हैं? WhatsApp मार्केटिंग में सफल होने के लिए हम यहां मदद करने के लिए हैं।"
+        },
+        "form": {
+            "heading": "हमें संदेश भेजें",
+            "fields": {
+                "name": "पूरा नाम",
+                "email": "ईमेल पता",
+                "company": "कंपनी",
+                "subject": "विषय",
+                "message": "संदेश",
+                "required": "*"
+            },
+            "placeholders": {
+                "selectSubject": "विषय चुनें",
+                "message": "बताएं हम आपकी कैसे मदद कर सकते हैं..."
+            },
+            "subjects": {
+                "general": "सामान्य पूछताछ",
+                "support": "तकनीकी सहायता",
+                "sales": "सेल्स सवाल",
+                "partnership": "साझेदारी",
+                "feedback": "फीडबैक"
+            },
+            "button": "संदेश भेजें"
+        },
+        "contactInfo": {
+            "heading": "संपर्क जानकारी",
+            "list": [
+                {
+                    "title": "हमें ईमेल करें",
+                    "details": "",
+                    "description": "कभी भी हमें ईमेल करें"
+                },
+                {
+                    "title": "हमसे मिलें",
+                    "details": "नोएडा",
+                    "description": "भारत"
+                }
+            ]
+        },
+        "faq": {
+            "heading": "अक्सर पूछे जाने वाले सवाल",
+            "subtitle": "WPSaaS से जुड़े आम सवालों के तुरंत जवाब",
+            "questions": [
+                {
+                    "q": "WPSaaS से शुरू होने में कितना समय लगेगा?",
+                    "a": "आप 5 मिनट में ऑनबोर्ड हो सकते हैं। बस साइन अप करें, अपनी Meta WhatsApp Business API जोड़ें और अभियान शुरू करें।"
+                },
+                {
+                    "q": "क्या आप WhatsApp Business API देते हैं?",
+                    "a": "नहीं, आपको अपनी खुद की Meta WhatsApp Business API लानी होगी जिससे आपके डेटा और लागत पर पूरा नियंत्रण रहेगा।"
+                },
+                {
+                    "q": "आप क्या प्रकार का सपोर्ट देते हैं?",
+                    "a": "हम 24/7 ईमेल सपोर्ट, बिजनेस घंटों में लाइव चैट, विस्तृत डाक्यूमेंटेशन और वीडियो ट्यूटोरियल्स देते हैं।"
+                },
+                {
+                    "q": "क्या मैं दूसरी WhatsApp मार्केटिंग प्लेटफ़ॉर्म से माइग्रेट कर सकता हूं?",
+                    "a": "हां! हम आपकी कॉन्टेक्ट, टेम्पलेट्स और कैंपेन दूसरे प्लेटफ़ॉर्म से फ्री में ट्रांसफ़र करवाने में मदद करते हैं।"
+                },
+                {
+                    "q": "क्या फ्री ट्रायल है?",
+                    "a": "हां, हमारा Starter प्लान 1,000 कॉन्टेक्ट्स तक पूरी तरह मुफ्त है। शुरू करने के लिए क्रेडिट कार्ड की ज़रूरत नहीं है।"
+                }
+            ]
+        }
+    },
+    "careers": {
+        "hero": {
+            "title": "हमारी",
+            "titleHighlight": "अद्भुत टीम से जुड़ें",
+            "subtitle": "WhatsApp मार्केटिंग में क्रांति लाने और बिज़नेस कम्युनिकेशन का भविष्य बनाने में मदद करें। हम जोशीले लोगों की अपनी टीम का हिस्सा बनने के लिए तलाश कर रहे हैं।",
+            "buttons": {
+                "viewPositions": "खाली पद देखें",
+                "learnCulture": "संस्कृति के बारे में जानें"
+            }
+        },
+        "stats": [
+            {
+                "number": "50+",
+                "label": "टीम सदस्य"
+            },
+            {
+                "number": "15+",
+                "label": "देश"
+            },
+            {
+                "number": "10,000+",
+                "label": "खुश ग्राहक"
+            },
+            {
+                "number": "$10M+",
+                "label": "राजस्व उत्पन्न"
+            }
+        ],
+        "positions": {
+            "heading": "खाली पद",
+            "subtitle": "हमारे साथ अपना अगला अवसर पाएं",
+            "departments": [
+                {
+                    "id": "all",
+                    "name": "सभी पद"
+                },
+                {
+                    "id": "engineering",
+                    "name": "इंजीनियरिंग"
+                },
+                {
+                    "id": "product",
+                    "name": "प्रोडक्ट"
+                },
+                {
+                    "id": "marketing",
+                    "name": "मार्केटिंग"
+                },
+                {
+                    "id": "sales",
+                    "name": "सेल्स"
+                },
+                {
+                    "id": "support",
+                    "name": "सपोर्ट"
+                }
+            ],
+            "applyButton": "अब आवेदन करें",
+            "noResults": {
+                "title": "कोई पद नहीं मिला",
+                "description": "कोई अन्य डिपार्टमेंट चुनें या थोड़ी देर बाद देखें"
+            }
+        },
+        "benefits": {
+            "heading": "WPSaaS में क्यों काम करें?",
+            "subtitle": "हम शानदार लाभ और बेहतरीन माहौल देते हैं",
+            "list": [
+                {
+                    "title": "हेल्थ & वेलनेस",
+                    "description": "फुल हेल्थ, डेंटल, विज़न इंश्योरेंस और वेलनेस स्टाइपेंड"
+                },
+                {
+                    "title": "लचीला काम",
+                    "description": "रिमोट-फर्स्ट कल्चर, फ्लेक्सिबल घंटों के साथ, अनलिमिटेड छुट्टी"
+                },
+                {
+                    "title": "ग्रोथ और लर्निंग",
+                    "description": "$2,000 सालाना लर्निंग बजट और सम्मेलन उपस्थिति"
+                },
+                {
+                    "title": "इक्विटी & ओनरशिप",
+                    "description": "प्रतिस्पर्धात्मक इक्विटी पैकेज और स्टॉक खरीद योजना"
+                },
+                {
+                    "title": "रिमोट कल्चर",
+                    "description": "कहीं से भी काम करें, तिमाही टीम रिट्रीट्स के साथ"
+                },
+                {
+                    "title": "उपकरण",
+                    "description": "टॉप-लेवल लैपटॉप, मॉनिटर और होम ऑफिस सेटअप भत्ता"
+                }
+            ]
+        },
+        "values": {
+            "heading": "हमारे मूल्य",
+            "subtitle": "वे सिद्धांत जो हमारे हर काम में मार्गदर्शक हैं",
+            "list": [
+                {
+                    "title": "ग्राहक केंद्रितता",
+                    "description": "हम अपने हर कार्य के केंद्र में ग्राहकों को रखते हैं"
+                },
+                {
+                    "title": "नवाचार",
+                    "description": "हम लगातार सीमाएं पार करते हैं और नई टेक्नोलॉजी अपनाते हैं"
+                },
+                {
+                    "title": "पारदर्शिता",
+                    "description": "हम खुलकर और ईमानदारी से संवाद करते हैं"
+                },
+                {
+                    "title": "ग्रोथ माइंडसेट",
+                    "description": "हम गलतियों से सीखते हैं और लगातार बेहतर बनते हैं"
+                }
+            ]
+        },
+        "cta": {
+            "heading": "सही भूमिका नहीं दिख रही?",
+            "subtitle": "हम हमेशा प्रतिभाशाली लोगों की तलाश में रहते हैं। अपना रिज्यूमे भेजें और भविष्य के अवसरों के लिए हम आपको ध्यान में रखेंगे।",
+            "button": "रिज्यूमे भेजें"
+        }
+    },
+    "caseStudies": {
+        "hero": {
+            "title": "सक्सेस",
+            "titleHighlight": "स्टोरीज़",
+            "subtitle": "देखें कैसे विभिन्न इंडस्ट्री के व्यवसाय WPSaaS WhatsApp मार्केटिंग प्लेटफार्म से शानदार परिणाम हासिल कर रहे हैं।"
+        },
+        "cta": {
+            "buttonText": "पूरी केस स्टडी पढ़ें",
+            "modalButtons": {
+                "startStory": "अपनी सफलता की कहानी शुरू करें",
+                "share": "शेयर करें"
+            }
+        },
+        "modal": {
+            "challenge": "चुनौती",
+            "solution": "समाधान",
+            "keyResults": "मुख्य परिणाम",
+            "primaryResult": "प्रमुख परिणाम"
+        },
+        "stats": {
+            "heading": "हर इंडस्ट्री में रिजल्ट्स",
+            "list": [
+                {
+                    "number": "300%",
+                    "label": "औसत ROI वृद्धि"
+                },
+                {
+                    "number": "85%",
+                    "label": "कस्टमर इंगेजमेंट"
+                },
+                {
+                    "number": "60%",
+                    "label": "लागत में कमी"
+                },
+                {
+                    "number": "24/7",
+                    "label": "ऑटोमेटेड सपोर्ट"
+                }
+            ]
+        },
+        "ctaBanner": {
+            "heading": "क्या आप भी अपनी सक्सेस स्टोरी लिखना चाहते हैं?",
+            "subtitle": "हज़ारों बिज़नेस जिनका विकास {{appName}} के साथ हो रहा है, उनसे जुड़ें",
+            "button": "फ्री ट्रायल शुरू करें"
+        }
+    },
+    "whatsappGuide": {
+        "hero": {
+            "title": "WhatsApp मार्केटिंग",
+            "titleHighlight": "पूर्ण गाइड",
+            "subtitle": "WhatsApp Business API, मार्केटिंग स्ट्रेटेजी और आपके बिजनेस को बढ़ाने के लिए बेस्ट प्रैक्टिसेज़ के बारे में सब कुछ जानें।"
+        },
+        "sections": [
+            {
+                "id": "getting-started",
+                "title": "शुरुआत करना"
+            },
+            {
+                "id": "setup",
+                "title": "API सेटअप"
+            },
+            {
+                "id": "campaigns",
+                "title": "कैंपेन बनाना"
+            },
+            {
+                "id": "automation",
+                "title": "ऑटोमेशन"
+            },
+            {
+                "id": "best-practices",
+                "title": "बेस्ट प्रैक्टिसेज़"
+            },
+            {
+                "id": "compliance",
+                "title": "कम्प्लायंस"
+            }
+        ],
+        "sidebarTitle": "गाइड सेक्शंस",
+        "navigation": {
+            "previous": "पिछला",
+            "next": "अगला"
+        },
+        "content": {
+            "getting-started": {
+                "title": "WhatsApp मार्केटिंग से शुरुआत करना",
+                "items": [
+                    {
+                        "title": "WhatsApp Business API क्या है?",
+                        "text": "WhatsApp Business API एक शक्तिशाली प्लेटफार्म है जो व्यवसायों को बड़े पैमाने पर ग्राहकों के साथ संवाद करने की अनुमति देता है। रेगुलर WhatsApp Business ऐप के विपरीत, API स्वचालित मैसेजिंग, इंटीग्रेशन और एडवांस्ड फीचर्स को सक्षम करता है।"
+                    },
+                    {
+                        "title": "WPSaaS क्यों चुनें?",
+                        "text": "WPSaaS, WhatsApp Business API के लिए एक यूज़र-फ्रेंडली इंटरफ़ेस प्रदान करता है, जो आपको तकनीकी जटिलता के बिना कैंपेन बनाने, प्रतिक्रियाओं को स्वचालित करने और प्रदर्शन को ट्रैक करने की अनुमति देता है।"
+                    },
+                    {
+                        "title": "आवश्यक शर्तें",
+                        "text": "शुरू करने से पहले, आपको चाहिए: Meta से एक वेरिफाइड WhatsApp Business API अकाउंट, एक बिज़नेस फ़ोन नंबर, अपने टारगेट ऑडियंस की बुनियादी समझ"
+                    }
+                ]
+            },
+            "setup": {
+                "title": "अपना WhatsApp Business API सेटअप करना",
+                "items": [
+                    {
+                        "title": "स्टेप 1: अपने Meta API क्रेडेंशियल्स प्राप्त करें",
+                        "text": "Meta Business Platform पर जाएं और एक WhatsApp Business API अकाउंट बनाएं। आपको API क्रेडेंशियल्स मिलेंगे जिसमें आपका फ़ोन नंबर ID, एक्सेस टोकन और webhook URL शामिल है।"
+                    },
+                    {
+                        "title": "स्टेप 2: WPSaaS से कनेक्ट करें",
+                        "text": "अपने WPSaaS डैशबोर्ड में, Settings > API Configuration पर जाएं। अपने Meta API क्रेडेंशियल्स दर्ज करें और कनेक्शन को टेस्ट करें ताकि सब कुछ सही से काम कर रहा हो।"
+                    },
+                    {
+                        "title": "स्टेप 3: अपने बिज़नेस को वेरिफाई करें",
+                        "text": "Meta के साथ बिज़नेस वेरिफिकेशन प्रक्रिया पूरी करें। इसमें आमतौर पर बिज़नेस डॉक्यूमेंट्स प्रदान करना शामिल है और इसे पूरा होने में 1-3 बिज़नेस दिन लग सकते हैं।"
+                    }
+                ]
+            },
+            "campaigns": {
+                "title": "प्रभावी WhatsApp कैंपेन बनाना",
+                "items": [
+                    {
+                        "title": "कैंपेन के प्रकार",
+                        "text": "WPSaaS विभिन्न कैंपेन प्रकारों का समर्थन करता है: घोषणाओं के लिए ब्रॉडकास्ट मैसेज, लीड्स को पोषित करने के लिए ड्रिप कैंपेन, यूज़र एक्शन के आधार पर ट्रिगर्ड मैसेज, बिक्री और ऑफ़र के लिए प्रमोशनल कैंपेन"
+                    },
+                    {
+                        "title": "मैसेज टेम्पलेट्स",
+                        "text": "अपने Meta Business Manager में टेम्पलेट्स बनाएं और उन्हें {{appName}} के साथ सिंक करें। टेम्पलेट्स में टेक्स्ट, इमेजेज, वीडियो और इंटरैक्टिव बटन शामिल हो सकते हैं।"
+                    },
+                    {
+                        "title": "ऑडियंस सेगमेंटेशन",
+                        "text": "जनसांख्यिकी, व्यवहार, खरीद इतिहास और एंगेजमेंट स्तरों के आधार पर अपने ऑडियंस को सेगमेंट करें। यह सुनिश्चित करता है कि आपके मैसेज प्रासंगिक हैं और एंगेजमेंट दरों में सुधार होता है।"
+                    }
+                ]
+            },
+            "automation": {
+                "title": "WhatsApp मार्केटिंग ऑटोमेशन",
+                "items": [
+                    {
+                        "title": "वर्कफ़्लो ऑटोमेशन",
+                        "text": "स्वचालित वर्कफ़्लो बनाएं जो ग्राहक की कार्रवाइयों पर प्रतिक्रिया करते हैं। उदाहरणों में नए सब्सक्राइबर्स के लिए वेलकम सीक्वेंस, छोड़ी गई कार्ट रिकवरी, अपॉइंटमेंट रिमाइंडर और फ़ॉलो-अप मैसेज शामिल हैं।"
+                    },
+                    {
+                        "title": "चैटबॉट इंटीग्रेशन",
+                        "text": "सामान्य प्रश्नों को संभालने, लीड्स को क्वालिफाई करने और 24/7 कस्टमर सपोर्ट प्रदान करने के लिए AI-पावर्ड चैटबॉट्स तैनात करें। चैटबॉट्स ज़रूरत पड़ने पर मानव एजेंटों को सहजता से हैंड ओवर कर सकते हैं।"
+                    },
+                    {
+                        "title": "ट्रिगर-आधारित मैसेजिंग",
+                        "text": "ग्राहक के व्यवहार, समय की देरी या बाहरी घटनाओं के आधार पर ट्रिगर सेट करें। यह सुनिश्चित करता है कि आपके ऑडियंस के साथ समय पर और प्रासंगिक संचार हो।"
+                    }
+                ]
+            },
+            "best-practices": {
+                "title": "WhatsApp मार्केटिंग बेस्ट प्रैक्टिसेज़",
+                "items": [
+                    {
+                        "title": "यूज़र प्राइवेसी का सम्मान करें",
+                        "text": "यूज़र्स को मैसेज करने से पहले हमेशा स्पष्ट सहमति प्राप्त करें। स्पष्ट ऑप्ट-आउट विकल्प प्रदान करें और यूज़र प्राथमिकताओं का सम्मान करें। कभी भी संपर्क सूचियाँ न खरीदें या अनचाहे मैसेज न भेजें।"
+                    },
+                    {
+                        "title": "टाइमिंग और फ़्रीक्वेंसी",
+                        "text": "अपने ऑडियंस के टाइम ज़ोन के आधार पर उपयुक्त समय पर मैसेज भेजें। ओवर-मैसेजिंग से बचें - क्वालिटी ओवर क्वांटिटी महत्वपूर्ण है। एंगेजमेंट दरों की निगरानी करें और तदनुसार फ़्रीक्वेंसी को समायोजित करें।"
+                    },
+                    {
+                        "title": "पर्सनलाइज़ेशन",
+                        "text": "मैसेज को पर्सनलाइज़ करने के लिए ग्राहक डेटा का उपयोग करें। नाम, खरीद इतिहास और प्रासंगिक ऑफ़र शामिल करें। पर्सनलाइज़्ड मैसेज में काफी अधिक एंगेजमेंट दरें होती हैं।"
+                    }
+                ]
+            },
+            "compliance": {
+                "title": "WhatsApp Business पॉलिसी कम्प्लायंस",
+                "items": [
+                    {
+                        "title": "मैसेज कैटेगरीज़",
+                        "text": "WhatsApp मैसेज को इनमें वर्गीकृत करता है: यूटिलिटी (अकाउंट अपडेट्स, ऑर्डर कन्फर्मेशन), ऑथेंटिकेशन (लॉगिन कोड, सुरक्षा अलर्ट), मार्केटिंग (प्रमोशन, घोषणाएं)। प्रत्येक कैटेगरी के विशिष्ट नियम और मूल्य निर्धारण हैं।"
+                    },
+                    {
+                        "title": "टेम्पलेट अप्रूवल प्रोसेस",
+                        "text": "उपयोग से पहले सभी मैसेज टेम्पलेट्स को Meta द्वारा अप्रूव किया जाना चाहिए। अप्रूवल प्रोसेस में आमतौर पर 24-48 घंटे लगते हैं। सुनिश्चित करें कि टेम्पलेट्स WhatsApp की कंटेंट गाइडलाइंस का पालन करते हैं।"
+                    },
+                    {
+                        "title": "क्वालिटी रेटिंग",
+                        "text": "WhatsApp यूज़र फ़ीडबैक और एंगेजमेंट मेट्रिक्स के माध्यम से आपकी मैसेजिंग क्वालिटी की निगरानी करता है। प्रतिबंधों से बचने और डिलीवरेबिलिटी सुनिश्चित करने के लिए एक उच्च क्वालिटी रेटिंग बनाए रखें।"
+                    }
+                ]
+            }
+        },
+        "quickTips": {
+            "heading": "सफलता के लिए त्वरित टिप्स",
+            "subtitle": "WhatsApp मार्केटिंग रिज़ल्ट्स को अधिकतम करने के लिए ज़रूरी टिप्स",
+            "tips": [
+                {
+                    "title": "अपने ऑडियंस को ऑर्गेनिकली बनाएं",
+                    "tip": "क्वालिटी पर फोकस करें, क्वांटिटी नहीं। एंगेज्ड सब्सक्राइबर्स बड़े अनएंगेज्ड लिस्ट से ज़्यादा मूल्यवान हैं।"
+                },
+                {
+                    "title": "कम्पेलिंग मैसेज बनाएं",
+                    "tip": "मैसेज संक्षिप्त, वैल्युएबल और एक्शन-ओरिएंटेड रखें। स्पष्ट call-to-action शामिल करें।"
+                },
+                {
+                    "title": "परफॉर्मेंस मॉनिटर करें",
+                    "tip": "डिलीवरी रेट, रीड रेट और रिस्पांस रेट ट्रैक करें। अपने कैंपेन को ऑप्टिमाइज़ करने के लिए डेटा का उपयोग करें।"
+                },
+                {
+                    "title": "समझदारी से ऑटोमेट करें",
+                    "tip": "रूटीन टास्क ऑटोमेट करें लेकिन जटिल इंटरैक्शन के लिए ह्यूमन टच बनाए रखें।"
+                },
+                {
+                    "title": "कम्प्लायंस बनाए रखें",
+                    "tip": "हमेशा WhatsApp पॉलिसी और लोकल रेगुलेशंस फॉलो करें। कम्प्लायंस आपके बिजनेस की रक्षा करती है।"
+                },
+                {
+                    "title": "टेस्ट और इटरेट करें",
+                    "tip": "लगातार अलग-अलग अप्रोच टेस्ट करें और रिज़ल्ट के आधार पर ऑप्टिमाइज़ करें।"
+                }
+            ]
+        },
+        "cta": {
+            "heading": "क्या आप अपनी WhatsApp मार्केटिंग यात्रा शुरू करने के लिए तैयार हैं?",
+            "subtitle": "WPSaaS के शक्तिशाली प्लेटफॉर्म के साथ इस गाइड को एक्शन में लाएं",
+            "button": "फ्री ट्रायल शुरू करें"
+        }
+    },
+    "bestPractices": {
+        "hero": {
+            "title": "व्हाट्सएप मार्केटिंग",
+            "titleHighlight": "सर्वोत्तम अभ्यास",
+            "subtitle": "अपने व्हाट्सएप मार्केटिंग सफलताओं को अधिकतम करने के लिए सिद्ध रणनीतियाँ और तकनीकें। उद्योग विशेषज्ञों और शीर्ष प्रदर्शन करने वाले अभियानों से सीखें।"
+        },
+        "categories": [
+            {
+                "id": "messaging",
+                "name": "संदेश"
+            },
+            {
+                "id": "automation",
+                "name": "स्वचालन"
+            },
+            {
+                "id": "engagement",
+                "name": "संपर्क"
+            },
+            {
+                "id": "compliance",
+                "name": "अनुपालन"
+            },
+            {
+                "id": "timing",
+                "name": "समय निर्धारण"
+            },
+            {
+                "id": "optimization",
+                "name": "संतुलन"
+            }
+        ],
+        "implementationTips": "कार्यान्वयन सुझाव:",
+        "expectedImpact": "प्रत्याशित प्रभाव",
+        "expectedImpactDesc": "इस अभ्यास को लागू करने से आमतौर पर आपके व्हाट्सएप मार्केटिंग प्रदर्शन में मापन योग्य सुधार होता है।",
+        "quickTips": {
+            "heading": "त्वरित सफलता सुझाव",
+            "subtitle": "व्हाट्सएप मार्केटिंग सफलता के लिए आवश्यक यादृच्छिक बातें",
+            "tips": [
+                {
+                    "title": "गुणवत्ता मात्रा से अधिक महत्वपूर्ण",
+                    "tip": "बड़ी सूचियों से अधिक सक्रिय ग्राहकों पर ध्यान दें"
+                },
+                {
+                    "title": "समय महत्वपूर्ण है",
+                    "tip": "अपने दर्शकों के सबसे सक्रिय समय में संदेश भेजें"
+                },
+                {
+                    "title": "व्यक्तिगत बनें",
+                    "tip": "प्रासंगिक अनुभव बनाने के लिए ग्राहक डेटा का उपयोग करें"
+                },
+                {
+                    "title": "अनुपालन बनाए रखें",
+                    "tip": "हमेशा व्हाट्सएप नीतियों और स्थानीय नियमों का पालन करें"
+                },
+                {
+                    "title": "इंटरैक्शन को प्रोत्साहित करें",
+                    "tip": "बेहतर संपर्क के लिए बातचीत दो-तरफा बनाएं"
+                },
+                {
+                    "title": "परीक्षण करें और सुधारें",
+                    "tip": "प्रदर्शन डेटा के आधार पर लगातार सुधार करें"
+                }
+            ]
+        },
+        "warning": {
+            "heading": "महत्वपूर्ण अनुपालन अनुस्मारक",
+            "description": "व्हाट्सएप पर ग्राहकों को संदेश भेजने से पहले स्पष्ट सहमति सुनिश्चित करें। व्हाट्सएप की व्यावसायिक नीतियों का उल्लंघन खाते की सीमाओं या प्रतिबंधों का कारण बन सकता है।",
+            "points": [
+                "कभी संपर्क सूचियाँ न खरीदें",
+                "हमेशा ऑप्ट-आउट विकल्प प्रदान करें",
+                "24 घंटे के संदेश विंडो का सम्मान करें",
+                "प्रचार सामग्री के लिए अनुमोदित संदेश टेम्पलेट का उपयोग करें"
+            ]
+        },
+        "cta": {
+            "heading": "क्या आप इन सर्वोत्तम अभ्यासों को लागू करने के लिए तैयार हैं?",
+            "subtitle": "आज ही {{appName}} के साथ ये सिद्ध रणनीतियाँ लागू करना शुरू करें",
+            "button": "मुफ़्त परीक्षण शुरू करें"
+        },
+        "practices": {
+            "messaging": [
+                {
+                    "title": "संदेश संक्षिप्त और स्पष्ट रखें",
+                    "description": "व्हाट्सएप उपयोगकर्ता छोटे, सीधे संदेशों को पसंद करते हैं। जहाँ संभव हो 160 अक्षरों से कम का लक्ष्य रखें।",
+                    "tips": [
+                        "कई वस्तुओं के लिए बुलेट पॉइंट्स का उपयोग करें",
+                        "स्पष्ट कॉल-टू-एक्शन शामिल करें",
+                        "जटिल शब्दों और जार्गन से बचें",
+                        "भाव-चिह्नों का संयमित और प्रभावी उपयोग करें"
+                    ],
+                    "impact": "पढ़ने की दरों में 40% वृद्धि होती है"
+                },
+                {
+                    "title": "अपने संदेशों को व्यक्तिगत बनाएं",
+                    "description": "अपने दर्शकों के साथ गूंजने वाले व्यक्तिगत अनुभव बनाने के लिए ग्राहक डेटा का उपयोग करें।",
+                    "tips": [
+                        "शुभकामनाओं में ग्राहक के नाम शामिल करें",
+                        "पिछली खरीद या इंटरैक्शन का संदर्भ दें",
+                        "लक्षित संदेश के लिए दर्शकों का विभाजन करें",
+                        "उपयोगकर्ता व्यवहार पर आधारित गतिशील सामग्री का उपयोग करें"
+                    ],
+                    "impact": "संपर्क 60% तक बढ़ता है"
+                },
+                {
+                    "title": "समृद्ध मीडिया का प्रभावी उपयोग करें",
+                    "description": "चित्र, वीडियो और दस्तावेज़ आपके संदेश के प्रभाव को काफी बढ़ा सकते हैं।",
+                    "tips": [
+                        "मोबाइल देखने के लिए चित्रों का अनुकूलन करें",
+                        "वीडियो 30 सेकंड से कम रखें",
+                        "उच्च गुणवत्ता वाले दृश्य सामग्री का उपयोग करें",
+                        "सुलभता के लिए कैप्शन शामिल करें"
+                    ],
+                    "impact": "रूपांतरण दर में 35% की वृद्धि होती है"
+                }
+            ],
+            "automation": [
+                {
+                    "title": "स्वागत अनुक्रम सेट करें",
+                    "description": "नए ग्राहकों के लिए स्वचालित स्वागत संदेश बनाएं ताकि अपेक्षाएं सेट हो सकें।",
+                    "tips": [
+                        "स्वागत संदेश 5 मिनट के अंदर भेजें",
+                        "ग्राहकों को क्या उम्मीद करनी चाहिए समझाएं",
+                        "ऑप्ट-आउट निर्देश दें",
+                        "सहायक संसाधन या लिंक शामिल करें"
+                    ],
+                    "impact": "अनसब्सक्राइब दर में 25% की कमी आती है"
+                },
+                {
+                    "title": "स्मार्ट ट्रिगर लागू करें",
+                    "description": "संबंधित संदेश सही समय पर भेजने के लिए व्यवहार संबंधी ट्रिगर का उपयोग करें।",
+                    "tips": [
+                        "कार्ट परित्याग अनुस्मारक",
+                        "खरीद के बाद फॉलो-अप",
+                        "जन्मदिन और वर्षगांठ संदेश",
+                        "निष्क्रिय उपयोगकर्ता के लिए पुनः जुड़े अभियान"
+                    ],
+                    "impact": "राजस्व में 45% की वृद्धि होती है"
+                },
+                {
+                    "title": "ड्रिप अभियान बनाएँ",
+                    "description": "स्वचालित संदेशों की एक श्रृंखला के साथ लीड्स को पोषित करें।",
+                    "tips": [
+                        "2-3 दिन के अंतराल पर संदेश भेजें",
+                        "प्रत्येक संदेश में मूल्य प्रदान करें",
+                        "सामाजिक प्रमाण और प्रशंसापत्र शामिल करें",
+                        "स्पष्ट कॉल टू एक्शन के साथ समाप्त करें"
+                    ],
+                    "impact": "लीड रूपांतरण में 50% सुधार होता है"
+                }
+            ],
+            "engagement": [
+                {
+                    "title": "दो-तरफा बातचीत को प्रोत्साहित करें",
+                    "description": "मजबूत संबंध बनाने के लिए अपनी व्हाट्सएप उपस्थिति को इंटरैक्टिव बनाएं।",
+                    "tips": [
+                        "अपने संदेशों में प्रश्न पूछें",
+                        "ग्राहक पूछताछ का तेजी से जवाब दें",
+                        "पोल और सर्वेक्षण का उपयोग करें",
+                        "उपयोगकर्ता-जनित सामग्री साझा करें"
+                    ],
+                    "impact": "ग्राहक निष्ठा में 30% वृद्धि होती है"
+                },
+                {
+                    "title": "उत्कृष्ट ग्राहक समर्थन प्रदान करें",
+                    "description": "समस्याओं को जल्दी हल करने के लिए व्हाट्सएप का ग्राहक सेवा चैनल के रूप में उपयोग करें।",
+                    "tips": [
+                        "सामान्य प्रश्नों के लिए स्वचालित जवाब सेट करें",
+                        "व्हाट्सएप शिष्टाचार पर समर्थन टीम को प्रशिक्षित करें",
+                        "तेजी से प्रतिक्रिया के लिए त्वरित उत्तर का उपयोग करें",
+                        "जटिल मुद्दों को फोन या ईमेल पर स्थानांतरित करें"
+                    ],
+                    "impact": "संतुष्टि में 55% सुधार होता है"
+                },
+                {
+                    "title": "मूल्यवान सामग्री साझा करें",
+                    "description": "ऐसी सामग्री प्रदान करें जो आपके दर्शकों को शिक्षित, मनोरंजन या समस्या समाधान करे।",
+                    "tips": [
+                        "उद्योग अंतर्दृष्टि और सुझाव साझा करें",
+                        "विशेष ऑफ़र और पूर्वावलोकन प्रदान करें",
+                        "सहायक ट्यूटोरियल और गाइड भेजें",
+                        "प्रासंगिक समाचार और अपडेट क्यूरेट करें"
+                    ],
+                    "impact": "ब्रांड ट्रस्ट में 40% वृद्धि होती है"
+                }
+            ],
+            "compliance": [
+                {
+                    "title": "उचित सहमति प्राप्त करें",
+                    "description": "व्हाट्सएप सूची में संपर्क जोड़ने से पहले हमेशा स्पष्ट अनुमति लें।",
+                    "tips": [
+                        "डबल ऑप्ट-इन प्रक्रियाओं का उपयोग करें",
+                        "स्पष्ट रूप से बताएं कि उपयोगकर्ताओं को क्या मिलेगा",
+                        "आसानी से ऑप्ट-आउट विकल्प प्रदान करें",
+                        "सहमति के रिकॉर्ड रखें"
+                    ],
+                    "impact": "स्पैम शिकायतों में 80% कमी आती है"
+                },
+                {
+                    "title": "व्हाट्सएप बिजनेस नीतियों का पालन करें",
+                    "description": "व्हाट्सएप के सेवा नियमों और बिजनेस नीतियों का पालन करें।",
+                    "tips": [
+                        "अनुमोदित संदेश टेम्पलेट का उपयोग करें",
+                        "24 घंटे के संदेश विंडो का सम्मान करें",
+                        "सहमति के बिना प्रचार सामग्री न भेजें",
+                        "अपने गुणवत्ता रेटिंग की नियमित निगरानी करें"
+                    ],
+                    "impact": "खाते के प्रतिबंधों को रोकता है"
+                },
+                {
+                    "title": "डेटा गोपनीयता बनाए रखें",
+                    "description": "ग्राहक डेटा की सुरक्षा करें और गोपनीयता नियमों का पालन करें।",
+                    "tips": [
+                        "डेटा एन्क्रिप्शन लागू करें",
+                        "ग्राहक जानकारी तक पहुंच सीमित करें",
+                        "डेटा उपयोग की नियमित समीक्षा करें",
+                        "डेटा हटाने के विकल्प प्रदान करें"
+                    ],
+                    "impact": "ग्राहक विश्वास बनाता है"
+                }
+            ],
+            "timing": [
+                {
+                    "title": "संदेश उपयुक्त समय पर भेजें",
+                    "description": "अपने संदेशों का समय निर्धारित करें जब आपके दर्शक सबसे अधिक सक्रिय हों।",
+                    "tips": [
+                        "अपने दर्शकों के समय क्षेत्रों का विश्लेषण करें",
+                        "विभिन्न भेजने के समयों को परीक्षण करें",
+                        "सुबह जल्दी और देर रात के संदेशों से बचें",
+                        "स्थानीय छुट्टियों और आयोजनों का ध्यान रखें"
+                    ],
+                    "impact": "खुलने की दर में 25% वृद्धि होती है"
+                },
+                {
+                    "title": "आवृत्ति सीमाओं का सम्मान करें",
+                    "description": "अपने दर्शकों को बहुत अधिक संदेशों से अभिभूत न करें।",
+                    "tips": [
+                        "सप्ताह में अधिकतम 2-3 संदेशों तक सीमित करें",
+                        "प्रचारात्मक संदेशों के लिए उचित अंतराल रखें",
+                        "अनसब्सक्राइब दरों पर निगरानी रखें",
+                        "उपयोगकर्ताओं को आवृत्ति वरीयताएँ सेट करने दें"
+                    ],
+                    "impact": "अनसब्सक्राइब दर में 35% कमी आती है"
+                },
+                {
+                    "title": "ऋतुअनुसार अभियान योजना बनाएं",
+                    "description": "अपने संदेशों को मौसमी रुझानों और आयोजनों के साथ संरेखित करें।",
+                    "tips": [
+                        "छुट्टी-विशेष अभियान बनाएं",
+                        "स्कूल वापसी प्रचार की योजना बनाएं",
+                        "स्थानीय कार्यक्रमों और त्योहारों का लाभ उठाएं",
+                        "साल के अंत की बिक्री संदेश तैयार करें"
+                    ],
+                    "impact": "मौसमी बिक्री में 60% वृद्धि होती है"
+                }
+            ],
+            "optimization": [
+                {
+                    "title": "अपने संदेशों का A/B परीक्षण करें",
+                    "description": "प्रदर्शन सुधारने के लिए विभिन्न संदेश संस्करणों का निरंतर परीक्षण करें।",
+                    "tips": [
+                        "विषय पंक्तियों और प्रारंभिक संदेशों का परीक्षण करें",
+                        "विभिन्न कॉल-टू-एक्शन वाक्यांश आज़माएं",
+                        "संदेश की लंबाई का प्रयोग करें",
+                        "भेजने के समय और आवृत्तियों का परीक्षण करें"
+                    ],
+                    "impact": "प्रदर्शन में 30% सुधार होता है"
+                },
+                {
+                    "title": "प्रमुख मेट्रिक्स की निगरानी करें",
+                    "description": "महत्वपूर्ण मेट्रिक्स पर नज़र रखें ताकि आप अपने व्हाट्सएप मार्केटिंग को बेहतर बना सकें।",
+                    "tips": [
+                        "डिलीवरी और पढ़ने की दरों की निगरानी करें",
+                        "क्लिक-थ्रू दरों ट्रैक करें",
+                        "रूपांतरण दरों को मापें",
+                        "ग्राहक जीवनकाल मूल्य का विश्लेषण करें"
+                    ],
+                    "impact": "डेटा-आधारित निर्णय सक्षम बनाता है"
+                },
+                {
+                    "title": "अपने दर्शकों को वर्गीकृत करें",
+                    "description": "अधिक लक्षित संदेशों के लिए अपने दर्शकों को समूहों में विभाजित करें।",
+                    "tips": [
+                        "जनसांख्यिकी के अनुसार वर्गीकरण करें",
+                        "खरीद व्यवहार के आधार पर समूह बनाएं",
+                        "संपर्क-आधारित वर्गीकरण बनाएं",
+                        "भौगोलिक वर्गीकरण का उपयोग करें"
+                    ],
+                    "impact": "प्रासंगिकता में 45% वृद्धि करता है"
+                }
+            ]
+        }
+    },
+    "privacy_policy": {
+        "hero": {
+            "title": "Privacy Policy"
+        },
+        "intro": {
+            "text": "At StyleHub, we are committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information when you visit and make purchases from our website."
+        },
+        "sections": {
+            "informationWeCollect": {
+                "title": "1. Information We Collect",
+                "paragraphs": {
+                    "intro": "We collect information you directly provide to us:",
+                    "personalIdentifiers": {
+                        "label": "Personal Identifiers:",
+                        "text": "Name, shipping address, email address, and phone number when you place an order or create an account."
+                    },
+                    "paymentInformation": {
+                        "label": "Payment Information:",
+                        "text": "Credit/debit card details or other payment information. Payments are processed securely by our payment processors (e.g., Stripe, PayPal). We do not store full card details on our servers."
+                    },
+                    "orderHistory": {
+                        "label": "Order History:",
+                        "text": "A record of the products you purchase."
+                    },
+                    "communication": {
+                        "label": "Communication:",
+                        "text": "Any communication you send us, including support requests."
+                    },
+                    "autoIntro": "We also automatically collect certain information when you visit our site:",
+                    "technicalData": {
+                        "label": "Technical Data:",
+                        "text": "IP address, browser type, device info, and your interactions with our website (e.g., pages viewed), collected via cookies and similar technologies."
+                    }
+                }
+            },
+            "howWeUseInfo": {
+                "title": "2. How We Use Your Information",
+                "list": [
+                    "To process and fulfill your orders",
+                    "To provide invoices, receipts, and order confirmations",
+                    "To respond to inquiries and provide customer support",
+                    "To analyze site usage and improve our store",
+                    "For marketing (only with your consent). You can opt out anytime."
+                ]
+            },
+            "sharingInfo": {
+                "title": "3. Sharing Your Information",
+                "intro": "We do not sell your personal information. We share it only in limited circumstances:",
+                "list": [
+                    {
+                        "label": "Service Providers:",
+                        "text": "Shipping carriers, payment processors, email platforms, etc."
+                    },
+                    {
+                        "label": "Legal Obligations:",
+                        "text": "When required by law or legal proceedings."
+                    }
+                ]
+            },
+            "cookies": {
+                "title": "4. Cookies",
+                "text": "We use cookies to remember preferences, analyze traffic, and improve your shopping experience. You can disable cookies in your browser settings, but some site features may not work properly."
+            },
+            "dataRetention": {
+                "title": "5. Data Retention",
+                "text": "We retain your information only as long as necessary to fulfill the purposes for which it was collected, including legal, accounting, or reporting requirements."
+            },
+            "yourRights": {
+                "title": "6. Your Rights",
+                "intro": "You may have rights depending on your location:",
+                "list": [
+                    "Access and correct personal information",
+                    "Request deletion of your data",
+                    "Opt out of marketing emails anytime",
+                    "Request your information in a portable format"
+                ],
+                "contact": "To exercise these rights, contact us at:"
+            },
+            "dataSecurity": {
+                "title": "7. Data Security",
+                "text": "We use industry-standard security measures to protect your data. However, no method of transmission over the internet is 100% secure."
+            },
+            "changes": {
+                "title": "8. Changes to This Policy",
+                "text": "We may update this policy from time to time. Updates will be shown on this page along with a revised \"Last Updated\" date."
+            }
+        }
+    },
+    "terms": {
+        "hero": {
+            "title": "नियम और शर्तें",
+            "lastUpdated": "अंतिम अपडेट: 01 जनवरी 2025"
+        },
+        "intro": {
+            "text": "कृपया StyleHub वेबसाइट और सेवाओं का उपयोग करने से पहले इन नियमों और शर्तों को ध्यानपूर्वक पढ़ें। हमारी प्लेटफ़ॉर्म तक पहुँचने या उपयोग करने पर, आप इन नियमों से सहमत होते हैं।"
+        },
+        "sections": {
+            "generalConditions": {
+                "title": "1. सामान्य शर्तें",
+                "text": "हम किसी भी व्यक्ति को किसी भी कारण से और किसी भी समय सेवा देने से इंकार करने का अधिकार रखते हैं। आप समझते हैं कि आपकी सामग्री (भुगतान जानकारी को छोड़कर) बिना एन्क्रिप्शन के स्थानांतरित की जा सकती है और तकनीकी आवश्यकताओं के अनुसार बदली जा सकती है।"
+            },
+            "accountCreation": {
+                "title": "2. खाता निर्माण और सुरक्षा",
+                "text": "कुछ सुविधाओं का उपयोग करने के लिए आपको खाता बनाना पड़ सकता है। आपके खाते और पासवर्ड की गोपनीयता बनाए रखना आपकी ज़िम्मेदारी है। इस साइट का उपयोग करने के लिए आपको अपने क्षेत्र में कानूनी वयस्क आयु प्राप्त करनी चाहिए।"
+            },
+            "productsServices": {
+                "title": "3. उत्पाद और सेवाएँ",
+                "items": [
+                    "हम किसी भी व्यक्ति, क्षेत्र या अधिकार क्षेत्र को उत्पाद बिक्री सीमित कर सकते हैं।",
+                    "हम उत्पादों की छवियों और रंगों को सटीक रूप से प्रदर्शित करने का हर प्रयास करते हैं।",
+                    "सभी कीमतें बिना किसी सूचना के बदल सकती हैं।"
+                ]
+            },
+            "billingOrders": {
+                "title": "4. बिलिंग और ऑर्डर जानकारी",
+                "text": "आप सभी लेनदेन के लिए सही और पूर्ण खरीद और खाता जानकारी प्रदान करने के लिए सहमत होते हैं। हम किसी भी ऑर्डर को अस्वीकार या रद्द करने का अधिकार रखते हैं।"
+            },
+            "thirdPartyLinks": {
+                "title": "5. तृतीय-पक्ष लिंक",
+                "text": "हम तृतीय-पक्ष सामग्री, वेबसाइटों या सेवाओं के लिए जिम्मेदार नहीं हैं जिन्हें हमारी प्लेटफ़ॉर्म पर दिए गए लिंक के माध्यम से एक्सेस किया जाता है।"
+            },
+            "userComments": {
+                "title": "6. उपयोगकर्ता टिप्पणियाँ",
+                "text": "आप द्वारा भेजी गई कोई भी टिप्पणी या सामग्री बिना किसी प्रतिबंध के उपयोग की जा सकती है। हम टिप्पणियों को गोपनीय रखने या आपको मुआवज़ा देने के लिए बाध्य नहीं हैं।"
+            },
+            "prohibitedUses": {
+                "title": "7. प्रतिबंधित उपयोग",
+                "items": [
+                    "अवैध गतिविधियों में शामिल होना",
+                    "प्रासंगिक कानूनों और नियमों का उल्लंघन करना",
+                    "हमारी बौद्धिक संपत्ति या दूसरों के अधिकारों का उल्लंघन करना",
+                    "अपमानजनक, हानिकारक या भेदभावपूर्ण व्यवहार"
+                ]
+            },
+            "disclaimer": {
+                "title": "8. वारंटी और दायित्व अस्वीकरण",
+                "text": "हम निर्बाध, सुरक्षित या त्रुटि-मुक्त सेवा की गारंटी नहीं देते। आप सहमत होते हैं कि सेवा का उपयोग आपके अपने जोखिम पर है। सभी सेवाएँ “जैसी हैं” के आधार पर बिना किसी वारंटी के प्रदान की जाती हैं।"
+            },
+            "indemnification": {
+                "title": "9. क्षतिपूर्ति",
+                "text": "आप सहमत होते हैं कि StyleHub, उसके कर्मचारियों और साझेदारों को किसी भी दावे से मुक्त रखेंगे, जो इन नियमों का उल्लंघन करने से उत्पन्न होता है।"
+            },
+            "severability": {
+                "title": "10. विभाज्यता",
+                "text": "यदि इन नियमों में कोई प्रावधान अवैध पाया जाता है, तब भी शेष प्रावधान मान्य और लागू रहेंगे।"
+            },
+            "termination": {
+                "title": "11. समाप्ति",
+                "text": "ये नियम तब तक प्रभावी रहेंगे जब तक किसी भी पक्ष द्वारा समाप्त नहीं किया जाता। समाप्ति से पहले उत्पन्न दायित्व समाप्ति के बाद भी लागू रहेंगे।"
+            },
+            "governingLaw": {
+                "title": "12. लागू कानून",
+                "text": "ये नियम भारत के कानूनों द्वारा नियंत्रित हैं।"
+            },
+            "changes": {
+                "title": "13. इन नियमों में परिवर्तन",
+                "text": "हम किसी भी समय इन नियमों को अपडेट कर सकते हैं, और परिवर्तन इस पृष्ठ पर प्रकाशित किए जाएंगे। उन्हें समय-समय पर समीक्षा करना आपकी जिम्मेदारी है।"
+            }
+        }
+    },
+    "cookiePolicy": {
+        "hero": {
+            "title": "कुकी नीति",
+            "lastUpdated": "15 जनवरी 2025"
+        },
+        "sections": {
+            "whatAreCookies": {
+                "title": "कुकीज़ क्या हैं",
+                "paragraphs": [
+                    "कुकीज़ छोटे टेक्स्ट फ़ाइलें होती हैं जो हमारी वेबसाइट पर जाने पर आपके डिवाइस पर संग्रहीत की जाती हैं। ये आपकी प्राथमिकताओं को याद रखने और यह समझने में मदद करती हैं कि आप हमारी सेवाओं का उपयोग कैसे करते हैं।",
+                    "यह कुकी नीति बताती है कि कुकीज़ क्या हैं, हम उन्हें कैसे उपयोग करते हैं, हम कौन-सी कुकीज़ का उपयोग करते हैं, और आप अपनी कुकी प्राथमिकताओं को कैसे नियंत्रित कर सकते हैं।"
+                ]
+            },
+            "howWeUseCookies": {
+                "title": "हम कुकीज़ का उपयोग कैसे करते हैं",
+                "intro": "हम विभिन्न उद्देश्यों के लिए कुकीज़ का उपयोग करते हैं:",
+                "list": [
+                    "हमारी वेबसाइट को सही ढंग से कार्य करने के लिए",
+                    "आपके लॉगइन स्थिति और प्राथमिकताओं को याद रखने के लिए",
+                    "वेबसाइट ट्रैफ़िक और उपयोग पैटर्न का विश्लेषण करने के लिए",
+                    "हमारी सेवाओं और उपयोगकर्ता अनुभव को बेहतर बनाने के लिए",
+                    "व्यक्तिगत सामग्री और सुविधाएँ प्रदान करने के लिए",
+                    "हमारे विपणन अभियानों की प्रभावशीलता मापने के लिए"
+                ]
+            },
+            "typesOfCookies": {
+                "title": "हम जिन कुकीज़ का उपयोग करते हैं उनके प्रकार",
+                "essential": {
+                    "title": "आवश्यक कुकीज़",
+                    "text": "ये कुकीज़ वेबसाइट के सही ढंग से काम करने के लिए जरूरी होती हैं। ये सुरक्षा, नेटवर्क प्रबंधन और एक्सेसिबिलिटी जैसी मुख्य सुविधाएँ सक्षम करती हैं। आप इन कुकीज़ से बाहर नहीं हो सकते।",
+                    "examples": "उदाहरण: सेशन कुकीज़, प्रमाणीकरण कुकीज़, लोड बैलेंसिंग कुकीज़"
+                },
+                "performance": {
+                    "title": "प्रदर्शन कुकीज़",
+                    "text": "ये कुकीज़ यह जानकारी एकत्रित करती हैं कि उपयोगकर्ता हमारी वेबसाइट का उपयोग कैसे करते हैं, जैसे कि सबसे अधिक देखे गए पृष्ठ और त्रुटि संदेश प्राप्त करना। इससे हमें हमारी वेबसाइट के प्रदर्शन को बेहतर बनाने में मदद मिलती है।",
+                    "examples": "उदाहरण: Google Analytics, पेज लोड समय ट्रैकिंग, त्रुटि रिपोर्टिंग"
+                },
+                "functional": {
+                    "title": "कार्यात्मक कुकीज़",
+                    "text": "ये कुकीज़ वेबसाइट को आपके द्वारा किए गए विकल्पों को याद रखने और अधिक व्यक्तिगत सुविधाएँ प्रदान करने की अनुमति देती हैं। ये हमारे द्वारा या उन तृतीय-पक्ष प्रदाताओं द्वारा सेट की जा सकती हैं जिनकी सेवाएँ हमने शामिल की हैं।",
+                    "examples": "उदाहरण: भाषा प्राथमिकताएँ, थीम सेटिंग्स, फॉर्म डेटा"
+                },
+                "marketing": {
+                    "title": "विपणन कुकीज़",
+                    "text": "ये कुकीज़ वेबसाइटों में आगंतुकों को ट्रैक करने, प्रासंगिक विज्ञापन दिखाने और विपणन अभियानों की प्रभावशीलता मापने के लिए उपयोग की जाती हैं।",
+                    "examples": "उदाहरण: Facebook Pixel, Google Ads, री-टार्गेटिंग कुकीज़"
+                }
+            },
+            "thirdPartyCookies": {
+                "title": "तृतीय-पक्ष कुकीज़",
+                "intro": "हम तृतीय-पक्ष सेवाओं का उपयोग कर सकते हैं जो आपके डिवाइस पर कुकीज़ सेट कर सकती हैं। इन सेवाओं में शामिल हैं:",
+                "list": [
+                    "Google Analytics: वेबसाइट विश्लेषण और प्रदर्शन की निगरानी के लिए",
+                    "Intercom: ग्राहक समर्थन और लाइव चैट के लिए",
+                    "Stripe: भुगतान प्रक्रिया और धोखाधड़ी रोकथाम के लिए",
+                    "Facebook: सोशल मीडिया एकीकरण और विज्ञापन के लिए"
+                ],
+                "outro": "इन तृतीय-पक्ष सेवाओं की अपनी गोपनीयता और कुकी नीतियाँ होती हैं। हम सलाह देते हैं कि आप उनकी नीतियाँ पढ़ें ताकि आप समझ सकें कि वे कुकीज़ का उपयोग कैसे करते हैं।"
+            },
+            "cookieDuration": {
+                "title": "कुकीज़ की अवधि",
+                "intro": "कुकीज़ या तो सेशन कुकीज़ या स्थायी कुकीज़ हो सकती हैं:",
+                "list": [
+                    "सेशन कुकीज़: ये अस्थायी होती हैं और ब्राउज़र बंद करने पर हटा दी जाती हैं",
+                    "स्थायी कुकीज़: ये आपके डिवाइस पर एक निर्धारित अवधि तक रहती हैं या जब तक आप इन्हें हटाते नहीं"
+                ],
+                "extra": "स्थायी कुकीज़ की अवधि उनके उद्देश्य पर निर्भर करती है, जो आमतौर पर 30 दिनों से 2 वर्षों तक होती है।"
+            },
+            "managingCookies": {
+                "title": "कुकी प्राथमिकताओं का प्रबंधन",
+                "intro": "आप कुकीज़ को प्रबंधित करने के लिए कई विकल्पों का उपयोग कर सकते हैं:",
+                "browserSettings": {
+                    "title": "ब्राउज़र सेटिंग्स",
+                    "text": "अधिकांश वेब ब्राउज़र आपको कुकीज़ को उनकी सेटिंग्स के माध्यम से नियंत्रित करने की अनुमति देते हैं। आप कर सकते हैं:",
+                    "list": [
+                        "सभी कुकीज़ को ब्लॉक करें",
+                        "तृतीय-पक्ष कुकीज़ को ब्लॉक करें",
+                        "मौजूदा कुकीज़ को हटाएं",
+                        "जब कुकीज़ भेजी जा रही हों तब सूचनाएं सेट करें"
+                    ]
+                },
+                "consentManager": {
+                    "title": "कुकी अनुमति प्रबंधक",
+                    "text": "जब आप पहली बार हमारी वेबसाइट पर आते हैं, तो आपको एक कुकी अनुमति बैनर दिखाई देगा जो आपको विभिन्न प्रकार की कुकीज़ स्वीकार या अस्वीकार करने की अनुमति देता है। आप किसी भी समय हमारे फुटर में \"कुकी सेटिंग्स\" लिंक पर क्लिक करके अपनी प्राथमिकताओं को बदल सकते हैं।"
+                },
+                "optOutLinks": {
+                    "title": "ऑप्ट-आउट लिंक",
+                    "intro": "आप विशेष तृतीय-पक्ष कुकीज़ को अक्षम कर सकते हैं:",
+                    "links": [
+                        {
+                            "label": "Google Analytics:",
+                            "text": "Google Analytics ऑप्ट-आउट",
+                            "href": "https://tools.google.com/dlpage/gaoptout"
+                        },
+                        {
+                            "label": "Facebook:",
+                            "text": "Facebook विज्ञापन प्राथमिकताएँ",
+                            "href": "https://www.facebook.com/settings?tab=ads"
+                        }
+                    ]
+                }
+            },
+            "impactDisabling": {
+                "title": "कुकीज़ को निष्क्रिय करने का प्रभाव",
+                "intro": "हालांकि आप कुकीज़ को निष्क्रिय कर सकते हैं, कृपया ध्यान दें कि ऐसा करने से आपकी वेबसाइट अनुभव प्रभावित हो सकता है:",
+                "list": [
+                    "कुछ सुविधाएँ सही ढंग से काम नहीं कर सकतीं",
+                    "आपको जानकारी बार-बार दर्ज करनी पड़ सकती है",
+                    "व्यक्तिगत सामग्री और अनुशंसाएँ उपलब्ध नहीं हो सकतीं",
+                    "हम आपकी प्राथमिकताओं को याद नहीं रख पाएंगे"
+                ]
+            },
+            "updates": {
+                "title": "इस नीति में अपडेट",
+                "paragraphs": [
+                    "हम अपनी प्रथाओं में परिवर्तन या अन्य परिचालन, कानूनी या नियामक कारणों को दर्शाने के लिए समय-समय पर इस कुकी नीति को अपडेट कर सकते हैं। हम किसी भी महत्वपूर्ण अपडेट के बारे में आपको नीति को हमारी वेबसाइट पर पोस्ट करके सूचित करेंगे।",
+                    "हम आपको सलाह देते हैं कि आप समय-समय पर इस नीति की समीक्षा करें ताकि आप जान सकें कि हम कुकीज़ का उपयोग कैसे करते हैं।"
+                ]
+            },
+            "contact": {
+                "title": "हमसे संपर्क करें",
+                "intro": "यदि आपके पास हमारे कुकी उपयोग या इस कुकी नीति के बारे में कोई प्रश्न हैं, तो कृपया हमसे संपर्क करें:",
+                "emailLabel": "ईमेल:",
+                "email": "{{suportEmail}}",
+                "addressLabel": "पता:",
+                "address": "123 बिजनेस एवेन्यू, सुइट 100, सैन फ्रांसिस्को, CA 94105",
+                "phoneLabel": "फ़ोन:",
+                "phone": "+1 (555) 123-4567"
+            }
+        }
+    },
+    "apiDocs": {
+        "title": "API दस्तावेज़",
+        "subtitle": "डेवलपर्स के लिए पूर्ण REST API संदर्भ",
+        "navigation": "नेविगेशन",
+        "copied": "कॉपी किया गया!",
+        "copiedToClipboard": "सामग्री कॉपी की गई",
+        "copyCurl": "cURL कॉपी करें",
+        "sections": {
+            "authentication": "प्रमाणीकरण",
+            "rateLimiting": "दर सीमा",
+            "errorCodes": "त्रुटि कोड"
+        },
+        "overview": {
+            "title": "REST API संदर्भ",
+            "description": "अपने एप्लिकेशन में संदेश, संपर्क, अभियान और अधिक को एकीकृत करने के लिए REST API का उपयोग करें।",
+            "responseFormat": "सभी प्रतिक्रियाएँ इस प्रारूप का पालन करती हैं"
+        },
+        "auth": {
+            "description": "सभी API अनुरोधों में अनुरोध हेडर में आपकी API कुंजी और गुप्त कोड शामिल होना चाहिए।",
+            "warning": "अपना API गुप्त कोड सुरक्षित रखें। इसे कभी भी क्लाइंट-साइड कोड में उजागर न करें।",
+            "curlExample": "प्रमाणित अनुरोध उदाहरण"
+        },
+        "rateLimit": {
+            "description": "API उपयोग आपकी सदस्यता योजना के आधार पर सीमित है।",
+            "monthly": "मासिक अनुरोध सीमा",
+            "monthlyDesc": "प्रति माह कुल API अनुरोध की अनुमति।",
+            "perMinute": "प्रति मिनट दर सीमा",
+            "perMinuteDesc": "प्रति मिनट अनुमत अनुरोधों की अधिकतम संख्या।",
+            "exceeded": "दर सीमा पार होने पर प्रतिक्रिया (HTTP 429)"
+        }
+    },
+    "channelsManagement": {
+        "title": "Channels Management",
+        "subtitle": "Manage all channels and signup attempts",
+        "tabs": {
+            "channels": "Channels",
+            "signupLogs": "Signup Logs"
+        },
+        "search": {
+            "placeholder": "Search by channel name, phone number, or owner...",
+            "button": "Search",
+            "clear": "Clear"
+        },
+        "filter": {
+            "allStatuses": "All Statuses",
+            "active": "Active",
+            "inactive": "Inactive",
+            "allHealth": "All Health",
+            "healthy": "Healthy",
+            "warning": "Warning",
+            "error": "Error",
+            "unknown": "Unknown",
+            "success": "Success",
+            "failed": "Failed",
+            "incomplete": "Incomplete"
+        },
+        "pagination": {
+            "showing": "Showing",
+            "to": "to",
+            "of": "of",
+            "channels": "channels",
+            "logs": "logs",
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "stats": {
+            "showing": "Showing",
+            "of": "of",
+            "channels": "channels",
+            "logs": "logs"
+        },
+        "table": {
+            "channels": {
+                "channelName": "Channel Name",
+                "phoneNumber": "Phone Number",
+                "owner": "Owner",
+                "status": "Status",
+                "health": "Health",
+                "connection": "Connection",
+                "created": "Created",
+                "actions": "Actions",
+                "loading": "Loading channels...",
+                "noChannels": "No channels found",
+                "unnamed": "Unnamed",
+                "unknown": "Unknown",
+                "na": "N/A",
+                "disabled": "Disabled",
+                "activeBadge": "ACTIVE",
+                "inactiveBadge": "INACTIVE",
+                "disconnect": "Disconnect",
+                "delete": "Delete"
+            },
+            "logs": {
+                "user": "User",
+                "status": "Status",
+                "stepReached": "Step Reached",
+                "errorMessage": "Error Message",
+                "phoneNumber": "Phone Number",
+                "date": "Date",
+                "loading": "Loading logs...",
+                "noLogs": "No signup logs found",
+                "unknown": "Unknown",
+                "na": "N/A",
+                "suggestedFix": "Suggested Fix:",
+                "wabaId": "WABA ID:",
+                "channelId": "Channel ID:",
+                "rawErrorDetails": "Raw Error Details (Meta API):",
+                "fullError": "Full Error:",
+                "error": "Error:",
+                "step": "Step:",
+                "phone": "Phone:",
+                "dateLabel": "Date:"
+            }
+        },
+        "dialog": {
+            "disconnectTitle": "Disconnect Channel",
+            "deleteTitle": "Delete Channel",
+            "disconnectConfirm": "Are you sure you want to disconnect",
+            "disconnectDesc": "This will deactivate the channel and deregister it from WhatsApp. The user's data (contacts, conversations, templates) will be preserved and they can reconnect later.",
+            "deleteConfirm": "Are you sure you want to delete",
+            "deleteDesc": "This will permanently delete the channel and ALL associated data including contacts, conversations, messages, templates, campaigns, and automations. This action cannot be undone.",
+            "cancel": "Cancel",
+            "processing": "Processing...",
+            "disconnectBtn": "Disconnect",
+            "deletePermanentlyBtn": "Delete Permanently"
+        },
+        "toast": {
+            "channelDisconnected": "Channel Disconnected",
+            "channelDisconnectedDesc": "has been disconnected. The user can reconnect later.",
+            "channelDeleted": "Channel Deleted",
+            "channelDeletedDesc": "and all associated data have been permanently deleted.",
+            "error": "Error",
+            "disconnectFailed": "Failed to disconnect channel:",
+            "deleteFailed": "Failed to delete channel:",
+            "fetchChannelsFailed": "Failed to fetch channels",
+            "fetchLogsFailed": "Failed to fetch signup logs",
+            "unknownError": "Unknown error"
+        }
+    },
+    "settings": {
+        "headTitle": "सेटिंग्स",
+        "subTitle": "अपने एप्लिकेशन सेटिंग्स और प्राथमिकताओं को कॉन्फ़िगर करें",
+        "general_setting": {
+            "tabName": "सामान्य",
+            "title": "सामान्य कॉन्फ़िगरेशन",
+            "description": "अपने एप्लिकेशन की ब्रांड पहचान और दिखावट प्रबंधित करें",
+            "loadingText": "सेटिंग्स लोड हो रही हैं...",
+            "connectionIssueTitle": "कनेक्शन समस्या",
+            "connectionIssueDesc": "कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+            "refreshedTitle": "रिफ्रेश किया गया",
+            "refreshedDesc": "सेटिंग्स सफलतापूर्वक रिफ्रेश हो गई हैं।",
+            "refreshFailedTitle": "रिफ्रेश विफल",
+            "refreshFailedDesc": "सेटिंग्स रिफ्रेश करने में असमर्थ। कृपया पुनः प्रयास करें।",
+            "connectionErrorTitle": "कनेक्शन त्रुटि",
+            "connectionErrorDesc": "सर्वर से सेटिंग्स लोड करने में असमर्थ। सैंपल डेटा दिखाया जा रहा है। कृपया अपना कनेक्शन जांचें और रिफ्रेश करने का प्रयास करें।",
+            "offline": "ऑफलाइन",
+            "online": "ऑनलाइन",
+            "refreshing": "रिफ्रेश हो रहा है...",
+            "refresh": "रिफ्रेश करें",
+            "editSettings": "सेटिंग्स संपादित करें",
+            "brandIdentity": "ब्रांड पहचान",
+            "dataTypeSample": "सैंपल डेटा",
+            "dataTypeLive": "लाइव डेटा",
+            "dataTypeLabel": "डेटा प्रकार:",
+            "unknownTime": "अज्ञात",
+            "justNow": "अभी",
+            "minuteAgo": "मिनट पहले",
+            "minutesAgo": "मिनट पहले",
+            "hourAgo": "घंटा पहले",
+            "hoursAgo": "घंटे पहले",
+            "applicationTitle": "एप्लिकेशन शीर्षक",
+            "notConfigured": "कॉन्फ़िगर नहीं किया गया",
+            "applicationTitleHelper": "अपने ऐप शीर्षक को कॉन्फ़िगर करने के लिए \"सेटिंग्स संपादित करें\" पर क्लिक करें",
+            "tagline": "टैगलाइन",
+            "taglineHelper": "अपने ब्रांड के लिए एक आकर्षक टैगलाइन जोड़ें",
+            "logo": "लोगो",
+            "logoUploaded": "लोगो अपलोड किया गया",
+            "logoHelper": "लोगो प्रदर्शित करने के लिए तैयार है",
+            "logoMissing": "कोई लोगो अपलोड नहीं किया गया",
+            "logoMissingHelper": "अपने ब्रांड को बेहतर बनाने के लिए लोगो अपलोड करें",
+            "favicon": "फेविकॉन",
+            "faviconUploaded": "फेविकॉन अपलोड किया गया",
+            "faviconHelper": "फेविकॉन ब्राउज़र टैब में दिखाई देगा",
+            "faviconMissing": "कोई फेविकॉन अपलोड नहीं किया गया",
+            "faviconMissingHelper": "ब्राउज़र टैब आइकन के लिए फेविकॉन जोड़ें",
+            "country": "देश",
+            "countryHelper": "अपने ब्रांड के लिए एक आकर्षक देश जोड़ें",
+            "currency": "मुद्रा",
+            "currencyHelper": "अपने ब्रांड के लिए एक आकर्षक मुद्रा जोड़ें",
+            "configurationStatusLabel": "कॉन्फ़िगरेशन स्थिति:",
+            "configurationStatusComplete": "पूर्ण",
+            "configurationStatusPartial": "आंशिक",
+            "configurationStatusIncomplete": "अपूर्ण",
+            "lastUpdated": "आखिरी अपडेट",
+            "brandPreviewTitle": "ब्रांड पूर्वावलोकन",
+            "brandPreviewDesc": "आपका ब्रांड एप्लिकेशन में कैसे दिखाई देगा",
+            "brandLogoAlt": "ब्रांड लोगो",
+            "logoAlt": "लोगो",
+            "faviconAlt": "फेविकॉन",
+            "logo2": "Logo 2",
+            "logo2Alt": "Secondary Logo",
+            "logo2Uploaded": "Logo 2 uploaded",
+            "logo2Helper": "Recommended transparent PNG or SVG",
+            "logo2Missing": "No Logo 2 uploaded",
+            "logo2MissingHelper": "Upload a second brand logo.",
+            "supportEmail": "Support Email",
+            "supportEmailHelper": "Email address for customer support inquiries"
+        },
+        "storage_setting": {
+            "tabName": "भंडारण",
+            "title": "स्टोरेज कॉन्फ़िगरेशन",
+            "description": "अपने फ़ाइल स्टोरेज इंटीग्रेशन और क्रेडेंशियल्स प्रबंधित करें",
+            "loadingText": "स्टोरेज कॉन्फ़िगरेशन लोड हो रहा है...",
+            "connectionIssueTitle": "कनेक्शन समस्या",
+            "connectionIssueDesc": "कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+            "refreshedTitle": "रिफ्रेश किया गया",
+            "refreshedDesc": "स्टोरेज कॉन्फ़िगरेशन सफलतापूर्वक रिफ्रेश हो गया।",
+            "refreshFailedTitle": "रिफ्रेश विफल",
+            "refreshFailedDesc": "स्टोरेज सेटिंग्स रिफ्रेश करने में असमर्थ।",
+            "connectionErrorTitle": "कनेक्शन त्रुटि",
+            "connectionErrorDesc": "सर्वर से स्टोरेज सेटिंग्स लोड करने में असमर्थ। कैश किया गया डेटा दिखाया जा रहा है।",
+            "offline": "ऑफलाइन",
+            "online": "ऑनलाइन",
+            "refreshing": "रिफ्रेश हो रहा है...",
+            "refresh": "रिफ्रेश करें",
+            "editStorage": "स्टोरेज संपादित करें",
+            "storageDetails": "स्टोरेज विवरण",
+            "active": "सक्रिय",
+            "inactive": "निष्क्रिय",
+            "unknownTime": "अज्ञात",
+            "justNow": "अभी",
+            "minuteAgo": "मिनट पहले",
+            "minutesAgo": "मिनट पहले",
+            "hourAgo": "घंटा पहले",
+            "hoursAgo": "घंटे पहले",
+            "spaceName": "स्पेस का नाम",
+            "spaceNamePlaceholder": "कॉन्फ़िगर नहीं किया गया",
+            "endpoint": "एंडपॉइंट",
+            "endpointPlaceholder": "कोई एंडपॉइंट प्रदान नहीं किया गया",
+            "region": "क्षेत्र",
+            "regionPlaceholder": "निर्दिष्ट नहीं",
+            "accessKey": "एक्सेस कुंजी",
+            "accessKeyPlaceholder": "कॉन्फ़िगर नहीं किया गया",
+            "accessKeyMasked": "********",
+            "secretKey": "सीक्रेट कुंजी",
+            "secretKeyPlaceholder": "कॉन्फ़िगर नहीं किया गया",
+            "secretKeyMasked": "********",
+            "configurationStatusLabel": "कॉन्फ़िगरेशन स्थिति:",
+            "configurationStatusComplete": "पूर्ण",
+            "configurationStatusPartial": "आंशिक",
+            "configurationStatusIncomplete": "अपूर्ण",
+            "lastUpdated": "आखिरी अपडेट",
+            "notTested": "Not Tested",
+            "testing": "Testing...",
+            "connectionOnline": "Storage connection is online"
+        },
+        "webhook_setting": {
+            "tabName": "वेबहुक",
+            "title": "वेबहुक कॉन्फ़िगरेशन",
+            "description": "रियल-टाइम WhatsApp इवेंट प्राप्त करने के लिए वेबहुक कॉन्फ़िगर करें",
+            "refresh": "रिफ्रेश करें",
+            "configureWebhook": "वेबहुक कॉन्फ़िगर करें",
+            "noWebhooks": "अभी तक कोई वेबहुक कॉन्फ़िगर नहीं किया गया",
+            "configureFirst": "अपना पहला वेबहुक कॉन्फ़िगर करें",
+            "channelWebhook": "चैनल वेबहुक",
+            "globalWebhook": "ग्लोबल वेबहुक",
+            "webhookUrl": "वेबहुक URL:",
+            "events": "इवेंट्स:",
+            "lastEvent": "आखिरी इवेंट:",
+            "test": "टेस्ट करें",
+            "edit": "संपादित करें",
+            "delete": "हटाएं",
+            "webhookDeleted": "वेबहुक हटा दिया गया",
+            "webhookDeletedDesc": "वेबहुक कॉन्फ़िगरेशन हटा दिया गया है।",
+            "error": "त्रुटि",
+            "deleteConfirm": "क्या आप वाकई इस वेबहुक कॉन्फ़िगरेशन को हटाना चाहते हैं?",
+            "testSent": "टेस्ट वेबहुक भेजा गया",
+            "testSentDesc": "टेस्ट संदेश के लिए अपने वेबहुक एंडपॉइंट की जांच करें।",
+            "testFailed": "टेस्ट विफल",
+            "copied": "कॉपी किया गया!",
+            "copiedDesc": "वेबहुक URL क्लिपबोर्ड पर कॉपी किया गया",
+            "status": {
+                "noEvents": "कोई इवेंट प्राप्त नहीं हुआ",
+                "active": "सक्रिय",
+                "inactive": "निष्क्रिय"
+            },
+            "howItWorks": {
+                "title": "वेबहुक कैसे काम करते हैं",
+                "description": "WhatsApp Business API के लिए वेबहुक फ्लो को समझें"
+            },
+            "setupInstructions": {
+                "title": "सेटअप निर्देश",
+                "step1": {
+                    "title": "1. Meta ऐप में वेबहुक कॉन्फ़िगर करें",
+                    "description": "अपने Meta App Dashboard → WhatsApp → Configuration → Webhook पर जाएं"
+                },
+                "step2": {
+                    "title": "2. वेबहुक URL सेट करें",
+                    "description": "ऊपर से वेबहुक URL कॉपी करें और Meta ऐप वेबहुक URL फील्ड में पेस्ट करें"
+                },
+                "step3": {
+                    "title": "3. वेरिफाई टोकन दर्ज करें",
+                    "description": "अपने वेबहुक कॉन्फ़िगरेशन में दिखाए गए वेरिफाई टोकन का उपयोग करें"
+                },
+                "step4": {
+                    "title": "4. इवेंट्स सब्सक्राइब करें",
+                    "description": "messages, message_status और अन्य आवश्यक वेबहुक फ़ील्ड सब्सक्राइब करें"
+                }
+            },
+            "globalTitle": "Global Webhook Configuration",
+            "globalDescription": "Configure your global webhook once here, then paste the URL and verify token into your Meta App Dashboard.",
+            "yourWebhookUrl": "Your Webhook URL",
+            "yourVerifyToken": "Your Verify Token",
+            "noActiveConfig": "No active webhook config. Create one below.",
+            "statusLabel": "Status:",
+            "lastEventLabel": "Last event: ",
+            "instructionsText": "Copy the Webhook URL and Verify Token above, then paste them into your Meta App Dashboard → WhatsApp → Configuration → Webhook.",
+            "dialog": {
+                "editTitle": "Edit Webhook",
+                "createTitle": "Configure Webhook",
+                "description": "Set up your webhook to receive real-time WhatsApp events",
+                "globalConfigTitle": "Global Webhook Configuration",
+                "globalConfigDesc": "This creates a single webhook endpoint that handles events for all your WhatsApp channels. The webhook URL will be generated automatically.",
+                "verifyTokenLabel": "Verify Token",
+                "generateButton": "Generate",
+                "verifyTokenDesc": "A secret token you'll use when configuring the webhook in Meta",
+                "eventsLabel": "Webhook Events",
+                "eventsDesc": "Select the events you want to receive notifications for",
+                "cancel": "Cancel",
+                "saving": "Saving...",
+                "update": "Update",
+                "configure": "Configure",
+                "validation": {
+                    "tokenMin": "Verify token must be at least 10 characters",
+                    "selectEvent": "Select at least one event"
+                },
+                "toast": {
+                    "updated": "Webhook updated",
+                    "configured": "Webhook configured",
+                    "updatedDesc": "Your webhook has been updated successfully.",
+                    "configuredDesc": "Your webhook has been configured successfully.",
+                    "error": "Error"
+                },
+                "eventLabels": {
+                    "messages": "Messages - Receive incoming messages",
+                    "message_status": "Message Status - Track delivery status",
+                    "message_template_status_update": "Template Status - Template approval updates",
+                    "phone_number_name_update": "Phone Number Updates - Name changes",
+                    "account_update": "Account Updates - Account status changes",
+                    "security": "Security - Security-related events"
+                }
+            }
+        },
+        "channel_setting": {
+            "tabName": "WhatsApp",
+            "title": "WhatsApp चैनल",
+            "description": "Cloud API और MM Lite के लिए अपने WhatsApp Business API चैनल कॉन्फ़िगर करें",
+            "addChannel": "चैनल जोड़ें",
+            "noChannels": "अभी तक कोई WhatsApp चैनल कॉन्फ़िगर नहीं किया गया",
+            "addFirstChannel": "अपना पहला चैनल जोड़ें",
+            "active": "सक्रिय",
+            "mmLite": "MM Lite",
+            "phone": "फोन:",
+            "phoneNumberId": "फोन नंबर ID:",
+            "businessAccountId": "बिजनेस अकाउंट ID:",
+            "notSet": "सेट नहीं किया गया",
+            "channelHealth": "चैनल स्वास्थ्य",
+            "test": "टेस्ट करें",
+            "edit": "संपादित करें",
+            "delete": "हटाएं",
+            "channelDeleted": "चैनल हटा दिया गया",
+            "channelDeletedDesc": "चैनल सफलतापूर्वक हटा दिया गया है।",
+            "error": "त्रुटि",
+            "deleteConfirm": "क्या आप वाकई इस चैनल को हटाना चाहते हैं?",
+            "checkingHealth": "स्वास्थ्य जांच रही है...",
+            "verifyingConnection": "चैनल कनेक्शन और स्थिति सत्यापित की जा रही है",
+            "channelHealthy": "चैनल स्वस्थ है",
+            "channelHealthyDesc": "WhatsApp चैनल ठीक से काम कर रहा है",
+            "channelWarnings": "चैनल में चेतावनियां हैं",
+            "channelWarningsDesc": "अधिक जानकारी के लिए स्वास्थ्य विवरण देखें",
+            "channelIssues": "चैनल में समस्याएं हैं",
+            "channelIssuesDesc": "चैनल को ध्यान की आवश्यकता है",
+            "healthCheckFailed": "स्वास्थ्य जांच विफल",
+            "healthCheckFailedDesc": "चैनल स्थिति सत्यापित नहीं कर सके",
+            "healthStatus": {
+                "healthy": "स्वस्थ",
+                "warning": "चेतावनी",
+                "error": "त्रुटि",
+                "unknown": "अज्ञात"
+            },
+            "healthDetails": {
+                "accountMode": "अकाउंट मोड",
+                "qualityRating": "गुणवत्ता रेटिंग",
+                "messagingLimit": "मैसेजिंग सीमा",
+                "throughput": "थ्रूपुट",
+                "verification": "सत्यापन",
+                "nameStatus": "नाम स्थिति",
+                "errorLabel": "त्रुटि:",
+                "errorCode": "त्रुटि कोड:",
+                "errorType": "त्रुटि प्रकार:"
+            },
+            "lastChecked": "आखिरी बार जांचा गया:",
+            "refresh": "रिफ्रेश करें"
+        },
+        "ai_setting": {
+            "tabName": "AI",
+            "title": "AI कॉन्फ़िगरेशन",
+            "description": "अपने AI मॉडल प्रोवाइडर, क्रेडेंशियल्स और रनटाइम पैरामीटर्स प्रबंधित करें।",
+            "loadingText": "AI कॉन्फ़िगरेशन लोड हो रहा है...",
+            "loadingError": "AI सेटिंग्स लोड करने में विफल।",
+            "refreshedTitle": "रिफ्रेश किया गया",
+            "refreshedDesc": "AI कॉन्फ़िगरेशन सफलतापूर्वक रिफ्रेश हो गया।",
+            "refreshFailedTitle": "रिफ्रेश विफल",
+            "refreshFailedDesc": "AI सेटिंग्स रिफ्रेश करने में असमर्थ।",
+            "active": "सक्रिय",
+            "inactive": "निष्क्रिय",
+            "refreshing": "रिफ्रेश हो रहा है...",
+            "refresh": "रिफ्रेश करें",
+            "edit": "संपादित करें",
+            "provider": "प्रोवाइडर",
+            "providerPlaceholder": "सेट नहीं किया गया",
+            "apiKey": "API कुंजी",
+            "apiKeyMasked": "***************",
+            "apiKeyPlaceholder": "कॉन्फ़िगर नहीं किया गया",
+            "model": "मॉडल",
+            "modelPlaceholder": "सेट नहीं किया गया",
+            "endpoint": "एंडपॉइंट",
+            "endpointPlaceholder": "सेट नहीं किया गया",
+            "temperature": "टेम्परेचर",
+            "temperaturePlaceholder": "सेट नहीं किया गया",
+            "maxTokens": "अधिकतम टोकन",
+            "maxTokensPlaceholder": "सेट नहीं किया गया",
+            "triggerWords": "ट्रिगर शब्द",
+            "triggerWordsPlaceholder": "कोई ट्रिगर शब्द परिभाषित नहीं",
+            "notSet": "सेट नहीं किया गया"
+        },
+        "api_key_setting": {
+            "tabName": "API कुंजी",
+            "title": "API कुंजियाँ",
+            "description": "बाहरी सिस्टम के साथ इंटीग्रेशन के लिए API कुंजियों को प्रबंधित करें",
+            "createApiKey": "API कुंजी बनाएं",
+            "noApiKeys": "अभी तक कोई API कुंजी नहीं बनाई गई",
+            "createFirst": "अपनी पहली API कुंजी बनाएं",
+            "active": "सक्रिय",
+            "revoked": "रद्द किया गया",
+            "created": "बनाया गया:",
+            "lastUsed": "आखिरी बार उपयोग:",
+            "revoke": "रद्द करें",
+            "apiKeyCreated": "API कुंजी बनाई गई",
+            "apiKeyCreatedDesc": "आपकी नई API कुंजी बना दी गई है। इसे अभी कॉपी करना सुनिश्चित करें क्योंकि यह दोबारा नहीं दिखाई जाएगी।",
+            "error": "त्रुटि",
+            "apiKeyRevoked": "API कुंजी रद्द की गई",
+            "apiKeyRevokedDesc": "API कुंजी रद्द कर दी गई है और अब इसका उपयोग नहीं किया जा सकता।",
+            "revokeConfirm": "क्या आप वाकई इस API कुंजी को रद्द करना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+            "copied": "कॉपी किया गया!",
+            "copiedDesc": "API कुंजी क्लिपबोर्ड पर कॉपी की गई",
+            "nameRequired": "नाम आवश्यक",
+            "nameRequiredDesc": "कृपया API कुंजी के लिए एक नाम दर्ज करें",
+            "createForm": {
+                "title": "नई API कुंजी बनाएं",
+                "keyName": "कुंजी का नाम",
+                "keyNamePlaceholder": "प्रोडक्शन API कुंजी",
+                "keyNameHelper": "इस API कुंजी की पहचान के लिए एक वर्णनात्मक नाम",
+                "creating": "बना रहे हैं...",
+                "createKey": "कुंजी बनाएं",
+                "cancel": "रद्द करें",
+                "channel": "चैनल",
+                "channelHelper": "इस कुंजी को किसी विशिष्ट चैनल तक सीमित करने के लिए एक चैनल चुनें, या सभी चैनलों के लिए खाली छोड़ दें",
+                "allChannels": "सभी चैनल",
+                "permissions": "अनुमतियाँ"
+            },
+            "documentation": {
+                "title": "API दस्तावेज़",
+                "description": "WhatsWay API का उपयोग कैसे करें सीखें",
+                "baseUrl": "बेस URL",
+                "authentication": "प्रमाणीकरण",
+                "authDesc": "Authorization हेडर में अपनी API कुंजी शामिल करें:",
+                "exampleRequest": "उदाहरण अनुरोध",
+                "viewDocs": "पूर्ण दस्तावेज़ देखें"
+            },
+            "usage": {
+                "totalRequests": "कुल अनुरोध",
+                "monthlyRequests": "मासिक अनुरोध",
+                "activeKeys": "सक्रिय कुंजियाँ",
+                "revokedKeys": "निरस्त कुंजियाँ"
+            },
+            "requests": "अनुरोध",
+            "monthlyRequestsLabel": "मासिक अनुरोध",
+            "keyCreatedDialog": {
+                "title": "API कुंजी बनाई गई",
+                "warning": "अभी अपनी API कुंजी और गुप्त कोड कॉपी करना सुनिश्चित करें। आप गुप्त कोड दोबारा नहीं देख पाएंगे!",
+                "apiKeyLabel": "API कुंजी",
+                "apiKeyCopied": "API कुंजी कॉपी की गई",
+                "secretLabel": "API गुप्त कोड",
+                "secretCopied": "गुप्त कोड कॉपी किया गया",
+                "done": "हो गया"
+            },
+            "revokeDialog": {
+                "title": "API कुंजी निरस्त करें",
+                "description": "क्या आप वाकई इस API कुंजी को निरस्त करना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+                "confirm": "कुंजी निरस्त करें",
+                "cancel": "रद्द करें",
+                "revoking": "निरस्त कर रहे हैं..."
+            }
+        },
+        "tabs": {
+            "smtp": "SMTP",
+            "waOnboarding": "WA ऑनबोर्डिंग",
+            "notifications": "सूचनाएं",
+            "languages": "भाषाएं",
+            "appearance": "दिखावट",
+            "messageLogs": "संदेश लॉग",
+            "billingMembership": "बिलिंग और सदस्यता",
+            "support": "समर्थन",
+            "team": "टीम"
+        },
+        "title": "सेटिंग्स",
+        "general": "सामान्य",
+        "channels": "चैनल",
+        "webhooks": "वेबहुक",
+        "apiKeys": "API कुंजियाँ",
+        "account": {
+            "title": "Account Information",
+            "subtitle": "Manage your account details and preferences",
+            "labels": {
+                "username": "Username",
+                "email": "Email",
+                "role": "Role",
+                "memberSince": "Member since {{date}}"
+            },
+            "buttons": {
+                "cancel": "Cancel",
+                "saveChanges": "Save Changes",
+                "saving": "Saving...",
+                "editAccount": "Edit Account",
+                "change": "Change",
+                "updatePassword": "Update Password",
+                "updating": "Updating...",
+                "deleteAccount": "Delete Account",
+                "deleting": "Deleting...",
+                "yesDelete": "Yes, delete my account"
+            },
+            "security": {
+                "title": "Security",
+                "subtitle": "Manage your security preferences",
+                "changePassword": "Change Password",
+                "changePasswordDesc": "Update your account password",
+                "modalTitle": "Change Password",
+                "modalDesc": "Enter your current password and choose a new one.",
+                "currentPassword": "Current Password",
+                "newPassword": "New Password",
+                "confirmPassword": "Confirm New Password"
+            },
+            "dangerZone": {
+                "title": "Danger Zone",
+                "subtitle": "Irreversible actions for your account",
+                "deleteAccount": "Delete Account",
+                "deleteDesc": "Permanently delete your account and all data",
+                "confirmTitle": "Are you absolutely sure?",
+                "confirmDesc": "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
+            },
+            "toast": {
+                "accountUpdated": "Account updated",
+                "accountUpdatedDesc": "Your account information has been updated successfully.",
+                "errorAccount": "Error updating account",
+                "passwordUpdated": "Password updated",
+                "passwordUpdatedDesc": "Your password has been updated successfully.",
+                "errorPassword": "Error updating password",
+                "unexpectedError": "An unexpected error occurred. Please try again.",
+                "accountDeleted": "Account Deleted",
+                "accountDeletedDesc": "Your account has been permanently deleted.",
+                "errorDelete": "Failed to delete account",
+                "unknownError": "Something went wrong"
+            }
+        },
+        "billing": "बिलिंग",
+        "notifications": {
+            "title": "Notification Templates",
+            "description": "Manage email and in-app notification templates for system events",
+            "loading": "Loading templates...",
+            "noTemplates": "No notification templates found",
+            "availableVariables": "Available Variables",
+            "emailEnabled": "Email Enabled",
+            "inAppEnabled": "In-App Enabled",
+            "editTemplate": "Edit Template",
+            "editDialog": {
+                "title": "Edit Template",
+                "subject": "Subject",
+                "htmlBody": "HTML Body",
+                "subjectPlaceholder": "Enter email subject...",
+                "htmlPlaceholder": "Enter HTML email body...",
+                "availableVars": "Available Variables to Use:",
+                "cancel": "Cancel",
+                "save": "Save Changes",
+                "saving": "Saving..."
+            },
+            "toast": {
+                "updateSuccessTitle": "Template Updated",
+                "updateSuccessDesc": "Notification template has been successfully updated.",
+                "errorTitle": "Error",
+                "updateErrorDesc": "Failed to update template",
+                "toggleSuccessTitle": "Updated",
+                "emailToggleSuccessDesc": "Email notification setting updated.",
+                "inAppToggleSuccessDesc": "In-app notification setting updated.",
+                "toggleErrorDesc": "Failed to update setting",
+                "validationErrorTitle": "Validation Error",
+                "emptySubject": "Subject cannot be empty",
+                "emptyBody": "HTML Body cannot be empty"
+            }
+        },
+        "security": "सुरक्षा",
+        "channelName": "चैनल का नाम",
+        "phoneNumber": "फोन नंबर",
+        "accessToken": "एक्सेस टोकन",
+        "webhookUrl": "वेबहुक URL",
+        "webhookSecret": "वेबहुक सीक्रेट",
+        "testConnection": "कनेक्शन टेस्ट करें",
+        "saveSettings": "सेटिंग्स सेव करें",
+        "generateApiKey": "API कुंजी जनरेट करें",
+        "revokeApiKey": "API कुंजी रद्द करें",
+        "apiKeyName": "API कुंजी का नाम",
+        "createdAt": "बनाया गया",
+        "lastUsed": "आखिरी बार उपयोग",
+        "changePassword": "पासवर्ड बदलें",
+        "twoFactorAuth": "दो-कारक प्रमाणीकरण",
+        "enable": "सक्षम करें",
+        "disable": "अक्षम करें",
+        "emailNotifications": "ईमेल सूचनाएं",
+        "smsNotifications": "SMS सूचनाएं",
+        "webhookNotifications": "वेबहुक सूचनाएं",
+        "language": {
+            "title": "Language Management",
+            "subtitle": "Manage platform languages and translations",
+            "addLanguage": "Add Language",
+            "active": "Active",
+            "disabled": "Disabled",
+            "keys": "keys",
+            "editKeys": "Edit Keys",
+            "setDefault": "Set Default",
+            "searchPlaceholder": "Search keys or values...",
+            "allSections": "All sections",
+            "saveChanges": "Save Changes",
+            "saving": "Saving...",
+            "tabs": {
+                "overview": "Overview",
+                "editor": "Translation Editor"
+            },
+            "dialog": {
+                "addTitle": "Add New Language",
+                "addDesc": "Add a new language to the platform",
+                "code": "Language Code",
+                "icon": "Icon (emoji)",
+                "name": "Name (English)",
+                "nativeName": "Native Name",
+                "direction": "Direction",
+                "ltr": "Left to Right (LTR)",
+                "rtl": "Right to Left (RTL)",
+                "copyFrom": "Copy Keys From",
+                "cancel": "Cancel",
+                "create": "Create Language",
+                "creating": "Creating...",
+                "editTitle": "Edit Language",
+                "editDesc": "Update language settings",
+                "save": "Save",
+                "copyTitle": "Copy Translation Keys",
+                "copyDesc": "Copy missing translation keys from another language. Existing translations will be preserved.",
+                "sourceLang": "Source Language",
+                "selectSource": "Select source language",
+                "close": "Close",
+                "deleteTitle": "Delete Language",
+                "deleteDesc": "Are you sure you want to delete this language? This action cannot be undone and all translations will be lost.",
+                "delete": "Delete",
+                "deleting": "Deleting..."
+            },
+            "toast": {
+                "created": "Language created successfully",
+                "updated": "Language updated successfully",
+                "translationsSaved": "Translations saved successfully",
+                "deleted": "Language deleted successfully",
+                "keysCopied": "Translation keys copied successfully",
+                "error": "Error"
+            }
+        },
+        "timezone": "समय क्षेत्र",
+        "dateFormat": "तिथि प्रारूप",
+        "theme": "थीम",
+        "light": "लाइट",
+        "dark": "डार्क",
+        "firebase": {
+            "tabName": "Firebase सेटिंग",
+            "title": "Firebase सेटिंग्स",
+            "description": "प्रमाणीकरण और पुश नोटिफिकेशन के लिए उपयोग किए गए Firebase कॉन्फ़िगरेशन को प्रबंधित करें।",
+            "editButton": "संपादित करें",
+            "loading": "लोड हो रहा है...",
+            "fields": {
+                "apiKey": "API कुंजी",
+                "authDomain": "ऑथ डोमेन",
+                "projectId": "प्रोजेक्ट आईडी",
+                "storageBucket": "स्टोरेज बकेट",
+                "messagingSenderId": "मैसेजिंग प्रेषक आईडी",
+                "appId": "एप आईडी",
+                "measurementId": "माप आईडी",
+                "privateKey": "प्राइवेट कुंजी",
+                "clientEmail": "क्लाइंट ईमेल",
+                "vapidKey": "Vapid कुंजी"
+            },
+            "notConfigured": "कॉन्फ़िगर नहीं किया गया",
+            "status": {
+                "active": "Firebase कॉन्फ़िग सक्रिय",
+                "notFound": "कोई Firebase सेटिंग्स नहीं मिलीं"
+            },
+            "modal": {
+                "title": "Firebase सेटिंग्स अपडेट करें",
+                "cancel": "रद्द करें",
+                "save": "सेव करें"
+            },
+            "toast": {
+                "success": "Firebase सेटिंग्स सफलतापूर्वक सेव हो गईं!",
+                "error": "त्रुटि",
+                "errorDescription": "Firebase सेटिंग्स सेव करने में विफल"
+            }
+        },
+        "smtp": {
+            "title": "SMTP Settings",
+            "loading": "Loading SMTP configuration...",
+            "offline": "Offline",
+            "online": "Online",
+            "refresh": "Refresh",
+            "edit": "Edit SMTP",
+            "manage": "Manage outgoing email server and credentials",
+            "details": "SMTP Details",
+            "host": "SMTP Host",
+            "port": "Port",
+            "secure": "Secure (TLS)",
+            "user": "SMTP User",
+            "fromName": "From Name",
+            "fromEmail": "From Email",
+            "logo": "Logo",
+            "notConfigured": "Not configured",
+            "notProvided": "Not provided",
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "noLogo": "No logo uploaded",
+            "unknown": "Unknown"
+        },
+        "embedded": {
+            "onboardingTitle": "Channel Onboarding Mode",
+            "onboardingDesc": "Choose how your clients add WhatsApp channels. When Embedded Signup is enabled, clients connect through Meta's guided flow. When disabled, they enter credentials manually.",
+            "signupLabel": "Embedded Signup",
+            "manualLabel": "Manual Setup",
+            "active": "Active",
+            "inactive": "Inactive",
+            "signupHelper": "Clients will connect via Meta's Embedded Signup flow. Manual channel adding is hidden.",
+            "manualHelper": "Clients will manually enter WABA ID, Phone Number ID, and Access Token. Embedded Signup is hidden.",
+            "manualModeNotice": "With manual mode, clients need to provide their WABA ID, Phone Number ID, and a permanent Access Token. You don't need to configure Meta App credentials below when using manual mode.",
+            "credentialsTitle": "Meta App Credentials",
+            "configured": "Configured",
+            "notConfigured": "Not Configured",
+            "test": "Test",
+            "edit": "Edit",
+            "testResults": "Credential Test Results",
+            "appValid": "App credentials valid",
+            "appInvalid": "App credentials invalid",
+            "configValid": "Config ID valid",
+            "configInvalid": "Config ID invalid",
+            "noConfigWarning": "No configuration found. Please create credentials first.",
+            "appIdLabel": "Meta App ID",
+            "appSecretLabel": "Meta App Secret",
+            "configIdLabel": "Embedded Signup Config ID",
+            "saving": "Saving...",
+            "save": "Save",
+            "update": "Update",
+            "create": "Create",
+            "cancel": "Cancel",
+            "toast": {
+                "updated": "Updated",
+                "created": "Created",
+                "savedSuccess": "Configuration saved successfully",
+                "enabled": "Embedded Signup Enabled",
+                "disabled": "Embedded Signup Disabled",
+                "enabledDesc": "Clients will use Meta Embedded Signup to add channels.",
+                "disabledDesc": "Clients will manually enter WABA credentials to add channels.",
+                "testFailed": "Test failed"
+            }
+        },
+        "appearance": {
+            "title": "Appearance Settings",
+            "description": "Customize the visual look and feel of your platform.",
+            "resetToDefaults": "Reset to Defaults",
+            "saveChanges": "Save Changes",
+            "primaryColor": "Primary Color",
+            "primaryColorHelper": "Main brand color used for buttons, links, and highlights.",
+            "backgroundColor": "Background Color",
+            "backgroundColorHelper": "Main background color of the application.",
+            "buttonColor": "Button Color",
+            "buttonColorHelper": "Specific color for primary action buttons.",
+            "lightModeColor": "Light Mode Color",
+            "lightModeColorHelper": "Secondary background or surface color for light mode.",
+            "fontFamily": "Font Family",
+            "fontFamilyHelper": "Specify the CSS font family (e.g., 'Roboto', 'Inter', system-ui).",
+            "toast": {
+                "successTitle": "Settings updated",
+                "successDesc": "Your appearance settings have been saved successfully.",
+                "errorTitle": "Update failed"
+            },
+            "preview": {
+                "title": "Live Preview",
+                "description": "See how your choices look in real-time.",
+                "sampleHeading": "Sample Heading",
+                "sampleText": "This is a preview of how your application's content will look with the selected colors and font.",
+                "primaryButton": "Primary Button",
+                "secondaryButton": "Secondary Button"
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1778232940210,
+      "tag": "0000_aromatic_wallop",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778829761894,
+      "tag": "0001_sour_brother_voodoo",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779872725796,
+      "tag": "0002_nasty_the_enforcers",
+      "breakpoints": true
+    }
+  ]
+}

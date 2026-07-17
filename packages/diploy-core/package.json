@@ -1,0 +1,21 @@
+{
+  "name": "@diploy/core",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Core utilities and branding for Diploy WhatsApp Marketing Platform",
+  "main": "index.ts",
+  "types": "index.ts",
+  "author": "BTPL Engineering Team <cs@diploy.in>",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://diploy.in",
+  "repository": {
+    "type": "git",
+    "url": "https://diploy.in"
+  },
+  "keywords": [
+    "diploy",
+    "whatsapp",
+    "marketing",
+    "btpl"
+  ]
+}

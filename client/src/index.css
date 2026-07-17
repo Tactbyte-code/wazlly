@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(240, 10%, 3.9%);
+  --muted: hsl(240, 4.8%, 95.9%);
+  --muted-foreground: hsl(240, 3.7%, 15.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(240, 10%, 3.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(240, 10%, 3.9%);
+  --border: hsl(240, 5.9%, 90%);
+  --input: hsl(240, 5.9%, 90%);
+  --primary: hsl(221, 83%, 53%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(222, 84%, 4.9%);
+  --accent: hsl(210, 40%, 96%);
+  --accent-foreground: hsl(222, 84%, 4.9%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(221, 83%, 53%);
+  --radius: 0.5rem;
+
+  /* WhatsApp Business Colors */
+  --whatsapp: hsl(145, 63%, 49%);
+  --whatsapp-dark: hsl(145, 63%, 42%);
+  --primary-blue: hsl(221, 83%, 53%);
+  --accent-orange: hsl(43, 96%, 56%);
+  --accent-purple: hsl(262, 83%, 58%);
+  --success: hsl(142, 76%, 36%);
+  --warning: hsl(43, 96%, 56%);
+  --error: hsl(0, 84%, 60%);
+
+  /* Professional grays */
+  --neutral-50: hsl(210, 40%, 98%);
+  --neutral-100: hsl(210, 40%, 96%);
+  --neutral-200: hsl(214, 32%, 91%);
+  --neutral-300: hsl(213, 27%, 84%);
+  --neutral-400: hsl(215, 20%, 65%);
+  --neutral-500: hsl(215, 16%, 47%);
+  --neutral-600: hsl(215, 19%, 35%);
+  --neutral-700: hsl(215, 25%, 27%);
+  --neutral-800: hsl(217, 33%, 17%);
+  --neutral-900: hsl(222, 84%, 4.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer components {
+  .dots-bg {
+    background-image: radial-gradient(
+      circle,
+      hsl(215, 20%, 85%) 1px,
+      transparent 1px
+    );
+    background-size: 20px 20px;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-0.5 shadow-md;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .pulse-gentle {
+    animation: pulseGentle 2s infinite;
+  }
+
+  @keyframes pulseGentle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .whatsapp-green {
+    background-color: var(--whatsapp);
+  }
+
+  .primary-blue {
+    background-color: var(--primary-blue);
+  }
+
+  .accent-orange {
+    background-color: var(--accent-orange);
+  }
+
+  .accent-purple {
+    background-color: var(--accent-purple);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-400);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-500);
+}
+
+/* Loading animation */
+.loading-spinner {
+  border: 2px solid var(--muted);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

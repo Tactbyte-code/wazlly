@@ -1,0 +1,189 @@
+# =============================================================
+# Whatsway — Nginx Production Config (SPA + API Proxy)
+# =============================================================
+#
+# INSTRUCTIONS
+# ------------
+# 1. Copy this file to /etc/nginx/sites-available/whatsway
+# 2. Update the variables marked with <CHANGE ME>:
+#      - server_name    → your actual domain(s)
+#      - root           → absolute path to your dist/public folder
+#      - ssl_certificate / ssl_certificate_key → your TLS cert paths
+# 3. Enable: ln -s /etc/nginx/sites-available/whatsway /etc/nginx/sites-enabled/
+# 4. Test:   nginx -t
+# 5. Reload: systemctl reload nginx
+#
+# WHY THIS CONFIG FIXES THE 502 ON HARD REFRESH
+# -----------------------------------------------
+# Without this config, nginx proxies ALL traffic (including requests
+# for /inbox, /dashboard, and static JS/CSS files) to Node.js.
+# If Node.js is restarting (e.g. PM2 memory-limit restart), every
+# request gets a 502 for the duration of the restart delay.
+#
+# This config makes nginx serve static assets DIRECTLY from disk,
+# so the frontend shell loads even while Node.js is restarting.
+# Only /api/* and /socket.io/* are forwarded to Node.js.
+# =============================================================
+
+upstream whatsway_node {
+    server 127.0.0.1:5000;
+    keepalive 64;
+}
+
+# Redirect HTTP → HTTPS
+server {
+    listen 80;
+    listen [::]:80;
+    server_name <CHANGE ME: your-domain.com www.your-domain.com>;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name <CHANGE ME: your-domain.com www.your-domain.com>;
+
+    # --- TLS ---
+    ssl_certificate     <CHANGE ME: /etc/letsencrypt/live/your-domain.com/fullchain.pem>;
+    ssl_certificate_key <CHANGE ME: /etc/letsencrypt/live/your-domain.com/privkey.pem>;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # --- Static files served DIRECTLY by nginx (bypasses Node.js) ---
+    # Adjust this path to wherever dist/public lives on your server.
+    root <CHANGE ME: /var/www/whatsway/dist/public>;
+
+    # Uploads served from the uploads directory
+    location /uploads/ {
+        alias <CHANGE ME: /var/www/whatsway/uploads/>;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # Widget files
+    location /widget/ {
+        alias <CHANGE ME: /var/www/whatsway/public/>;
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods "GET, OPTIONS";
+        add_header Access-Control-Allow-Headers "Content-Type";
+        try_files $uri =404;
+    }
+
+    # Hashed JS/CSS assets — cache aggressively (Vite adds content hash to filenames)
+    location ~* ^/assets/.*\.(js|css|woff2?|ttf|eot|png|jpg|jpeg|gif|svg|ico|webp)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # index.html — never cache so users always get the latest version on hard refresh
+    location = /index.html {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+        try_files $uri =404;
+    }
+
+    # --- API — forwarded to Node.js ---
+    location /api/ {
+        proxy_pass         http://whatsway_node;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   Connection        "";
+
+        proxy_read_timeout  120s;
+        proxy_send_timeout  120s;
+        proxy_connect_timeout 10s;
+
+        # Return a clean JSON 502 instead of nginx's default HTML page
+        # so the frontend can handle it gracefully.
+        proxy_intercept_errors on;
+        error_page 502 503 504 = @api_unavailable;
+    }
+
+    # --- Webhooks — forwarded to Node.js (higher body limit) ---
+    location /webhooks/ {
+        proxy_pass         http://whatsway_node;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   Connection        "";
+        client_max_body_size 10m;
+        proxy_read_timeout 60s;
+    }
+
+    # --- Socket.IO — forwarded to Node.js with WebSocket upgrade ---
+    location /socket.io/ {
+        proxy_pass         http://whatsway_node;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade    $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+        proxy_set_header   Host       $host;
+        proxy_set_header   X-Real-IP  $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400s;
+    }
+
+    # --- Raw WebSocket (/ws) — forwarded to Node.js with WebSocket upgrade ---
+    # The inbox uses a raw WebSocket on /ws for real-time conversation updates.
+    location /ws {
+        proxy_pass         http://whatsway_node;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade    $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+        proxy_set_header   Host       $host;
+        proxy_set_header   X-Real-IP  $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400s;
+    }
+
+    # --- SPA fallback — ALL other paths serve index.html ---
+    # This is what makes hard refresh work for /inbox, /dashboard, etc.
+    # nginx finds the file doesn't exist on disk → falls back to index.html.
+    location / {
+        try_files $uri $uri/ /index.html;
+
+        # index.html must not be cached
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+    }
+
+    # --- Fallback for API 502/503/504 errors ---
+    location @api_unavailable {
+        default_type application/json;
+        add_header Content-Type "application/json" always;
+        return 503 '{"error":"Server is temporarily unavailable. Please try again in a few seconds."}';
+    }
+
+    # --- Security headers ---
+    add_header X-Frame-Options       "SAMEORIGIN"   always;
+    add_header X-Content-Type-Options "nosniff"      always;
+    add_header Referrer-Policy       "strict-origin-when-cross-origin" always;
+
+    # --- Gzip ---
+    gzip            on;
+    gzip_vary       on;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_types      text/plain text/css text/javascript application/javascript
+                    application/json application/xml image/svg+xml font/woff2;
+
+    # --- File size limit (for media uploads via API — documents can be up to 100MB) ---
+    client_max_body_size 100m;
+
+    # --- Logging ---
+    access_log /var/log/nginx/whatsway-access.log;
+    error_log  /var/log/nginx/whatsway-error.log warn;
+}
