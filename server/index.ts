@@ -684,9 +684,9 @@ app.use((req, res, next) => {
   };
 
   // Only use reusePort if the platform supports it
-  if (process.platform !== "win32" && process.env.NODE_ENV !== "production") {
-    listenOptions.reusePort = true;
-  }
+  // if (process.platform !== "win32" && process.env.NODE_ENV !== "production") {
+  //   listenOptions.reusePort = true;
+  // }
 
   httpServer.listen(listenOptions, async () => {
     diployLogger.banner();
