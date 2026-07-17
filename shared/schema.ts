@@ -1173,7 +1173,7 @@ export const storageSettings = pgTable("storage_settings", {
   id: varchar("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  provider: text("provider").default("digitalocean"), // can extend later
+  provider: text("provider").default("aws"), // can extend later
   spaceName: text("space_name").notNull(),
   endpoint: text("endpoint").notNull(),
   region: text("region").notNull(),

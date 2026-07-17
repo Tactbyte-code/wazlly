@@ -128,7 +128,7 @@ export const testStorageConnection = async (req: Request, res: Response) => {
     }
 
     const s3Client = new S3Client({
-      endpoint: cleanEndpoint,
+      endpoint: config.provider === "aws" ? undefined : cleanEndpoint,
       region: config.region,
       credentials: {
         accessKeyId: config.accessKey,

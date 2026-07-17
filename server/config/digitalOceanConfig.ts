@@ -10,6 +10,7 @@ type DOClientResult = {
   s3: S3Client;
   bucket: string;
   endpoint: string;
+  region: string;
 } | null;
 
 type CacheEntry = {
@@ -69,7 +70,7 @@ export const createDOClient = async (): Promise<DOClientResult> => {
     console.log(`   Is Active: ${config.isActive}`);
 
     const s3Client = new S3Client({
-      endpoint: cleanEndpoint,
+      endpoint: config.provider === "aws" ? undefined : cleanEndpoint,
       region: config.region,
       credentials: {
         accessKeyId: config.accessKey,
@@ -83,7 +84,8 @@ export const createDOClient = async (): Promise<DOClientResult> => {
     const result: DOClientResult = {
       s3: s3Client,
       bucket: config.spaceName,
-      endpoint: cleanEndpoint,
+      endpoint: config.provider === "aws" ? `https://s3.${config.region}.amazonaws.com` : cleanEndpoint,
+      region: config.region,
     };
 
     cache.set(CACHE_KEY, { value: result, expiresAt: now + CACHE_TTL_MS });

@@ -1,20 +1,3 @@
-/**
- * ============================================================
- * © 2025 Diploy — a brand of Bisht Technologies Private Limited
- * Original Author: BTPL Engineering Team
- * Website: https://diploy.in
- * Contact: cs@diploy.in
- *
- * Distributed under the Envato / CodeCanyon License Agreement.
- * Licensed to the purchaser for use as defined by the
- * Envato Market (CodeCanyon) Regular or Extended License.
- *
- * You are NOT permitted to redistribute, resell, sublicense,
- * or share this source code, in whole or in part.
- * Respect the author's rights and Envato licensing terms.
- * ============================================================
- */
-
 import multer, { FileFilterCallback } from "multer";
 import { diployLogger, HTTP_STATUS, DIPLOY_BRAND } from "@diploy/core";
 import path from "path";
@@ -339,14 +322,14 @@ export const validateUploadedFiles = (
   next();
 };
 
-// Middleware to upload to DigitalOcean Spaces (if active)
+// Middleware to upload to AWS S3 (if active)
 export const handleDigitalOceanUpload = async (
   req: Request,
   _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    console.log("\n🔍 Checking DigitalOcean Spaces configuration...");
+    console.log("\n🔍 Checking AWS S3 configuration...");
     
     // Check if DO is active
     const doClient = await createDOClient();
@@ -399,7 +382,7 @@ export const handleDigitalOceanUpload = async (
       }
     }
 
-    // If DO is not active, keep files local — cloudUrl intentionally left unset
+    // If AWS is not active, keep files local — cloudUrl intentionally left unset
     // so the controller's fallback builds the correct /uploads/userId/filename path
     if (!doClient) {
       console.log("💾 DigitalOcean not configured/active, files saved locally");
@@ -410,10 +393,10 @@ export const handleDigitalOceanUpload = async (
       return next();
     }
 
-    const { s3, bucket, endpoint } = doClient;
+    const { s3, bucket, endpoint, region } = doClient;
     console.log(`☁️ Uploading to DigitalOcean Spaces: ${bucket}`);
 
-    // Upload to DigitalOcean Spaces
+    // Upload to AWS S3
     for (const file of files) {
       try {
         console.log(`\n📤 Uploading: ${file.originalname}`);
@@ -430,26 +413,28 @@ export const handleDigitalOceanUpload = async (
         const { conversationId } = req.params;
         console.log(`   File read successfully: ${file.path} , conversationId: ${conversationId}`);
         const userId = (req as any).user?.id || (req.body?.userId) || conversationId || "guest";
-        const fileKey = `uploads/${userId}/${Date.now()}-${path.basename(file.originalname)}`;
+        const FileKey = `uploads/${userId}/${Date.now()}-${path.basename(file.originalname)}`;
 
-        console.log(`   Cloud key: ${fileKey}`);
+        const isPublic = true; // decide this per-upload, e.g. based on file type or a flag
+        const accessFileKey = isPublic ? `public/${FileKey}` : `private/${FileKey}`;
+
+
+        console.log(`   Cloud key: ${accessFileKey}`);
         console.log(`   File size: ${fileBuffer.length} bytes`);
 
-        // Upload to DO Spaces
+        // Upload to S3
         await s3.send(
           new PutObjectCommand({
-            Bucket: bucket!,
-            Key: fileKey,
+            Bucket: bucket,
+            Key: accessFileKey,
             Body: fileBuffer,
-            ACL: "public-read",
+            // ACL: "public-read",
             ContentType: file.mimetype,
           })
         );
 
-        // Construct cloud URL
-        const endpointUrl = new URL(endpoint || "");
-        // console.log('endpointUrl:', endpointUrl);
-        file.cloudUrl = `https://${bucket}.${endpointUrl.host}/${fileKey}`;
+        // Construct cloud URL (virtual-hosted–style AWS S3 URL)
+        file.cloudUrl = `https://${bucket}.s3.${region}.amazonaws.com/${accessFileKey}`;
 
         console.log(`   ✅ Upload successful!`);
         console.log(`   🌐 Cloud URL: ${file.cloudUrl}`);
@@ -467,7 +452,7 @@ export const handleDigitalOceanUpload = async (
 
     next();
   } catch (error) {
-    console.error("❌ DigitalOcean Upload Middleware Error:", error);
+    console.error("❌ AWS S3 Upload Middleware Error:", error);
     console.log("💾 Falling back to local storage");
     // Fallback to local storage on error
     next();
