@@ -102,6 +102,7 @@ import ChannelsManagement from "./pages/channels-management";
 import AppUpdate from "./pages/app-update";
 import WidgetChat from "./pages/WidgetChat";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import { DeleteAccount } from "./pages/DeleteAccount";
 
 // Route permissions map. Every authenticated route must have an entry here.
 // Missing routes are treated as DENY (redirect to /dashboard). Empty string
@@ -573,6 +574,13 @@ function Router() {
           <>
             <Header />
             <TermsPage />
+            <Footer />
+          </>
+        </Route>
+        <Route path="/delete-account">
+          <>
+            <Header />
+            <DeleteAccount />
             <Footer />
           </>
         </Route>

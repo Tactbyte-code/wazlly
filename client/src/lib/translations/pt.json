@@ -3190,7 +3190,7 @@
             "title": "Política de Privacidade"
         },
         "intro": {
-            "text": "Na StyleHub, estamos comprometidos em proteger a sua privacidade. Esta política explica como coletamos, usamos e protegemos as suas informações pessoais quando você visita o nosso site e realiza compras."
+            "text": "Na Wazlly, estamos comprometidos em proteger a sua privacidade. Esta política explica como coletamos, usamos e protegemos as suas informações pessoais quando você visita o nosso site e realiza compras."
         },
         "sections": {
             "informationWeCollect": {
@@ -3279,7 +3279,7 @@
             "lastUpdated": "Última atualização: 01 de janeiro de 2025"
         },
         "intro": {
-            "text": "Leia atentamente estes Termos e Condições antes de usar o site e os serviços da StyleHub. Ao acessar ou utilizar nossa plataforma, você concorda em cumprir estes Termos."
+            "text": "Leia atentamente estes Termos e Condições antes de usar o site e os serviços da Wazlly. Ao acessar ou utilizar nossa plataforma, você concorda em cumprir estes Termos."
         },
         "sections": {
             "generalConditions": {
@@ -3325,7 +3325,7 @@
             },
             "indemnification": {
                 "title": "9. Indenização",
-                "text": "Você concorda em indenizar e isentar a StyleHub, seus funcionários e parceiros, de qualquer reclamação decorrente de sua violação destes Termos."
+                "text": "Você concorda em indenizar e isentar a Wazlly, seus funcionários e parceiros, de qualquer reclamação decorrente de sua violação destes Termos."
             },
             "severability": {
                 "title": "10. Separabilidade",
@@ -3345,6 +3345,68 @@
             }
         }
     },
+      "account_deletion": {
+  "hero": {
+    "title": "Excluir sua conta",
+    "subtitle": "Veja como excluir permanentemente sua conta e seus dados pessoais da Wazlly."
+  },
+  "intro": {
+    "text": "Você pode solicitar a exclusão da sua conta e dos dados pessoais associados a qualquer momento. Esta página explica como enviar uma solicitação, quais dados são excluídos e quanto tempo o processo leva."
+  },
+  "sections": {
+    "howToRequest": {
+      "title": "1. Como solicitar a exclusão",
+      "intro": "Você pode solicitar a exclusão da conta seguindo os passos abaixo:",
+      "email": {
+        "label": "Solicitação por e-mail:",
+        "text": "Envie uma solicitação de exclusão para support@wazlly.com a partir do endereço de e-mail associado à sua conta, com o assunto \"Account Deletion Request\", incluindo os seguintes dados:",
+        "fields": [
+          "Nome completo",
+          "Nome de usuário",
+          "E-mail de contato",
+          "Número de telefone"
+        ]
+      }
+    },
+    "infoNeeded": {
+      "title": "2. Informações que precisamos para processar sua solicitação",
+      "intro": "Para verificar sua identidade e localizar sua conta, podemos solicitar:",
+      "list": [
+        "O e-mail ou número de telefone vinculado à sua conta",
+        "Seu nome completo como aparece na conta",
+        "Qualquer ID de pedido ou de conta, se disponível"
+      ]
+    },
+    "whatGetsDeleted": {
+      "title": "3. O que é excluído",
+      "intro": "Assim que sua solicitação for verificada, excluímos permanentemente:",
+      "list": [
+        "Suas informações de perfil (nome, e-mail, telefone, endereços)",
+        "Métodos de pagamento salvos e preferências",
+        "Credenciais de login da conta",
+        "Atividade de navegação vinculada à sua conta",
+        "Qualquer dado obtido por meio de terceiros (por exemplo, Meta, etc.)"
+      ]
+    },
+    "timeframe": {
+      "title": "4. Quanto tempo leva",
+      "text": "As solicitações de exclusão são processadas dentro de [30 dias] após a verificação. Alguns dados podem levar até [90 dias] para serem totalmente removidos dos sistemas de backup."
+    },
+    "confirmation": {
+      "title": "5. Confirmação",
+      "text": "Assim que sua conta e os dados associados forem excluídos, enviaremos um e-mail de confirmação para o endereço registrado."
+    },
+    "thirdPartyLogin": {
+      "title": "6. Dados compartilhados via Meta",
+      "text": "Se você usou os serviços da Meta em nossa plataforma, excluir sua conta aqui também remove os dados que recebemos da Meta."
+    },
+    "contact": {
+      "title": "7. Fale conosco",
+      "text": "Se tiver dúvidas sobre esse processo ou precisar de ajuda com sua solicitação, entre em contato conosco em:",
+      "email": "support@wazzly.com"
+    }
+  }
+},
     "cookiePolicy": {
         "hero": {
             "title": "Política de Cookies",

@@ -3190,7 +3190,7 @@
             "title": "Politique de confidentialité"
         },
         "intro": {
-            "text": "Chez StyleHub, nous nous engageons à protéger votre vie privée. Cette politique explique comment nous collectons, utilisons et protégeons vos informations personnelles lorsque vous visitez notre site web et effectuez des achats."
+            "text": "Chez Wazlly, nous nous engageons à protéger votre vie privée. Cette politique explique comment nous collectons, utilisons et protégeons vos informations personnelles lorsque vous visitez notre site web et effectuez des achats."
         },
         "sections": {
             "informationWeCollect": {
@@ -3279,7 +3279,7 @@
             "lastUpdated": "Dernière mise à jour : 01 janvier 2025"
         },
         "intro": {
-            "text": "Veuillez lire attentivement ces Termes et Conditions avant d’utiliser le site web et les services de StyleHub. En accédant ou en utilisant notre plateforme, vous acceptez d’être lié par ces Termes."
+            "text": "Veuillez lire attentivement ces Termes et Conditions avant d’utiliser le site web et les services de Wazlly. En accédant ou en utilisant notre plateforme, vous acceptez d’être lié par ces Termes."
         },
         "sections": {
             "generalConditions": {
@@ -3325,7 +3325,7 @@
             },
             "indemnification": {
                 "title": "9. Indemnisation",
-                "text": "Vous acceptez d’indemniser et de dégager StyleHub, ainsi que ses employés et partenaires, de toute réclamation résultant de votre violation de ces Termes."
+                "text": "Vous acceptez d’indemniser et de dégager Wazlly, ainsi que ses employés et partenaires, de toute réclamation résultant de votre violation de ces Termes."
             },
             "severability": {
                 "title": "10. Divisibilité",
@@ -3345,6 +3345,68 @@
             }
         }
     },
+      "account_deletion": {
+  "hero": {
+    "title": "Supprimer votre compte",
+    "subtitle": "Voici comment supprimer définitivement votre compte et vos données personnelles de Wazlly."
+  },
+  "intro": {
+    "text": "Vous pouvez demander la suppression de votre compte et des données personnelles associées à tout moment. Cette page explique comment soumettre une demande, quelles données sont supprimées et combien de temps le processus prend."
+  },
+  "sections": {
+    "howToRequest": {
+      "title": "1. Comment demander la suppression",
+      "intro": "Vous pouvez demander la suppression de votre compte en suivant les étapes ci-dessous :",
+      "email": {
+        "label": "Demande par e-mail :",
+        "text": "Envoyez une demande de suppression à support@wazlly.com depuis l'adresse e-mail associée à votre compte, avec pour objet « Demande de suppression de compte », en incluant les informations suivantes :",
+        "fields": [
+          "Nom complet",
+          "Nom d'utilisateur",
+          "E-mail de contact",
+          "Numéro de téléphone"
+        ]
+      }
+    },
+    "infoNeeded": {
+      "title": "2. Informations dont nous avons besoin pour traiter votre demande",
+      "intro": "Pour vérifier votre identité et localiser votre compte, nous pouvons vous demander :",
+      "list": [
+        "L'adresse e-mail ou le numéro de téléphone lié à votre compte",
+        "Votre nom complet tel qu'il apparaît sur le compte",
+        "Un identifiant de commande ou de compte, si disponible"
+      ]
+    },
+    "whatGetsDeleted": {
+      "title": "3. Ce qui est supprimé",
+      "intro": "Une fois votre demande vérifiée, nous supprimons définitivement :",
+      "list": [
+        "Vos informations de profil (nom, e-mail, numéro de téléphone, adresses)",
+        "Les moyens de paiement enregistrés et vos préférences",
+        "Les identifiants de connexion du compte",
+        "L'activité de navigation liée à votre compte",
+        "Toute donnée obtenue via des tiers (par exemple, Meta, etc.)"
+      ]
+    },
+    "timeframe": {
+      "title": "4. Délai de traitement",
+      "text": "Les demandes de suppression sont traitées dans un délai de [30 jours] après vérification. Certaines données peuvent nécessiter jusqu'à [90 jours] pour être complètement supprimées des systèmes de sauvegarde."
+    },
+    "confirmation": {
+      "title": "5. Confirmation",
+      "text": "Une fois votre compte et les données associées supprimés, nous vous enverrons un e-mail de confirmation à l'adresse enregistrée."
+    },
+    "thirdPartyLogin": {
+      "title": "6. Données partagées via Meta",
+      "text": "Si vous avez utilisé les services Meta sur notre plateforme, la suppression de votre compte ici entraîne également la suppression des données que nous avons reçues de Meta."
+    },
+    "contact": {
+      "title": "7. Nous contacter",
+      "text": "Si vous avez des questions sur ce processus ou besoin d'aide avec votre demande, contactez-nous à :",
+      "email": "support@wazzly.com"
+    }
+  }
+},
     "cookiePolicy": {
         "hero": {
             "title": "Politique de Cookies",

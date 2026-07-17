@@ -3190,7 +3190,7 @@
             "title": "Datenschutzerklärung"
         },
         "intro": {
-            "text": "Bei StyleHub engagieren wir uns für den Schutz Ihrer Privatsphäre. Diese Richtlinie erklärt, wie wir Ihre personenbezogenen Daten erfassen, verwenden und schützen, wenn Sie unsere Website besuchen und Einkäufe tätigen."
+            "text": "Bei Wazlly engagieren wir uns für den Schutz Ihrer Privatsphäre. Diese Richtlinie erklärt, wie wir Ihre personenbezogenen Daten erfassen, verwenden und schützen, wenn Sie unsere Website besuchen und Einkäufe tätigen."
         },
         "sections": {
             "informationWeCollect": {
@@ -3279,7 +3279,7 @@
             "lastUpdated": "Letzte Aktualisierung: 01. Januar 2025"
         },
         "intro": {
-            "text": "Bitte lesen Sie diese Allgemeinen Geschäftsbedingungen sorgfältig durch, bevor Sie die Website und die Dienste von StyleHub nutzen. Durch den Zugriff auf unsere Plattform oder deren Nutzung stimmen Sie zu, an diese Bedingungen gebunden zu sein."
+            "text": "Bitte lesen Sie diese Allgemeinen Geschäftsbedingungen sorgfältig durch, bevor Sie die Website und die Dienste von Wazlly nutzen. Durch den Zugriff auf unsere Plattform oder deren Nutzung stimmen Sie zu, an diese Bedingungen gebunden zu sein."
         },
         "sections": {
             "generalConditions": {
@@ -3325,7 +3325,7 @@
             },
             "indemnification": {
                 "title": "9. Schadloshaltung",
-                "text": "Sie stimmen zu, StyleHub sowie dessen Mitarbeiter und Partner von jeglichen Ansprüchen freizustellen, die aufgrund Ihrer Verletzung dieser Bedingungen entstehen."
+                "text": "Sie stimmen zu, Wazlly sowie dessen Mitarbeiter und Partner von jeglichen Ansprüchen freizustellen, die aufgrund Ihrer Verletzung dieser Bedingungen entstehen."
             },
             "severability": {
                 "title": "10. Salvatorische Klausel",
@@ -3345,6 +3345,68 @@
             }
         }
     },
+    "account_deletion": {
+  "hero": {
+    "title": "Konto löschen",
+    "subtitle": "So können Sie Ihr Konto und Ihre personenbezogenen Daten dauerhaft von Wazlly löschen."
+  },
+  "intro": {
+    "text": "Sie können jederzeit die Löschung Ihres Kontos und der damit verbundenen personenbezogenen Daten beantragen. Diese Seite erklärt, wie Sie eine Anfrage stellen, welche Daten gelöscht werden und wie lange der Vorgang dauert."
+  },
+  "sections": {
+    "howToRequest": {
+      "title": "1. So beantragen Sie die Löschung",
+      "intro": "Sie können die Kontolöschung beantragen, indem Sie die folgenden Schritte befolgen:",
+      "email": {
+        "label": "Anfrage per E-Mail:",
+        "text": "Senden Sie eine Löschanfrage an support@wazlly.com von der E-Mail-Adresse, die mit Ihrem Konto verknüpft ist, mit dem Betreff „Antrag auf Kontolöschung“ und geben Sie dabei folgende Angaben an:",
+        "fields": [
+          "Vollständiger Name",
+          "Benutzername",
+          "Kontakt-E-Mail",
+          "Telefonnummer"
+        ]
+      }
+    },
+    "infoNeeded": {
+      "title": "2. Informationen, die wir zur Bearbeitung Ihrer Anfrage benötigen",
+      "intro": "Um Ihre Identität zu überprüfen und Ihr Konto zu finden, benötigen wir gegebenenfalls:",
+      "list": [
+        "Die mit Ihrem Konto verknüpfte E-Mail-Adresse oder Telefonnummer",
+        "Ihren vollständigen Namen, wie er im Konto angegeben ist",
+        "Eine Bestell- oder Konto-ID, falls vorhanden"
+      ]
+    },
+    "whatGetsDeleted": {
+      "title": "3. Was gelöscht wird",
+      "intro": "Sobald Ihre Anfrage überprüft wurde, löschen wir dauerhaft:",
+      "list": [
+        "Ihre Profilinformationen (Name, E-Mail, Telefonnummer, Adressen)",
+        "Gespeicherte Zahlungsmethoden und Einstellungen",
+        "Anmeldedaten des Kontos",
+        "Mit Ihrem Konto verknüpfte Browsing-Aktivitäten",
+        "Alle über Dritte erhaltenen Daten (z. B. Meta usw.)"
+      ]
+    },
+    "timeframe": {
+      "title": "4. Bearbeitungsdauer",
+      "text": "Löschanfragen werden innerhalb von [30 Tagen] nach der Verifizierung bearbeitet. Einige Daten können bis zu [90 Tage] benötigen, um vollständig aus den Backup-Systemen entfernt zu werden."
+    },
+    "confirmation": {
+      "title": "5. Bestätigung",
+      "text": "Sobald Ihr Konto und die zugehörigen Daten gelöscht wurden, senden wir eine Bestätigungs-E-Mail an die hinterlegte Adresse."
+    },
+    "thirdPartyLogin": {
+      "title": "6. Über Meta geteilte Daten",
+      "text": "Wenn Sie Meta-Dienste auf unserer Plattform genutzt haben, werden durch das Löschen Ihres Kontos hier auch die von Meta erhaltenen Daten entfernt."
+    },
+    "contact": {
+      "title": "7. Kontaktieren Sie uns",
+      "text": "Wenn Sie Fragen zu diesem Prozess haben oder Hilfe bei Ihrer Anfrage benötigen, kontaktieren Sie uns unter:",
+      "email": "support@wazzly.com"
+    }
+  }
+  },
     "cookiePolicy": {
         "hero": {
             "title": "Cookie-Richtlinie",

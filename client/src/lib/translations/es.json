@@ -3190,7 +3190,7 @@
             "title": "Política de Privacidad"
         },
         "intro": {
-            "text": "En StyleHub, estamos comprometidos con la protección de tu privacidad. Esta política explica cómo recopilamos, usamos y protegemos tu información personal cuando visitas nuestro sitio web y realizas compras."
+            "text": "En Wazlly, estamos comprometidos con la protección de tu privacidad. Esta política explica cómo recopilamos, usamos y protegemos tu información personal cuando visitas nuestro sitio web y realizas compras."
         },
         "sections": {
             "informationWeCollect": {
@@ -3279,7 +3279,7 @@
             "lastUpdated": "Última actualización: 01 de enero de 2025"
         },
         "intro": {
-            "text": "Por favor, lea estos Términos y Condiciones cuidadosamente antes de utilizar el sitio web y los servicios de StyleHub. Al acceder o utilizar nuestra plataforma, usted acepta estar sujeto a estos Términos."
+            "text": "Por favor, lea estos Términos y Condiciones cuidadosamente antes de utilizar el sitio web y los servicios de Wazlly. Al acceder o utilizar nuestra plataforma, usted acepta estar sujeto a estos Términos."
         },
         "sections": {
             "generalConditions": {
@@ -3325,7 +3325,7 @@
             },
             "indemnification": {
                 "title": "9. Indemnización",
-                "text": "Usted acepta indemnizar y mantener indemne a StyleHub, sus empleados y socios, frente a cualquier reclamo derivado del incumplimiento de estos Términos."
+                "text": "Usted acepta indemnizar y mantener indemne a Wazlly, sus empleados y socios, frente a cualquier reclamo derivado del incumplimiento de estos Términos."
             },
             "severability": {
                 "title": "10. Divisibilidad",
@@ -3345,6 +3345,68 @@
             }
         }
     },
+      "account_deletion": {
+  "hero": {
+    "title": "Eliminar tu cuenta",
+    "subtitle": "Así puedes eliminar de forma permanente tu cuenta y tus datos personales de Wazlly."
+  },
+  "intro": {
+    "text": "Puedes solicitar la eliminación de tu cuenta y de los datos personales asociados en cualquier momento. Esta página explica cómo enviar una solicitud, qué datos se eliminan y cuánto tiempo tarda el proceso."
+  },
+  "sections": {
+    "howToRequest": {
+      "title": "1. Cómo solicitar la eliminación",
+      "intro": "Puedes solicitar la eliminación de la cuenta siguiendo los pasos a continuación:",
+      "email": {
+        "label": "Solicitud por correo electrónico:",
+        "text": "Envía una solicitud de eliminación a support@wazlly.com desde el correo electrónico asociado a tu cuenta, con el asunto \"Solicitud de eliminación de cuenta\", incluyendo los siguientes datos:",
+        "fields": [
+          "Nombre completo",
+          "Nombre de usuario",
+          "Correo electrónico de contacto",
+          "Número de teléfono"
+        ]
+      }
+    },
+    "infoNeeded": {
+      "title": "2. Información que necesitamos para procesar tu solicitud",
+      "intro": "Para verificar tu identidad y localizar tu cuenta, es posible que te pidamos:",
+      "list": [
+        "El correo electrónico o número de teléfono vinculado a tu cuenta",
+        "Tu nombre completo tal como aparece en la cuenta",
+        "El ID de pedido o de cuenta, si está disponible"
+      ]
+    },
+    "whatGetsDeleted": {
+      "title": "3. Qué se elimina",
+      "intro": "Una vez verificada tu solicitud, eliminamos de forma permanente:",
+      "list": [
+        "Tu información de perfil (nombre, correo electrónico, teléfono, direcciones)",
+        "Métodos de pago guardados y preferencias",
+        "Credenciales de inicio de sesión de la cuenta",
+        "Actividad de navegación vinculada a tu cuenta",
+        "Cualquier dato obtenido a través de terceros (por ejemplo, Meta, etc.)"
+      ]
+    },
+    "timeframe": {
+      "title": "4. Cuánto tiempo tarda",
+      "text": "Las solicitudes de eliminación se procesan dentro de [30 días] tras la verificación. Algunos datos pueden tardar hasta [90 días] en eliminarse por completo de los sistemas de respaldo."
+    },
+    "confirmation": {
+      "title": "5. Confirmación",
+      "text": "Una vez eliminados tu cuenta y los datos asociados, te enviaremos un correo electrónico de confirmación a la dirección registrada."
+    },
+    "thirdPartyLogin": {
+      "title": "6. Datos compartidos a través de Meta",
+      "text": "Si utilizaste los servicios de Meta en nuestra plataforma, al eliminar tu cuenta aquí también se eliminan los datos que recibimos de Meta."
+    },
+    "contact": {
+      "title": "7. Contáctanos",
+      "text": "Si tienes preguntas sobre este proceso o necesitas ayuda con tu solicitud, contáctanos en:",
+      "email": "support@wazzly.com"
+    }
+  }
+  },
     "cookiePolicy": {
         "hero": {
             "title": "Política de Cookies",

@@ -3190,7 +3190,7 @@
             "title": "Privacy Policy"
         },
         "intro": {
-            "text": "At StyleHub, we are committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information when you visit and make purchases from our website."
+            "text": "At Wazlly, we are committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information when you visit and make purchases from our website."
         },
         "sections": {
             "informationWeCollect": {
@@ -3279,7 +3279,7 @@
             "lastUpdated": "Last Updated: January 01, 2025"
         },
         "intro": {
-            "text": "Please read these Terms and Conditions carefully before using the StyleHub website and services. By accessing or using our platform, you agree to be bound by these Terms."
+            "text": "Please read these Terms and Conditions carefully before using the Wazlly website and services. By accessing or using our platform, you agree to be bound by these Terms."
         },
         "sections": {
             "generalConditions": {
@@ -3325,7 +3325,7 @@
             },
             "indemnification": {
                 "title": "9. Indemnification",
-                "text": "You agree to indemnify and hold harmless StyleHub and its employees and partners from any claims arising from your breach of these Terms."
+                "text": "You agree to indemnify and hold harmless Wazlly and its employees and partners from any claims arising from your breach of these Terms."
             },
             "severability": {
                 "title": "10. Severability",
@@ -3345,6 +3345,70 @@
             }
         }
     },
+      "account_deletion": {
+    "hero": {
+      "title": "Delete Your Account",
+      "subtitle": "Here's how to permanently delete your account and personal data from Wazlly."
+    },
+    "intro": {
+      "text": "You can request the deletion of your account and associated personal data at any time. This page explains how to submit a request, what data is deleted, and how long the process takes."
+    },
+    "sections": {
+      "howToRequest": {
+        "title": "1. How to Request Deletion",
+        "intro": "You can request account deletion by following the steps below:",
+        "email": {
+          "label": "Request by Email:",
+          "text": "Send a deletion request to support@wazlly.com from the email address associated with your account, with the subject line \"Account Deletion Request,\" including the following details:",
+          "fields": [
+            "Full Name",
+            "Username",
+            "Contact Email",
+            "Phone Number"
+          ]
+        }
+
+      },
+      "infoNeeded": {
+        "title": "2. Information We Need to Process Your Request",
+        "intro": "To verify your identity and locate your account, we may ask for:",
+        "list": [
+          "The email address or phone number linked to your account",
+          "Your full name as it appears on the account",
+          "Any order or account ID, if available"
+        ]
+      },
+      "whatGetsDeleted": {
+        "title": "3. What Gets Deleted",
+        "intro": "Once your request is verified, we permanently delete:",
+        "list": [
+          "Your profile information (name, email, phone number, addresses)",
+          "Saved payment methods and preferences",
+          "Account login credentials",
+          "Browsing activity tied to your account",
+          "Any data obtained through third-party (e.g., Meta etc)"
+        ]
+      },
+      "timeframe": {
+        "title": "4. How Long It Takes",
+        "text": "Deletion requests are processed within [30 days] of verification. Some data may take up to [90 days] to be fully removed from backup systems."
+      },
+      "confirmation": {
+        "title": "5. Confirmation",
+        "text": "Once your account and associated data have been deleted, we will send a confirmation email to the address on file."
+      },
+      "thirdPartyLogin": {
+        "title": "6. Data Shared via Meta",
+        "text": "If you used Meta services in our platform, deleting your account here also removes the data we received from Meta."
+      },
+      "contact": {
+        "title": "7. Contact Us",
+        "text": "If you have questions about this process or need help with your request, contact us at:",
+        "email": "support@wazzly.com"
+
+      }
+    }
+  },
     "cookiePolicy": {
         "hero": {
             "title": "Cookie Policy",

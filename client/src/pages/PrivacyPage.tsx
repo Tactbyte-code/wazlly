@@ -35,7 +35,7 @@
 //             {/* Intro Section */}
 //             <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-8 rounded-2xl mb-12">
 //               <p className="text-lg text-gray-700 leading-relaxed m-0">
-//                 At StyleHub, we are committed to protecting your privacy. This
+//                 At Wazlly, we are committed to protecting your privacy. This
 //                 policy explains how we collect, use, and safeguard your personal
 //                 information when you visit and make purchases from our website
 //               </p>
