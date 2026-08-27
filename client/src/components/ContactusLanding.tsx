@@ -57,7 +57,11 @@ const ContactusLanding = () => {
     setLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/api/contact/sendmail", formData);
+      const response = await apiRequest(
+        "POST",
+        "/api/contact/sendmail",
+        formData,
+      );
       const data = await response.json();
 
       if (!data?.success) {
@@ -84,7 +88,8 @@ const ContactusLanding = () => {
     } catch (error: unknown) {
       toast({
         title: "Failed to send message",
-        description: error instanceof Error ? error.message : "Please try again later.",
+        description:
+          error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -95,7 +100,7 @@ const ContactusLanding = () => {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setFormData({
       ...formData,
@@ -154,7 +159,8 @@ const ContactusLanding = () => {
                       required
                     />
                     <label className="absolute left-4 -top-2.5 text-xs font-medium text-gray-500 bg-white px-1 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:bg-white">
-                      {t("contactUs.form.fields.name")} {t("contactUs.form.fields.required")}
+                      {t("contactUs.form.fields.name")}{" "}
+                      {t("contactUs.form.fields.required")}
                     </label>
                   </div>
                   <div className="relative">
@@ -168,7 +174,8 @@ const ContactusLanding = () => {
                       required
                     />
                     <label className="absolute left-4 -top-2.5 text-xs font-medium text-gray-500 bg-white px-1 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:bg-white">
-                      {t("contactUs.form.fields.email")} {t("contactUs.form.fields.required")}
+                      {t("contactUs.form.fields.email")}{" "}
+                      {t("contactUs.form.fields.required")}
                     </label>
                   </div>
                 </div>
@@ -232,7 +239,8 @@ const ContactusLanding = () => {
                     required
                   ></textarea>
                   <label className="absolute left-4 -top-2.5 text-xs font-medium text-gray-500 bg-white px-1 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:bg-white">
-                    {t("contactUs.form.fields.message")} {t("contactUs.form.fields.required")}
+                    {t("contactUs.form.fields.message")}{" "}
+                    {t("contactUs.form.fields.required")}
                   </label>
                 </div>
 
@@ -264,7 +272,7 @@ const ContactusLanding = () => {
                     const details =
                       info.title === "Email Us"
                         ? "support@wazlly.com"
-                        : "TactByte Technologies Pvt. Ltd. Ganeshguri, Guwahati, 781006";
+                        : "TactByte Technologies Pvt. Ltd.";
 
                     return (
                       <div
@@ -278,7 +286,16 @@ const ContactusLanding = () => {
                           <h3 className="font-semibold text-gray-900 text-sm">
                             {info.title}
                           </h3>
-                          <p className="text-gray-700 font-medium text-sm mt-0.5">{details}</p>
+                          <p className="text-gray-700 font-medium text-sm mt-0.5">
+                            {details}
+                          </p>
+                          <p className="text-gray-400 text-xs mt-0.5">
+                            {
+                              (info.title === "Visit Us"
+                                ? "Ganeshguri, Guwahati, 781006"
+                                : "")
+                            }
+                          </p>
                           <p className="text-gray-400 text-xs mt-1">
                             {info.description}
                           </p>
@@ -314,7 +331,9 @@ const ContactusLanding = () => {
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                   className="w-full flex items-center justify-between p-5 text-left"
                 >
-                  <h3 className="font-semibold text-gray-900 text-sm pr-4">{faq.q}</h3>
+                  <h3 className="font-semibold text-gray-900 text-sm pr-4">
+                    {faq.q}
+                  </h3>
                   <ChevronDown
                     className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200 ${
                       openFaq === index ? "rotate-180" : ""
@@ -323,7 +342,9 @@ const ContactusLanding = () => {
                 </button>
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    openFaq === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    openFaq === index
+                      ? "max-h-96 opacity-100"
+                      : "max-h-0 opacity-0"
                   }`}
                 >
                   <p className="px-5 pb-5 text-gray-500 text-sm leading-relaxed">
