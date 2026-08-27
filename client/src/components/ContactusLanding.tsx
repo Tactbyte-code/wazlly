@@ -263,8 +263,8 @@ const ContactusLanding = () => {
                     const Icon = iconMap[index];
                     const details =
                       info.title === "Email Us"
-                        ? brandSettings?.supportEmail
-                        : info.details;
+                        ? "support@wazlly.com"
+                        : "TactByte Technologies Pvt. Ltd. Ganeshguri, Guwahati, 781006";
 
                     return (
                       <div
