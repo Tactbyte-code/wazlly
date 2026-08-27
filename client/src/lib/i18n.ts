@@ -68,7 +68,6 @@ interface I18nState {
   loadTranslations: (code: string) => Promise<any>;
 }
 
-
 // Add this new function alongside normalizeArrays
 function deepParseStrings(obj: any): any {
   if (obj === null || obj === undefined) return obj;
@@ -99,9 +98,12 @@ function normalizeArrays(obj: any): any {
   if (Array.isArray(obj)) return obj.map(normalizeArrays);
   if (typeof obj === "object") {
     const keys = Object.keys(obj);
-    const isNumericKeys = keys.length > 0 && keys.every((k) => !isNaN(Number(k)));
+    const isNumericKeys =
+      keys.length > 0 && keys.every((k) => !isNaN(Number(k)));
     if (isNumericKeys) {
-      return keys.sort((a, b) => Number(a) - Number(b)).map((k) => normalizeArrays(obj[k]));
+      return keys
+        .sort((a, b) => Number(a) - Number(b))
+        .map((k) => normalizeArrays(obj[k]));
     }
     const result: any = {};
     for (const key of keys) result[key] = normalizeArrays(obj[key]);
@@ -115,109 +117,121 @@ export const useI18n = create<I18nState>()(
     (set, get) => ({
       language: "en",
       userSelectedLanguage: false,
-      languages: {  },
+      languages: {},
       translationsCache: {
-  // en: enTranslations,
-},
+        // en: enTranslations,
+      },
       isLoadingLanguages: false,
 
       fetchEnabledLanguages: async () => {
-  // Sirf agar cache bilkul empty ho tab clear karo
-  // set({ translationsCache: {} });  // ← YE LINE HATAO
+        // Sirf agar cache bilkul empty ho tab clear karo
+        // set({ translationsCache: {} });  // ← YE LINE HATAO
 
-  try {
-    set({ isLoadingLanguages: true });
-    const response = await fetch("/api/languages/enabled");
-    if (!response.ok) throw new Error("Failed to fetch languages");
-    const data = await response.json();
+        try {
+          set({ isLoadingLanguages: true });
+          const response = await fetch("/api/languages/enabled");
+          if (!response.ok) throw new Error("Failed to fetch languages");
+          const data = await response.json();
 
-    const dynamicLanguages: Record<string, LanguageConfig> = {};
-    for (const lang of data) {
-      dynamicLanguages[lang.code] = {
-        name: lang.name,
-        nativeName: lang.nativeName || lang.name.substring(0, 2),
-        direction: lang.direction || "ltr",
-        flag: lang.icon || "",
-      };
-    }
+          const dynamicLanguages: Record<string, LanguageConfig> = {};
+          for (const lang of data) {
+            dynamicLanguages[lang.code] = {
+              name: lang.name,
+              nativeName: lang.nativeName || lang.name.substring(0, 2),
+              direction: lang.direction || "ltr",
+              flag: lang.icon || "",
+            };
+          }
 
-    set({ languages: dynamicLanguages, isLoadingLanguages: false });
+          set({ languages: dynamicLanguages, isLoadingLanguages: false });
 
-    const userSelected = get().userSelectedLanguage;
-    const currentLang = get().language;
-    const defaultLang = data.find((l: any) => l.isDefault);
-    const defaultLangCode = defaultLang?.code || "en";
+          const userSelected = get().userSelectedLanguage;
+          const currentLang = get().language;
+          const defaultLang = data.find((l: any) => l.isDefault);
+          const defaultLangCode = defaultLang?.code || "en";
 
-    let langToUse = currentLang;
+          let langToUse = currentLang;
 
-    if (!userSelected && defaultLangCode) {
-      langToUse = defaultLangCode;
-    } else if (!dynamicLanguages[currentLang]) {
-      langToUse = defaultLangCode;
-    }
+          if (!userSelected && defaultLangCode) {
+            langToUse = defaultLangCode;
+          } else if (!dynamicLanguages[currentLang]) {
+            langToUse = defaultLangCode;
+          }
 
-    if (langToUse !== currentLang) {
-      const newUserSelectedState = !dynamicLanguages[currentLang] ? false : userSelected;
-      get().setLanguage(langToUse, newUserSelectedState);
-    } else {
-      await get().loadTranslations(currentLang);
-    }
-  } catch (error) {
-    console.error("Failed to fetch languages, using static fallback:", error);
-    set({ languages: { ...staticLanguages }, isLoadingLanguages: false });
-    // Static fallback mein current language load karo
-    const currentLang = get().language;
-    const fallback = staticTranslations[currentLang] || staticTranslations.en;
-    set((state) => ({
-      translationsCache: { ...state.translationsCache, [currentLang]: fallback },
-    }));
-  }
-},
+          if (langToUse !== currentLang) {
+            const newUserSelectedState = !dynamicLanguages[currentLang]
+              ? false
+              : userSelected;
+            get().setLanguage(langToUse, newUserSelectedState);
+          } else {
+            await get().loadTranslations(currentLang);
+          }
+        } catch (error) {
+          console.error(
+            "Failed to fetch languages, using static fallback:",
+            error,
+          );
+          set({ languages: { ...staticLanguages }, isLoadingLanguages: false });
+          // Static fallback mein current language load karo
+          const currentLang = get().language;
+          const fallback =
+            staticTranslations[currentLang] || staticTranslations.en;
+          set((state) => ({
+            translationsCache: {
+              ...state.translationsCache,
+              [currentLang]: fallback,
+            },
+          }));
+        }
+      },
 
-     loadTranslations: async (code: string, forceRefresh = false) => {
-  const cache = get().translationsCache;
+      loadTranslations: async (code: string, forceRefresh = false) => {
+        const cache = get().translationsCache;
 
-  // Skip cache only if NOT forcing refresh
-  if (cache[code] && !forceRefresh) return cache[code];
+        // Skip cache only if NOT forcing refresh
+        if (cache[code] && !forceRefresh) return cache[code];
 
-  try {
-    const response = await fetch(`/api/languages/translations/${code}`);
-    if (!response.ok) throw new Error("Failed to fetch translations");
-    const raw = await response.json();
-    const translations = deepParseStrings(normalizeArrays(raw));
+        try {
+          const response = await fetch(`/api/languages/translations/${code}`);
+          if (!response.ok) throw new Error("Failed to fetch translations");
+          const raw = await response.json();
+          const translations = deepParseStrings(normalizeArrays(raw));
 
-    set((state) => ({
-      translationsCache: { ...state.translationsCache, [code]: translations },
-    }));
-    return translations;
-  } catch (error) {
-    console.error(`Failed to load translations for ${code}:`, error);
-    const fallback = staticTranslations[code] || staticTranslations.en;
-    set((state) => ({
-      translationsCache: { ...state.translationsCache, [code]: fallback },
-    }));
-    return fallback;
-  }
-},
+          set((state) => ({
+            translationsCache: {
+              ...state.translationsCache,
+              [code]: translations,
+            },
+          }));
+          return translations;
+        } catch (error) {
+          console.error(`Failed to load translations for ${code}:`, error);
+          const fallback = staticTranslations[code] || staticTranslations.en;
+          set((state) => ({
+            translationsCache: { ...state.translationsCache, [code]: fallback },
+          }));
+          return fallback;
+        }
+      },
 
-setLanguage: async (language: string, userSelected?: boolean) => {
-  const state = get();
+      setLanguage: async (language: string, userSelected?: boolean) => {
+        const state = get();
 
-  // Always force-fetch fresh translations on language change
-  const translations = await state.loadTranslations(language, true); // ← forceRefresh: true
+        // Always force-fetch fresh translations on language change
+        const translations = await state.loadTranslations(language);
 
-  if (userSelected !== undefined) {
-    set({ language, userSelectedLanguage: userSelected });
-  } else {
-    set({ language });
-  }
+        if (userSelected !== undefined) {
+          set({ language, userSelectedLanguage: userSelected });
+        } else {
+          set({ language });
+        }
 
-  const langConfig = state.languages[language];
-  if (langConfig) {
-    document.documentElement.dir = langConfig.direction;
-    document.documentElement.lang = language;
-  }
-},
+        const langConfig = state.languages[language];
+        if (langConfig) {
+          document.documentElement.dir = langConfig.direction;
+          document.documentElement.lang = language;
+        }
+      },
 
       // t: (path: string, variables?: Record<string, string | number>) => {
       //   const state = get();
@@ -246,98 +260,110 @@ setLanguage: async (language: string, userSelected?: boolean) => {
       //   return result;
       // },
 
+      t: (path: string, variables?: Record<string, string | number>) => {
+        const state = get();
 
-  t: (path: string, variables?: Record<string, string | number>) => {
-  const state = get();
+        // backend translations
+        const backendTranslations =
+          state.translationsCache[state.language] || {};
 
-  // backend translations
-  const backendTranslations =
-    state.translationsCache[state.language] || {};
+        // static fallback translations
+        const fallbackTranslations =
+          staticTranslations[state.language] || staticTranslations.en || {};
 
-  // static fallback translations
-  const fallbackTranslations =
-    staticTranslations[state.language] ||
-    staticTranslations.en ||
-    {};
+        const keys = path.split(".");
 
-  const keys = path.split(".");
+        const getNestedValue = (obj: any, keys: string[]) => {
+          let value = obj;
 
-  const getNestedValue = (obj: any, keys: string[]) => {
-    let value = obj;
+          for (const key of keys) {
+            value = value?.[key];
 
-    for (const key of keys) {
-      value = value?.[key];
+            if (value === undefined || value === null) {
+              return undefined;
+            }
+          }
 
-      if (value === undefined || value === null) {
-        return undefined;
-      }
-    }
+          return value;
+        };
 
-    return value;
-  };
+        // first try backend
+        let value = getNestedValue(backendTranslations, keys);
 
-  // first try backend
-  let value = getNestedValue(backendTranslations, keys);
+        // fallback to static json
+        if (value === undefined || value === null) {
+          value = getNestedValue(fallbackTranslations, keys);
+        }
 
-  // fallback to static json
-  if (value === undefined || value === null) {
-    value = getNestedValue(fallbackTranslations, keys);
-  }
+        // still missing
+        if (value === undefined || value === null) {
+          return path;
+        }
 
-  // still missing
-  if (value === undefined || value === null) {
-    return path;
-  }
+        // auto-parse JSON strings that are stringified arrays or objects
+        if (typeof value === "string") {
+          const trimmed = value.trim();
+          if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+            try {
+              value = JSON.parse(trimmed);
+            } catch {
+              // not valid JSON, keep as string
+            }
+          }
+        }
 
-  // auto-parse JSON strings that are stringified arrays or objects
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
-      try {
-        value = JSON.parse(trimmed);
-      } catch {
-        // not valid JSON, keep as string
-      }
-    }
-  }
+        // convert numeric-keyed objects back to arrays (DB deserialization safety)
+        if (
+          value !== null &&
+          typeof value === "object" &&
+          !Array.isArray(value) &&
+          Object.keys(value).length > 0 &&
+          Object.keys(value).every((k) => !isNaN(Number(k)))
+        ) {
+          value = Object.values(value);
+        }
 
-  // convert numeric-keyed objects back to arrays (DB deserialization safety)
-  if (
-    value !== null &&
-    typeof value === "object" &&
-    !Array.isArray(value) &&
-    Object.keys(value).length > 0 &&
-    Object.keys(value).every((k) => !isNaN(Number(k)))
-  ) {
-    value = Object.values(value);
-  }
+        // variable replacement (only for strings)
+        if (typeof value === "string" && variables) {
+          Object.keys(variables).forEach((key) => {
+            const regex = new RegExp(`{{${key}}}`, "g");
+            value = value.replace(regex, String(variables[key]));
+          });
+        }
 
-  // variable replacement (only for strings)
-  if (typeof value === "string" && variables) {
-    Object.keys(variables).forEach((key) => {
-      const regex = new RegExp(`{{${key}}}`, "g");
-      value = value.replace(regex, String(variables[key]));
-    });
-  }
-
-  return value;
-},
+        return value;
+      },
     }),
     {
-  name: "i18n-storage",
-  version: 2,
-  partialize: (state) => ({ 
-    language: state.language,
-    userSelectedLanguage: state.userSelectedLanguage,
-    translationsCache: state.translationsCache
-  }),
-}
-  )
+      name: "i18n-storage",
+      version: 2,
+      partialize: (state) => ({
+        language: state.language,
+        userSelectedLanguage: state.userSelectedLanguage,
+        translationsCache: state.translationsCache,
+      }),
+    },
+  ),
 );
 
 export function useTranslation() {
-  const { t, language, setLanguage, languages, fetchEnabledLanguages, isLoadingLanguages } = useI18n();
-  return { t, language, setLanguage, languages, fetchEnabledLanguages, isLoadingLanguages };
+  const {
+    t,
+    language,
+    setLanguage,
+    languages,
+    fetchEnabledLanguages,
+    isLoadingLanguages,
+  } = useI18n();
+  return {
+    t,
+    language,
+    setLanguage,
+    languages,
+    fetchEnabledLanguages,
+    isLoadingLanguages,
+  };
 }
 
 export type Language = string;
+  

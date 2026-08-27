@@ -136,20 +136,22 @@ const Header = () => {
     title: string;
   }) => (
     <div
-      className={`fixed left-0 right-0 w-screen bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-emerald-100/50 dark:border-emerald-800/30 z-50 transition-all duration-400 ease-out max-h-[80vh] overflow-y-auto ${isVisible
-        ? "opacity-100 translate-y-0 visible"
-        : "opacity-0 -translate-y-2 invisible pointer-events-none"
-        }`}
+      className={`fixed left-0 right-0 w-screen bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-emerald-100/50 dark:border-emerald-800/30 z-50 transition-all duration-400 ease-out max-h-[80vh] overflow-y-auto ${
+        isVisible
+          ? "opacity-100 translate-y-0 visible"
+          : "opacity-0 -translate-y-2 invisible pointer-events-none"
+      }`}
       style={{
         top: isScrolled ? "64px" : "72px",
       }}
     >
       <div className="max-w-7xl mx-auto p-5 sm:p-6 md:p-8">
         <div
-          className={`grid gap-4 md:gap-5 ${items.length === 4
-            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-            }`}
+          className={`grid gap-4 md:gap-5 ${
+            items.length === 4
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+              : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          }`}
         >
           {items.map((item, index) => (
             <Link
@@ -219,18 +221,27 @@ const Header = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ease-out ${isScrolled
-          ? "bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl shadow-lg shadow-black/[0.03] border-b border-gray-200/50 dark:border-gray-700/50"
-          : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-transparent"
-          }`}
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ease-out ${
+          isScrolled
+            ? "bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl shadow-lg shadow-black/[0.03] border-b border-gray-200/50 dark:border-gray-700/50"
+            : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-transparent"
+        }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            className={`flex justify-between items-center transition-all duration-500 ${isScrolled ? "h-16" : "h-[72px]"
-              }`}
+            className={`flex justify-between items-center transition-all duration-500 ${
+              isScrolled ? "h-16" : "h-[90px]"
+            }`}
           >
             <Link href="/" className="flex items-center space-x-2.5 group">
-              {brandSettings?.logo ? (
+              <img
+                src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/1784295536437-LOGO-TEXT.png"
+                alt={t("Landing.header.logoAlt")}
+                className="h-14 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+
+              {/* change after api integration */}
+              {/* {brandSettings?.logo ? (
                 <img
                   src={brandSettings?.logo}
                   alt={t("Landing.header.logoAlt")}
@@ -240,16 +251,17 @@ const Header = () => {
                 <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-xl p-2.5 shadow-lg shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
                   <MessageSquare className="h-6 w-6" />
                 </div>
-              )}
+              )} */}
             </Link>
 
             <nav className="hidden lg:flex items-center gap-1">
               <Link
                 href="/"
-                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${location === "/"
-                  ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
-                  : "text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                  }`}
+                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  location === "/"
+                    ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
+                    : "text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                }`}
               >
                 {t("Landing.header.Navlinks.0")}
               </Link>
@@ -260,18 +272,20 @@ const Header = () => {
                 onMouseLeave={() => setShowAboutMega(false)}
               >
                 <button
-                  className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer bg-transparent border-none ${showAboutMega
-                    ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
-                    : "text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                    }`}
+                  className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer bg-transparent border-none ${
+                    showAboutMega
+                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
+                      : "text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  }`}
                   aria-haspopup="true"
                   aria-expanded={showAboutMega}
                   type="button"
                 >
                   {t("Landing.header.Navlinks.1")}
                   <ChevronDown
-                    className={`w-3.5 h-3.5 ml-1 transition-transform duration-300 ${showAboutMega ? "rotate-180" : ""
-                      }`}
+                    className={`w-3.5 h-3.5 ml-1 transition-transform duration-300 ${
+                      showAboutMega ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
@@ -293,18 +307,20 @@ const Header = () => {
                 onMouseLeave={() => setShowResourcesMega(false)}
               >
                 <button
-                  className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer bg-transparent border-none ${showResourcesMega
-                    ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
-                    : "text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                    }`}
+                  className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer bg-transparent border-none ${
+                    showResourcesMega
+                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
+                      : "text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  }`}
                   aria-haspopup="true"
                   aria-expanded={showResourcesMega}
                   type="button"
                 >
                   {t("Landing.header.Navlinks.2")}
                   <ChevronDown
-                    className={`w-3.5 h-3.5 ml-1 transition-transform duration-300 ${showResourcesMega ? "rotate-180" : ""
-                      }`}
+                    className={`w-3.5 h-3.5 ml-1 transition-transform duration-300 ${
+                      showResourcesMega ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
@@ -357,7 +373,7 @@ const Header = () => {
                     >
                       <img
                         src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          username
+                          username,
                         )}`}
                         alt={t("Landing.header.ariaLabels.userAvatar")}
                         className="w-full h-full object-cover"
@@ -365,10 +381,11 @@ const Header = () => {
                     </button>
 
                     <div
-                      className={`absolute right-0 mt-2 w-56 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-gray-200/80 dark:border-gray-700/80 rounded-2xl shadow-xl shadow-black/[0.08] z-50 overflow-hidden transition-all duration-300 origin-top-right ${dropdownOpen
-                        ? "opacity-100 scale-100 visible"
-                        : "opacity-0 scale-95 invisible pointer-events-none"
-                        }`}
+                      className={`absolute right-0 mt-2 w-56 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-gray-200/80 dark:border-gray-700/80 rounded-2xl shadow-xl shadow-black/[0.08] z-50 overflow-hidden transition-all duration-300 origin-top-right ${
+                        dropdownOpen
+                          ? "opacity-100 scale-100 visible"
+                          : "opacity-0 scale-95 invisible pointer-events-none"
+                      }`}
                     >
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700/80 bg-gradient-to-r from-emerald-50/50 to-transparent dark:from-emerald-900/10">
                         <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
@@ -432,29 +449,31 @@ const Header = () => {
       </header>
 
       <div
-        className={`lg:hidden fixed inset-0 z-30 transition-all duration-500 ${isMenuOpen
-          ? "visible"
-          : "invisible pointer-events-none"
-          }`}
+        className={`lg:hidden fixed inset-0 z-30 transition-all duration-500 ${
+          isMenuOpen ? "visible" : "invisible pointer-events-none"
+        }`}
       >
         <div
-          className={`absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-opacity duration-500 ${isMenuOpen ? "opacity-100" : "opacity-0"
-            }`}
+          className={`absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-opacity duration-500 ${
+            isMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
           onClick={() => setIsMenuOpen(false)}
         />
 
         <div
-          className={`absolute top-0 right-0 w-full max-w-sm h-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-l border-gray-200/50 dark:border-gray-700/50 shadow-2xl transition-transform duration-500 ease-out overflow-y-auto ${isMenuOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`absolute top-0 right-0 w-full max-w-sm h-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-l border-gray-200/50 dark:border-gray-700/50 shadow-2xl transition-transform duration-500 ease-out overflow-y-auto ${
+            isMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
           style={{ paddingTop: isScrolled ? "64px" : "72px" }}
         >
           <div className="px-5 py-6 space-y-1">
             <Link
               href="/"
-              className={`block px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${location === "/"
-                ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
-                : "text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                }`}
+              className={`block px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                location === "/"
+                  ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
+                  : "text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               {t("Landing.header.Navlinks.0")}
@@ -468,16 +487,18 @@ const Header = () => {
               >
                 <span>{t("Landing.header.Navlinks.1")}</span>
                 <ChevronDown
-                  className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${showAboutMobile ? "rotate-180" : ""
-                    }`}
+                  className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
+                    showAboutMobile ? "rotate-180" : ""
+                  }`}
                 />
               </button>
 
               <div
-                className={`grid overflow-hidden transition-all duration-400 ease-in-out ${showAboutMobile
-                  ? "grid-rows-[1fr] opacity-100"
-                  : "grid-rows-[0fr] opacity-0"
-                  }`}
+                className={`grid overflow-hidden transition-all duration-400 ease-in-out ${
+                  showAboutMobile
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
+                }`}
               >
                 <div className="overflow-hidden">
                   <div className="space-y-0.5 pl-4 pr-2 pb-2">
@@ -507,16 +528,18 @@ const Header = () => {
               >
                 <span>{t("Landing.header.Navlinks.2")}</span>
                 <ChevronDown
-                  className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${showResourcesMobile ? "rotate-180" : ""
-                    }`}
+                  className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
+                    showResourcesMobile ? "rotate-180" : ""
+                  }`}
                 />
               </button>
 
               <div
-                className={`grid overflow-hidden transition-all duration-400 ease-in-out ${showResourcesMobile
-                  ? "grid-rows-[1fr] opacity-100"
-                  : "grid-rows-[0fr] opacity-0"
-                  }`}
+                className={`grid overflow-hidden transition-all duration-400 ease-in-out ${
+                  showResourcesMobile
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
+                }`}
               >
                 <div className="overflow-hidden">
                   <div className="space-y-0.5 pl-4 pr-2 pb-2">
@@ -595,7 +618,7 @@ const Header = () => {
                       <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-emerald-200/50 dark:border-emerald-800/50 shadow-sm">
                         <img
                           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            username
+                            username,
                           )}`}
                           alt={t("Landing.header.ariaLabels.userAvatar")}
                           className="w-full h-full object-cover"

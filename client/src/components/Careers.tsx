@@ -315,6 +315,7 @@ const Careers = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              {/* Why Work at Wazlly */}
               {t("careers.benefits.heading")}
             </h2>
             <p className="text-xl text-gray-600">

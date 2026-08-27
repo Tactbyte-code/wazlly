@@ -55,7 +55,7 @@ const AboutUs: React.FC = () => {
   }>;
 
   const journeyMilestones = t(
-    "aboutUs.story.journey.milestones"
+    "aboutUs.story.journey.milestones",
   ) as unknown as Array<{
     year: string;
     label: string;
@@ -70,13 +70,23 @@ const AboutUs: React.FC = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
         <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3" />
+
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center bg-white/15 backdrop-blur-md px-5 py-2.5 rounded-full text-sm font-medium mb-10 border border-white/20">
-            <MessageCircle className="w-4 h-4 mr-2" />
+          <div className="inline-flex items-center bg-white backdrop-blur-md px-2 py-1 rounded-full text-sm font-medium mb-10 border border-white/20">
+            <img
+              src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/1784295608994-Artboard+1.png"
+              alt="wazlly-logo"
+              className="h-12 object-contain transition-transform duration-300 group-hover:scale-105"
+            />
+            <span className="text-xl font-bold text-green-700">Wazlly</span>
+
+            {/* to be changed after api integration */}
+            {/* <MessageCircle className="w-4 h-4 mr-2" />
             {t("aboutUs.hero.badge", {
               appName,
-            })}
+            })} */}
           </div>
+
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 tracking-tight">
             {t("aboutUs.hero.title")}
             <span className="block mt-2 bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">
@@ -89,6 +99,7 @@ const AboutUs: React.FC = () => {
         </div>
       </section>
 
+      {/* mission */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -109,7 +120,7 @@ const AboutUs: React.FC = () => {
               </p>
               <p className="text-gray-600 mb-10 leading-relaxed text-lg">
                 {t("aboutUs.mission.description2", {
-                  appName,
+                  appName: "Wazlly",
                 })}
               </p>
               <div className="grid grid-cols-2 gap-5">
@@ -163,6 +174,7 @@ const AboutUs: React.FC = () => {
         </div>
       </section>
 
+      {/* story */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -224,12 +236,12 @@ const AboutUs: React.FC = () => {
               </h2>
               <p className="text-gray-600 mb-5 leading-relaxed text-lg">
                 {t("aboutUs.story.description1", {
-                  appName,
+                  appName: "Wazlly",
                 })}
               </p>
               <p className="text-gray-600 mb-5 leading-relaxed text-lg">
                 {t("aboutUs.story.description2", {
-                  appName,
+                  appName: "Wazlly",
                 })}
               </p>
               <p className="text-gray-600 mb-10 leading-relaxed text-lg">
@@ -325,7 +337,9 @@ const AboutUs: React.FC = () => {
                   key={index}
                   className="relative bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 group overflow-hidden"
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index]} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${gradients[index]} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                  />
                   <div
                     className={`bg-gradient-to-br ${gradients[index]} w-14 h-14 rounded-2xl flex items-center justify-center mb-5 shadow-lg`}
                   >

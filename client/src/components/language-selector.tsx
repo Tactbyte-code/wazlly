@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/select";
 
 export function LanguageSelector() {
-  const { language, setLanguage, languages, fetchEnabledLanguages } = useTranslation();
+  const { language, setLanguage, languages, fetchEnabledLanguages } =
+    useTranslation();
 
   useEffect(() => {
     fetchEnabledLanguages();
@@ -35,9 +36,15 @@ export function LanguageSelector() {
   const currentConfig = languages[language];
 
   return (
-    <Select value={language} onValueChange={(value: any) => setLanguage(value, true)}>
-      <SelectTrigger className="w-[110px]" data-testid="select-language">
-        <span className="flex items-center gap-1.5">
+    <Select
+      value={language}
+      onValueChange={(value: any) => setLanguage(value, true)}
+    >
+      <SelectTrigger
+        className="min-w-35 [&>svg]:ml-2"
+        data-testid="select-language"
+      >
+        <span className="!flex items-center gap-3">
           <span className="text-base leading-none">{currentConfig?.flag}</span>
           <span>{currentConfig?.nativeName}</span>
         </span>
@@ -49,7 +56,7 @@ export function LanguageSelector() {
             value={code}
             data-testid={`option-language-${code}`}
           >
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 cursor-pointer">
               <span className="text-base leading-none">{config.flag}</span>
               <span>{config.nativeName}</span>
             </span>

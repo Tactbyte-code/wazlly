@@ -25,10 +25,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import ResetPassword from "@/components/ResetPassword";
 import VerifyOtp from "@/components/VerifyOtp";
 import ForgotPasswordEmail from "@/components/ForgotPasswordEmail";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -59,7 +56,6 @@ import { AppSettings } from "@/types/types";
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
-
 });
 
 export default function LoginPage() {
@@ -70,7 +66,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [step, setStep] = useState<"login" | "forgot" | "verify" | "reset">(
-    "login"
+    "login",
   );
   const [email, setEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
@@ -172,7 +168,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 text-white w-full">
-          <div className="mb-10">
+          <div className="mb-5">
             {brandSettings?.logo ? (
               <img
                 src={brandSettings?.logo}
@@ -181,19 +177,24 @@ export default function LoginPage() {
               />
             ) : (
               <div className="flex items-center gap-3">
-                <div className="bg-green-500/10 backdrop-blur-sm rounded-xl p-2.5">
+                {/* <div className="bg-green-500/10 backdrop-blur-sm rounded-xl p-2.5">
                   <MessageSquare className="h-7 w-7 text-green-400" />
-                </div>
-                <span className="text-2xl font-bold">WhatsWay</span>
+                </div> */}
+                <img
+                  src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-light.png"
+                  alt="wazlly-logo"
+                  className="h-20 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+                />
               </div>
             )}
           </div>
 
-          <h2 className="text-3xl xl:text-4xl font-bold leading-tight mb-4">
+          <h2 className="text-2xl xl:text-3xl font-bold leading-tight mb-4">
             Power your business with WhatsApp Marketing
           </h2>
           <p className="text-slate-400 text-lg mb-10">
-            Reach your customers where they are. Drive engagement, boost sales, and build relationships.
+            Reach your customers where they are. Drive engagement, boost sales,
+            and build relationships.
           </p>
 
           <div className="space-y-5">
@@ -204,7 +205,9 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">{feature.title}</h3>
-                  <p className="text-slate-400 text-sm">{feature.description}</p>
+                  <p className="text-slate-400 text-sm">
+                    {feature.description}
+                  </p>
                 </div>
               </div>
             ))}
@@ -235,7 +238,8 @@ export default function LoginPage() {
               {step === "reset" && "Reset Password"}
             </h1>
             <p className="mt-1.5 text-gray-500">
-              {step === "login" && "Sign in to your WhatsApp marketing dashboard"}
+              {step === "login" &&
+                "Sign in to your WhatsApp marketing dashboard"}
               {step === "forgot" && "Enter your email to receive a reset code"}
               {step === "verify" && "Enter the code sent to your email"}
               {step === "reset" && "Create a new secure password"}
@@ -382,7 +386,6 @@ export default function LoginPage() {
                   </p>
                 </div>
               )}
-
             </CardContent>
           </Card>
 

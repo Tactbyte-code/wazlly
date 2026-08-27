@@ -40,16 +40,16 @@ const Footer: React.FC = () => {
   });
 
   const productLinks = t(
-    "Landing.footerSec.links.product"
+    "Landing.footerSec.links.product",
   ) as unknown as string[];
   const companyLinks = t(
-    "Landing.footerSec.links.company"
+    "Landing.footerSec.links.company",
   ) as unknown as string[];
   const supportLinks = t(
-    "Landing.footerSec.links.support"
+    "Landing.footerSec.links.support",
   ) as unknown as string[];
   const resourcesLinks = t(
-    "Landing.footerSec.links.resources"
+    "Landing.footerSec.links.resources",
   ) as unknown as string[];
   const legalLinks = t("Landing.footerSec.links.legal") as unknown as string[];
 
@@ -109,8 +109,25 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
           <div className="lg:col-span-4">
-            <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
-              {brandSettings?.logo2 && brandSettings.logo2 !== "/uploads/null" ? (
+            <Link
+              href="/"
+              className="flex items-center space-x-2 sm:space-x-3 gap-3"
+            >
+              <img
+                src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-light.png"
+                alt="wazlly-logo"
+                className="h-16 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+
+              <div className="w-[1px] self-stretch bg-white" />
+
+              <img
+                src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/meta.png"
+                alt="meta-verified-partner"
+                className="h-14 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+
+              {/* {brandSettings?.logo2 && brandSettings.logo2 !== "/uploads/null" ? (
                 <img
                   src={brandSettings.logo2}
                   alt="Logo"
@@ -128,11 +145,13 @@ const Footer: React.FC = () => {
                 <div className="bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 rounded-xl p-2.5">
                   <MessageSquare className="h-7 w-7" />
                 </div>
-              )}
+              )} */}
             </Link>
+
             <p className="text-gray-400 mt-5 mb-8 max-w-sm text-sm leading-relaxed">
               {t("Landing.footerSec.brandSection.description")}
             </p>
+
             <div className="flex space-x-3">
               <a
                 href="https://x.com"
@@ -166,37 +185,37 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-5">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-5">
               Product
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {links.product.map((link, index) => renderLink(link, index))}
             </ul>
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-5">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-5">
               Company
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {links.company.map((link, index) => renderLink(link, index))}
             </ul>
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-5">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-5">
               Resources
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {links.resources.map((link, index) => renderLink(link, index))}
             </ul>
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-5">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-5">
               Legal
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {links.legal.map((link, index) => renderLink(link, index))}
             </ul>
           </div>
@@ -206,11 +225,18 @@ const Footer: React.FC = () => {
       <div className="border-t border-gray-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            {/* <p className="text-xs text-slate-500 text-center py-4">
+              © 2025 Wazlly. All rights reserved.
+            </p> */}
+
+            {/* to be changed after api integration */}
             <p className="text-gray-500 text-xs">
               {t("Landing.footerSec.bottomBar.copyrightText", {
-                appName: brandSettings?.title ?? "",
+                appName: "Wazlly",
+                // appName: brandSettings?.title ?? "",
               })}
             </p>
+
             <div className="flex items-center space-x-6">
               <Link
                 to="/terms"
@@ -234,7 +260,6 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-
     </footer>
   );
 };

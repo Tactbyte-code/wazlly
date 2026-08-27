@@ -8,18 +8,19 @@
     "module": "ESNext",
     "strict": true,
     "target": "es2017",
-    "lib": ["esnext", "dom", "dom.iterable" , "es2017",],
+    "lib": ["esnext", "dom", "dom.iterable", "es2017"],
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {
       "@/*": ["./client/src/*"],
       "@shared/*": ["./shared/*"],
-      "@diploy/core": ["./packages/diploy-core/index.ts"]
+      "@diploy/core": ["./packages/diploy-core/index.ts"],
+      "server/*": ["./server/*"]
     }
   }
 }

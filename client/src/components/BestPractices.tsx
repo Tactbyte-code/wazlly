@@ -288,7 +288,7 @@ const BestPractices = () => {
           </h2>
           <p className="text-xl text-white/90 mb-8">
             {t("bestPractices.cta.subtitle", {
-              appName,
+              appName: "Wazlly",
             })}
           </p>
           <Link
