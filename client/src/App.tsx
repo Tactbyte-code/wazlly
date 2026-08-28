@@ -165,7 +165,10 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
 // with ROUTE_PERMISSIONS so we can resolve dynamic paths like
 // /analytics/campaign/:campaignId or /users/:id.
 const DYNAMIC_ROUTE_PATTERNS: Array<{ pattern: RegExp; key: string }> = [
-  { pattern: /^\/analytics\/campaign\/[^/]+$/, key: "/analytics/campaign/:campaignId" },
+  {
+    pattern: /^\/analytics\/campaign\/[^/]+$/,
+    key: "/analytics/campaign/:campaignId",
+  },
   { pattern: /^\/users\/[^/]+$/, key: "/users" },
 ];
 
@@ -225,7 +228,7 @@ function PermissionRoute({
     return perms.some(
       (perm) =>
         perm.startsWith(normalize(permission)) &&
-        (Array.isArray(user.permissions) ? true : user.permissions[perm])
+        (Array.isArray(user.permissions) ? true : user.permissions[perm]),
     );
   };
 
@@ -259,7 +262,12 @@ function ProtectedRoutes() {
   // unmapped routes redirect to /dashboard. Empty-string permissions mean
   // "authenticated-only" (allowed).
   useEffect(() => {
-    if (isAuthenticated && user && location !== "/" && location !== "/dashboard") {
+    if (
+      isAuthenticated &&
+      user &&
+      location !== "/" &&
+      location !== "/dashboard"
+    ) {
       const routeKey = resolveRouteKey(location);
       if (routeKey === undefined) {
         setLocation("/dashboard");
@@ -285,7 +293,7 @@ function ProtectedRoutes() {
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white z-[9999]">
-        <MinimalLoader onComplete={() => { }} duration={1500} color="green" />
+        <MinimalLoader onComplete={() => {}} duration={1500} color="green" />
       </div>
     );
   }
@@ -323,10 +331,16 @@ function ProtectedRoutes() {
             <PermissionRoute component={User} requiredRoles={["superadmin"]} />
           </Route>
           <Route path="/channels-management">
-            <PermissionRoute component={ChannelsManagement} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={ChannelsManagement}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/users/:id">
-            <PermissionRoute component={userDetails} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={userDetails}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/campaigns">
             <PermissionRoute
@@ -350,10 +364,16 @@ function ProtectedRoutes() {
             <PermissionRoute component={Plans} />
           </Route>
           <Route path="/gateway">
-            <PermissionRoute component={GatewaySettings} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={GatewaySettings}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/languages">
-            <PermissionRoute component={LanguageManagement} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={LanguageManagement}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/team">
             <PermissionRoute component={Team} requiredPermission="team:view" />
@@ -388,7 +408,7 @@ function ProtectedRoutes() {
           <Route path="/analytics/campaign/:campaignId">
             <PermissionRoute
               component={CampaignAnalytics}
-            // requiredPermission="settings:view"
+              // requiredPermission="settings:view"
             />
           </Route>
           <Route path="/account">
@@ -431,7 +451,10 @@ function ProtectedRoutes() {
             <PermissionRoute component={Segmentation} />
           </Route>
           <Route path="/message-logs">
-            <PermissionRoute component={SuperadminMessageLogs} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={SuperadminMessageLogs}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/health-monitor">
             <PermissionRoute component={HealthMonitor} />
@@ -440,13 +463,22 @@ function ProtectedRoutes() {
             <PermissionRoute component={Reports} />
           </Route>
           <Route path="/transactions-logs">
-            <PermissionRoute component={TransactionsPage} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={TransactionsPage}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/contacts-management">
-            <PermissionRoute component={ContactsManagements} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={ContactsManagements}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/support-tickets">
-            <PermissionRoute component={SupportTicketsNew} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={SupportTicketsNew}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/groups">
             <PermissionRoute component={GroupsUI} />
@@ -470,7 +502,10 @@ function ProtectedRoutes() {
             <PermissionRoute component={PaymentSuccessPage} />
           </Route>
           <Route path="/notifications">
-            <PermissionRoute component={Notifications} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={Notifications}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/user-notifications">
             <PermissionRoute component={UserNotifications} />
@@ -479,10 +514,16 @@ function ProtectedRoutes() {
             <PermissionRoute component={ChatHub} />
           </Route>
           <Route path="/master-subscriptions">
-            <PermissionRoute component={AllSubscriptionsPage} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={AllSubscriptionsPage}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route path="/app-update">
-            <PermissionRoute component={AppUpdate} requiredRoles={["superadmin"]} />
+            <PermissionRoute
+              component={AppUpdate}
+              requiredRoles={["superadmin"]}
+            />
           </Route>
           <Route component={NotFound} />
         </Switch>
@@ -507,7 +548,7 @@ function hasRoutePermission(permission: string, user: any) {
   return perms.some(
     (perm: string) =>
       perm.startsWith(normalize(permission)) &&
-      (Array.isArray(user.permissions) ? true : user.permissions[perm])
+      (Array.isArray(user.permissions) ? true : user.permissions[perm]),
   );
 }
 
@@ -528,7 +569,7 @@ export function usePermissions() {
     return perms.some(
       (perm) =>
         perm.startsWith(normalizedPermission) &&
-        (Array.isArray(user.permissions) ? true : user.permissions[perm])
+        (Array.isArray(user.permissions) ? true : user.permissions[perm]),
     );
   };
 

@@ -16,7 +16,12 @@
  */
 
 import { Request, Response } from "express";
-import { DiployError, asyncHandler as _dHandler, diployLogger, HTTP_STATUS } from "@diploy/core";
+import {
+  DiployError,
+  asyncHandler as _dHandler,
+  diployLogger,
+  HTTP_STATUS,
+} from "@diploy/core";
 import {
   createPanelConfig,
   getPanelConfigs,
@@ -41,7 +46,6 @@ export const panelConfigSchema = z.object({
   supportedLanguages: z.array(z.string()).default(["en"]),
   currency: z.string().min(1).default("INR"), // e.g. USD, INR
   country: z.string().length(2).default("IN"), // ISO2 country code
-
 });
 
 export const brandSettingsSchema = z.object({
@@ -60,22 +64,21 @@ export const brandSettingsSchema = z.object({
   lightModeColor: z.string().optional(),
 });
 
-interface ParsedPanelConfig
-  extends Partial<{
-    name: string;
-    description: string;
-    tagline: string;
-    defaultLanguage: string;
-    supportedLanguages: string[];
-    companyName: string;
-    companyWebsite: string;
-    supportEmail: string;
-    logo: string;
-    favicon: string;
-    supportEmail: string;
-    currency: string;
-    country: string;
-  }> {}
+interface ParsedPanelConfig extends Partial<{
+  name: string;
+  description: string;
+  tagline: string;
+  defaultLanguage: string;
+  supportedLanguages: string[];
+  companyName: string;
+  companyWebsite: string;
+  supportEmail: string;
+  logo: string;
+  favicon: string;
+  supportEmail: string;
+  currency: string;
+  country: string;
+}> {}
 
 const resolveAssetUrl = (value: string | null | undefined): string => {
   if (!value) return "";
@@ -86,7 +89,7 @@ const resolveAssetUrl = (value: string | null | undefined): string => {
 // Helper function to process base64 images
 const processBase64Image = async (
   base64Data: string,
-  type: "logo" | "favicon"
+  type: "logo" | "favicon",
 ): Promise<string | null> => {
   if (!base64Data || !base64Data.includes("base64,")) {
     return base64Data; // Return as-is if not base64
@@ -160,13 +163,13 @@ export const create = async (req: Request, res: Response) => {
     // ✅ Log the file type (Cloud / Local)
     if (logoFile)
       console.log(
-        `🖼️ Logo: ${logoFile.cloudUrl ? "Cloud" : "Local"} → ${logoPath}`
+        `🖼️ Logo: ${logoFile.cloudUrl ? "Cloud" : "Local"} → ${logoPath}`,
       );
     if (faviconFile)
       console.log(
         `🌐 Favicon: ${
           faviconFile.cloudUrl ? "Cloud" : "Local"
-        } → ${faviconPath}`
+        } → ${faviconPath}`,
       );
 
     const data = {
@@ -233,13 +236,13 @@ export const update = async (req: Request, res: Response) => {
       console.log(
         `🖼️ Updating logo: ${
           logoFile.cloudUrl ? "Cloud" : "Local"
-        } → ${logoPath}`
+        } → ${logoPath}`,
       );
     if (faviconFile)
       console.log(
         `🌐 Updating favicon: ${
           faviconFile.cloudUrl ? "Cloud" : "Local"
-        } → ${faviconPath}`
+        } → ${faviconPath}`,
       );
 
     const data: ParsedPanelConfig = {
@@ -278,7 +281,7 @@ export const getBrandSettings = async (_req: Request, res: Response) => {
         title: "Your App Name",
         tagline: "Building amazing experiences",
         logo: "",
-        logo2:"",
+        logo2: "",
         favicon: "",
         supportEmail: "",
         primaryColor: "",
@@ -353,7 +356,6 @@ export const createBrandSettings = async (req: Request, res: Response) => {
       logo2Path = await processBase64Image(parsed.logo2, "logo2");
     }
 
-
     // ✅ 3. Handle uploaded favicon
     if (files?.favicon?.[0]) {
       const faviconFile = files.favicon[0];
@@ -364,7 +366,7 @@ export const createBrandSettings = async (req: Request, res: Response) => {
           faviconFile.filename
         }`;
       console.log(
-        `🌐 Favicon (${isCloudFile ? "Cloud" : "Local"}): ${faviconPath}`
+        `🌐 Favicon (${isCloudFile ? "Cloud" : "Local"}): ${faviconPath}`,
       );
     } else if (parsed.favicon && parsed.favicon.includes("base64,")) {
       faviconPath =
@@ -393,7 +395,7 @@ export const createBrandSettings = async (req: Request, res: Response) => {
         fontFamily: parsed.fontFamily,
         buttonColor: parsed.buttonColor,
         lightModeColor: parsed.lightModeColor,
-      }
+      },
     };
 
     const config = await createPanelConfig(panelData);
@@ -438,7 +440,9 @@ export const updateBrandSettingsOld = async (req: Request, res: Response) => {
     // ✅ 1. Handle logo
     if (files?.logo?.[0]) {
       const logoFile = files.logo[0];
-      logoPath = logoFile.cloudUrl || `/uploads/${path.basename(path.dirname(logoFile.path))}/${logoFile.filename}`;
+      logoPath =
+        logoFile.cloudUrl ||
+        `/uploads/${path.basename(path.dirname(logoFile.path))}/${logoFile.filename}`;
       console.log(`🖼️ Updated Logo: ${logoPath}`);
     } else if (parsed.logo && parsed.logo.includes("base64,")) {
       logoPath = await processBase64Image(parsed.logo, "logo");
@@ -447,7 +451,9 @@ export const updateBrandSettingsOld = async (req: Request, res: Response) => {
     // ✅ 2. Handle favicon
     if (files?.favicon?.[0]) {
       const faviconFile = files.favicon[0];
-      faviconPath = faviconFile.cloudUrl || `/uploads/${path.basename(path.dirname(faviconFile.path))}/${faviconFile.filename}`;
+      faviconPath =
+        faviconFile.cloudUrl ||
+        `/uploads/${path.basename(path.dirname(faviconFile.path))}/${faviconFile.filename}`;
       console.log(`🌐 Updated Favicon: ${faviconPath}`);
     } else if (parsed.favicon && parsed.favicon.includes("base64,")) {
       faviconPath = await processBase64Image(parsed.favicon, "favicon");
@@ -484,8 +490,6 @@ export const updateBrandSettingsOld = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const updateBrandSettings = async (req: Request, res: Response) => {
   try {
     const parsed = brandSettingsSchema.partial().parse(req.body);
@@ -503,7 +507,9 @@ export const updateBrandSettings = async (req: Request, res: Response) => {
     // =============================
     if (files?.logo?.[0]) {
       const logoFile = files.logo[0];
-      logoPath = logoFile.cloudUrl || `/uploads/${path.basename(path.dirname(logoFile.path))}/${logoFile.filename}`;
+      logoPath =
+        logoFile.cloudUrl ||
+        `/uploads/${path.basename(path.dirname(logoFile.path))}/${logoFile.filename}`;
       console.log(`🖼️ Updated Logo: ${logoPath}`);
     } else if (parsed.logo && parsed.logo.includes("base64,")) {
       logoPath = await processBase64Image(parsed.logo, "logo");
@@ -514,7 +520,9 @@ export const updateBrandSettings = async (req: Request, res: Response) => {
     // =============================
     if (files?.logo2?.[0]) {
       const logo2File = files.logo2[0];
-      logo2Path = logo2File.cloudUrl || `/uploads/${path.basename(path.dirname(logo2File.path))}/${logo2File.filename}`;
+      logo2Path =
+        logo2File.cloudUrl ||
+        `/uploads/${path.basename(path.dirname(logo2File.path))}/${logo2File.filename}`;
       console.log(`🖼️ Updated Secondary Logo: ${logo2Path}`);
     } else if (parsed.logo2 && parsed.logo2.includes("base64,")) {
       logo2Path = await processBase64Image(parsed.logo2, "logo2");
@@ -525,7 +533,9 @@ export const updateBrandSettings = async (req: Request, res: Response) => {
     // =============================
     if (files?.favicon?.[0]) {
       const faviconFile = files.favicon[0];
-      faviconPath = faviconFile.cloudUrl || `/uploads/${path.basename(path.dirname(faviconFile.path))}/${faviconFile.filename}`;
+      faviconPath =
+        faviconFile.cloudUrl ||
+        `/uploads/${path.basename(path.dirname(faviconFile.path))}/${faviconFile.filename}`;
       console.log(`🌐 Updated Favicon: ${faviconPath}`);
     } else if (parsed.favicon && parsed.favicon.includes("base64,")) {
       faviconPath = await processBase64Image(parsed.favicon, "favicon");
@@ -548,12 +558,22 @@ export const updateBrandSettings = async (req: Request, res: Response) => {
       currency: parsed.currency,
       appearanceConfig: {
         ...currentAppearance,
-        ...(parsed.primaryColor !== undefined && { primaryColor: parsed.primaryColor }),
-        ...(parsed.backgroundColor !== undefined && { backgroundColor: parsed.backgroundColor }),
-        ...(parsed.fontFamily !== undefined && { fontFamily: parsed.fontFamily }),
-        ...(parsed.buttonColor !== undefined && { buttonColor: parsed.buttonColor }),
-        ...(parsed.lightModeColor !== undefined && { lightModeColor: parsed.lightModeColor }),
-      }
+        ...(parsed.primaryColor !== undefined && {
+          primaryColor: parsed.primaryColor,
+        }),
+        ...(parsed.backgroundColor !== undefined && {
+          backgroundColor: parsed.backgroundColor,
+        }),
+        ...(parsed.fontFamily !== undefined && {
+          fontFamily: parsed.fontFamily,
+        }),
+        ...(parsed.buttonColor !== undefined && {
+          buttonColor: parsed.buttonColor,
+        }),
+        ...(parsed.lightModeColor !== undefined && {
+          lightModeColor: parsed.lightModeColor,
+        }),
+      },
     };
 
     const config = await updateFirstPanelConfig(panelData);
@@ -580,11 +600,10 @@ export const updateBrandSettings = async (req: Request, res: Response) => {
 
     res.json(brandSettings);
   } catch (err: any) {
-     console.error("❌ FULL BRAND SETTINGS ERROR:", err);
-  console.error("❌ STACK:", err?.stack);
-  console.error("❌ CAUSE:", err?.cause);
+    console.error("❌ FULL BRAND SETTINGS ERROR:", err);
+    console.error("❌ STACK:", err?.stack);
+    console.error("❌ CAUSE:", err?.cause);
     console.error("❌ Update Brand Settings Error:", err);
     res.status(400).json({ error: err.errors || err.message });
   }
 };
-

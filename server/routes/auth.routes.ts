@@ -24,11 +24,10 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
 import { resolveUserPermissions } from "server/utils/role-permissions";
-import country from "../config/country.json"
-import { sendOTPEmail } from "../services/email.service"
+import country from "../config/country.json";
+import { sendOTPEmail } from "../services/email.service";
 import { otpVerifications } from "@shared/schema";
 import { createUser } from "../controllers/user.controller";
-
 
 const router = Router();
 
@@ -42,7 +41,6 @@ router.post("/signup", createUser);
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
-
 });
 
 // Login endpoint
@@ -73,18 +71,24 @@ router.post("/login", validateRequest(loginSchema), async (req, res) => {
 
     // Check if user is active
     if ((user.status || "").trim().toLowerCase() !== "active") {
-      return res.status(403).json({ error: "Account is inactive. Please contact administrator." });
+      return res
+        .status(403)
+        .json({ error: "Account is inactive. Please contact administrator." });
     }
 
     // Check if email is verified
     if (user.isEmailVerified === false) {
-      return res.status(403).json({ error: "Email not verified. Please verify your email first." });
+      return res
+        .status(403)
+        .json({ error: "Email not verified. Please verify your email first." });
     }
 
     // Ensure password field exists
     if (!user.password) {
       console.error("User has no password in DB:", user.id);
-      return res.status(500).json({ error: "User record is invalid. Contact support." });
+      return res
+        .status(500)
+        .json({ error: "User record is invalid. Contact support." });
     }
 
     // Verify password
@@ -147,13 +151,11 @@ router.post("/login", validateRequest(loginSchema), async (req, res) => {
     });
   } catch (error) {
     console.log("Error during login:", error);
-    res.status(500).json({ error: "Login failed", message: (error as Error).message });
+    res
+      .status(500)
+      .json({ error: "Login failed", message: (error as Error).message });
   }
 });
-
-
-
-
 
 // Logout endpoint
 router.post("/logout", (req, res) => {
@@ -214,13 +216,9 @@ router.get("/check", (req, res) => {
   res.json({ authenticated: !!user, user });
 });
 
-
 router.get("/country-data", (req, res) => {
   res.json(country);
 });
-
-
-
 
 // forgot password
 
@@ -252,8 +250,8 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
       .where(
         and(
           eq(otpVerifications.userId, userId),
-          sql`${otpVerifications.createdAt} > NOW() - INTERVAL '5 minutes'`
-        )
+          sql`${otpVerifications.createdAt} > NOW() - INTERVAL '5 minutes'`,
+        ),
       );
 
     if (recentOTPs.length >= 3) {
@@ -288,19 +286,20 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error("Forgot password error:", error);
-    res.status(500).json({ error: error.message || "Failed to process request" });
+    res
+      .status(500)
+      .json({ error: error.message || "Failed to process request" });
   }
 });
-
-
-
 
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
     if (!email || !newPassword) {
-      return res.status(400).json({ error: "Email and new password are required" });
+      return res
+        .status(400)
+        .json({ error: "Email and new password are required" });
     }
 
     // Find user
@@ -322,7 +321,7 @@ router.post("/reset-password", async (req, res) => {
       .from(otpVerifications)
       .where(
         eq(otpVerifications.userId, userId),
-        eq(otpVerifications.isUsed, false)
+        eq(otpVerifications.isUsed, false),
       )
       .limit(1);
 
@@ -347,12 +346,11 @@ router.post("/reset-password", async (req, res) => {
     res.json({ success: true, message: "Password updated successfully" });
   } catch (error: any) {
     console.error("Reset password error:", error);
-    res.status(500).json({ error: error.message || "Failed to reset password" });
+    res
+      .status(500)
+      .json({ error: error.message || "Failed to reset password" });
   }
 });
-
-
-
 
 router.post("/verify-otp", async (req, res) => {
   try {
@@ -388,8 +386,7 @@ router.post("/verify-otp", async (req, res) => {
           eq(otpVerifications.otpCode, otpCode.toString()),
           eq(otpVerifications.isUsed, false),
           // sql`${otpVerifications.expiresAt} > timezone('UTC', now())`
-
-        )
+        ),
       )
       .limit(1);
 
@@ -412,17 +409,17 @@ router.post("/verify-otp", async (req, res) => {
   }
 });
 
-
-setInterval(async () => {
-  try {
-    await db.delete(otpVerifications).where(
-      sql`${otpVerifications.expiresAt} < timezone('UTC', now())`
-    );
-  } catch (error) {
-    console.error('[OTP Cleanup] Error:', error);
-  }
-}, 5 * 60 * 1000);
-
-
+setInterval(
+  async () => {
+    try {
+      await db
+        .delete(otpVerifications)
+        .where(sql`${otpVerifications.expiresAt} < timezone('UTC', now())`);
+    } catch (error) {
+      console.error("[OTP Cleanup] Error:", error);
+    }
+  },
+  5 * 60 * 1000,
+);
 
 export default router;

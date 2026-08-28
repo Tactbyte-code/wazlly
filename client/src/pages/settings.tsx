@@ -42,7 +42,6 @@ import { GeneralSettings } from "@/components/settings/GeneralSettings";
 import StorageSettings from "@/components/settings/StorageSettings";
 import AISettings from "@/components/settings/AISettings";
 import { useAuth } from "@/contexts/auth-context";
-
 import { useTranslation } from "@/lib/i18n";
 import SMTPSettings from "@/components/settings/SmtpSettings";
 import { EmbeddedSignupSettings } from "@/components/settings/EmbeddedSignupSettings";
@@ -90,7 +89,9 @@ export default function Settings() {
       origPushState(...args);
       readTab();
     };
-    history.replaceState = (...args: Parameters<typeof history.replaceState>) => {
+    history.replaceState = (
+      ...args: Parameters<typeof history.replaceState>
+    ) => {
       origReplaceState(...args);
       readTab();
     };
@@ -116,10 +117,13 @@ export default function Settings() {
         subtitle={t("settings.subTitle")}
       />
 
+      {/* version */}
       {user?.role === "superadmin" && versionData?.version && (
         <div className="mx-6 mt-4 mb-0">
           <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-700">
-            <span className="font-medium">Whatsway Version {versionData.version}</span>
+            <span className="font-medium">
+              Wazlly Version {versionData.version}
+            </span>
           </div>
         </div>
       )}
@@ -134,12 +138,18 @@ export default function Settings() {
             <TabsList className="inline-flex w-auto min-w-full gap-1 p-1 h-auto flex-nowrap">
               {user?.role === "superadmin" && (
                 <>
-                  <TabsTrigger value="general_setting" className={tabTriggerClass}>
+                  <TabsTrigger
+                    value="general_setting"
+                    className={tabTriggerClass}
+                  >
                     <SettingsIcon className="w-4 h-4 shrink-0" />
                     <span>{t("settings.general_setting.tabName")}</span>
                   </TabsTrigger>
 
-                  <TabsTrigger value="storage_setting" className={tabTriggerClass}>
+                  <TabsTrigger
+                    value="storage_setting"
+                    className={tabTriggerClass}
+                  >
                     <Database className="w-4 h-4 shrink-0" />
                     <span>{t("settings.storage_setting.tabName")}</span>
                   </TabsTrigger>
@@ -154,12 +164,18 @@ export default function Settings() {
                     <span>{t("settings.webhook_setting.tabName")}</span>
                   </TabsTrigger>
 
-                  <TabsTrigger value="embedded_signup" className={tabTriggerClass}>
+                  <TabsTrigger
+                    value="embedded_signup"
+                    className={tabTriggerClass}
+                  >
                     <Smartphone className="w-4 h-4 shrink-0" />
                     <span>{t("settings.tabs.waOnboarding")}</span>
                   </TabsTrigger>
 
-                  <TabsTrigger value="notification_templates" className={tabTriggerClass}>
+                  <TabsTrigger
+                    value="notification_templates"
+                    className={tabTriggerClass}
+                  >
                     <Bell className="w-4 h-4 shrink-0" />
                     <span>{t("settings.tabs.notifications")}</span>
                   </TabsTrigger>
@@ -208,7 +224,10 @@ export default function Settings() {
                     <span>{t("settings.tabs.team")}</span>
                   </TabsTrigger>
 
-                  <TabsTrigger value="notification_prefs" className={tabTriggerClass}>
+                  <TabsTrigger
+                    value="notification_prefs"
+                    className={tabTriggerClass}
+                  >
                     <Bell className="w-4 h-4 shrink-0" />
                     <span>{t("settings.tabs.notifications")}</span>
                   </TabsTrigger>

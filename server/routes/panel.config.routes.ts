@@ -22,12 +22,11 @@
 // import { requireAuth, requirePermission } from "../middlewares/auth.middleware";
 // import { PERMISSIONS } from "@shared/schema";
 
-
 // export function registerAnalyticsRoutes(app: Express) {
 //   // Legacy analytics endpoint for backward compatibility
 //   app.get("/api/analytics",requireAuth,
 //   requirePermission(PERMISSIONS.ANALYTICS_VIEW), dashboardController.getAnalytics);
-  
+
 //   // New comprehensive analytics endpoints
 //   app.get("/api/analytics/messages", analyticsController.getMessageAnalytics);
 //   app.get("/api/analytics/campaigns", analyticsController.getCampaignAnalytics);
@@ -36,13 +35,18 @@
 //   requirePermission(PERMISSIONS.ANALYTICS_EXPORT), analyticsController.exportAnalytics);
 // }
 
-
 import type { Express } from "express";
 import { diployLogger, HTTP_STATUS, DIPLOY_BRAND } from "@diploy/core";
 import * as panelController from "../controllers/panel.config.controller";
-import { handleDigitalOceanUpload, upload } from "../middlewares/upload.middleware";
+import {
+  handleDigitalOceanUpload,
+  upload,
+} from "../middlewares/upload.middleware";
 import { requireAuth, requireRole } from "../middlewares/auth.middleware";
-import { getFirstPanelConfig, updateFirstPanelConfig } from "../services/panel.config";
+import {
+  getFirstPanelConfig,
+  updateFirstPanelConfig,
+} from "../services/panel.config";
 
 export function registerPanelConfigRoutes(app: Express) {
   app.get("/api/platform-settings", async (_req, res) => {
@@ -56,41 +60,91 @@ export function registerPanelConfigRoutes(app: Express) {
     }
   });
 
-  app.put("/api/platform-settings", requireAuth, requireRole("superadmin"), async (req, res) => {
-    try {
-      const { embeddedSignupEnabled } = req.body;
-      const config = await updateFirstPanelConfig({
-        embeddedSignupEnabled: !!embeddedSignupEnabled,
-      });
-      res.json({
-        embeddedSignupEnabled: config?.embeddedSignupEnabled ?? true,
-      });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
+  app.put(
+    "/api/platform-settings",
+    requireAuth,
+    requireRole("superadmin"),
+    async (req, res) => {
+      try {
+        const { embeddedSignupEnabled } = req.body;
+        const config = await updateFirstPanelConfig({
+          embeddedSignupEnabled: !!embeddedSignupEnabled,
+        });
+        res.json({
+          embeddedSignupEnabled: config?.embeddedSignupEnabled ?? true,
+        });
+      } catch (err: any) {
+        res.status(500).json({ error: err.message });
+      }
+    },
+  );
   app.post(
     "/api/panel",
-    requireAuth, requireRole("superadmin"),
-    upload.fields([{ name: "logo", maxCount: 1 }, { name: "favicon", maxCount: 1 }]),
+    requireAuth,
+    requireRole("superadmin"),
+    upload.fields([
+      { name: "logo", maxCount: 1 },
+      { name: "favicon", maxCount: 1 },
+    ]),
     handleDigitalOceanUpload,
-    panelController.create
+    panelController.create,
   );
 
-  app.get("/api/panel", requireAuth, requireRole("superadmin"), panelController.getAll);
-  app.get("/api/panel/:id", requireAuth, requireRole("superadmin"), panelController.getOne);
+  app.get(
+    "/api/panel",
+    requireAuth,
+    requireRole("superadmin"),
+    panelController.getAll,
+  );
+  app.get(
+    "/api/panel/:id",
+    requireAuth,
+    requireRole("superadmin"),
+    panelController.getOne,
+  );
 
   app.put(
     "/api/panel/:id",
-    requireAuth, requireRole("superadmin"),
-    upload.fields([{ name: "logo", maxCount: 1 }, { name: "favicon", maxCount: 1 }]),
+    requireAuth,
+    requireRole("superadmin"),
+    upload.fields([
+      { name: "logo", maxCount: 1 },
+      { name: "favicon", maxCount: 1 },
+    ]),
     handleDigitalOceanUpload,
-    panelController.update
+    panelController.update,
   );
 
-  app.delete("/api/panel/:id", requireAuth, requireRole("superadmin"), panelController.remove);
+  app.delete(
+    "/api/panel/:id",
+    requireAuth,
+    requireRole("superadmin"),
+    panelController.remove,
+  );
 
   app.get("/api/brand-settings", panelController.getBrandSettings);
-  app.put("/api/brand-settings", requireAuth, requireRole("superadmin"), upload.fields([{ name: "logo", maxCount: 1 },{name: "logo2", maxCount:1}, { name: "favicon", maxCount: 1 }]),handleDigitalOceanUpload, panelController.updateBrandSettings);
-  app.post("/api/brand-settings", requireAuth, requireRole("superadmin"), upload.fields([{ name: "logo", maxCount: 1 }, {name: "logo2", maxCount:1}, { name: "favicon", maxCount: 1 }]),handleDigitalOceanUpload, panelController.createBrandSettings);
+  app.put(
+    "/api/brand-settings",
+    requireAuth,
+    requireRole("superadmin"),
+    upload.fields([
+      { name: "logo", maxCount: 1 },
+      { name: "logo2", maxCount: 1 },
+      { name: "favicon", maxCount: 1 },
+    ]),
+    handleDigitalOceanUpload,
+    panelController.updateBrandSettings,
+  );
+  app.post(
+    "/api/brand-settings",
+    requireAuth,
+    requireRole("superadmin"),
+    upload.fields([
+      { name: "logo", maxCount: 1 },
+      { name: "logo2", maxCount: 1 },
+      { name: "favicon", maxCount: 1 },
+    ]),
+    handleDigitalOceanUpload,
+    panelController.createBrandSettings,
+  );
 }

@@ -48,19 +48,17 @@ import { setMeta } from "@/hooks/setMeta";
 import { useAuth } from "@/contexts/auth-context";
 import { useTranslation } from "@/lib/i18n";
 
-
 // Types
 interface BrandSettings {
   title?: string;
   tagline?: string;
   logo?: string;
-  logo2?: string; 
+  logo2?: string;
   favicon?: string;
   updatedAt?: string;
   country?: string;
   currency?: string;
   supportEmail?: string;
-
 }
 
 export function GeneralSettings(): JSX.Element {
@@ -170,7 +168,7 @@ export function GeneralSettings(): JSX.Element {
       const date = new Date(dateString);
       const now = new Date();
       const diffInMinutes = Math.floor(
-        (now.getTime() - date.getTime()) / (1000 * 60)
+        (now.getTime() - date.getTime()) / (1000 * 60),
       );
 
       if (diffInMinutes < 1) {
@@ -300,7 +298,7 @@ export function GeneralSettings(): JSX.Element {
                 <div
                   className="mt-2 sm:mt-0 flex items-center text-sm text-gray-500"
                   aria-label={`${t(
-                    "settings.general_setting.lastUpdated"
+                    "settings.general_setting.lastUpdated",
                   )} ${formatLastUpdated(displayData.updatedAt)}`}
                 >
                   <Clock className="w-4 h-4 mr-1" aria-hidden="true" />
@@ -394,12 +392,13 @@ export function GeneralSettings(): JSX.Element {
                 </div>
               </div>
 
-
               {/* Logo 2 */}
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Image className="w-4 h-4 text-purple-500" />
-                  <Label className="font-medium">{t("settings.general_setting.logo2")}</Label>
+                  <Label className="font-medium">
+                    {t("settings.general_setting.logo2")}
+                  </Label>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg border">
                   {displayData.logo2 ? (
@@ -424,7 +423,9 @@ export function GeneralSettings(): JSX.Element {
                   ) : (
                     <div className="text-center py-4">
                       <Image className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-500">{t("settings.general_setting.logo2Missing")}</p>
+                      <p className="text-sm text-gray-500">
+                        {t("settings.general_setting.logo2Missing")}
+                      </p>
                       <p className="text-xs text-gray-400 mt-1">
                         {t("settings.general_setting.logo2MissingHelper")}
                       </p>
@@ -432,7 +433,6 @@ export function GeneralSettings(): JSX.Element {
                   )}
                 </div>
               </div>
-
 
               {/* Favicon */}
               <div className="space-y-3">
@@ -549,21 +549,23 @@ export function GeneralSettings(): JSX.Element {
                       displayData.title && displayData.logo
                         ? "bg-green-500"
                         : displayData.title
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
                     }`}
                   />
                   <span className="text-gray-600">
                     {t("settings.general_setting.configurationStatusLabel")}{" "}
                     {displayData.title && displayData.logo
                       ? t(
-                          "settings.general_setting.configurationStatusComplete"
+                          "settings.general_setting.configurationStatusComplete",
                         )
                       : displayData.title
-                      ? t("settings.general_setting.configurationStatusPartial")
-                      : t(
-                          "settings.general_setting.configurationStatusIncomplete"
-                        )}
+                        ? t(
+                            "settings.general_setting.configurationStatusPartial",
+                          )
+                        : t(
+                            "settings.general_setting.configurationStatusIncomplete",
+                          )}
                   </span>
                 </div>
                 {displayData.updatedAt && !isUsingStaticData && (
@@ -604,15 +606,15 @@ export function GeneralSettings(): JSX.Element {
               )}
 
               {displayData.logo2 && (
-  <img
-    src={displayData.logo2}
-    alt={t("settings.general_setting.logo2Alt")}
-    className="w-16 h-16 object-contain"
-    onError={(e) => {
-      e.currentTarget.style.display = "none";
-    }}
-  />
-)}
+                <img
+                  src={displayData.logo2}
+                  alt={t("settings.general_setting.logo2Alt")}
+                  className="w-16 h-16 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              )}
 
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">

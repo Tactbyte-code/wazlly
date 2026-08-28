@@ -19,11 +19,16 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, User, MessageSquare } from "lucide-react";
 import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  User,
+  MessageSquare,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { AppSettings } from "@/types/types";
 
 const Signup: React.FC = () => {
@@ -88,55 +93,54 @@ const Signup: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!validateForm()) return;
+    e.preventDefault();
+    if (!validateForm()) return;
 
-  setIsLoading(true);
-  setErrors({});
+    setIsLoading(true);
+    setErrors({});
 
-  try {
-    const res = await apiRequest("POST", "/api/auth/signup", {
-      username: formData.username,
-      password: formData.password,
-      email: formData.email,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      avatar: "",
-    });
+    try {
+      const res = await apiRequest("POST", "/api/auth/signup", {
+        username: formData.username,
+        password: formData.password,
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        avatar: "",
+      });
 
-    const data = await res.json();
-    console.log("User created:", data);
+      const data = await res.json();
+      console.log("User created from sign up: ", data);
 
-    if (data.success) {
-      setLocation(`/verify-email?email=${encodeURIComponent(formData.email)}`);
-      return;
-    }
-
-    setErrors({ general: data.message });
-
-  } catch (error: any) {
-    console.error("Signup error:", error);
-
-    let message = "";
-
-    if (error?.message) {
-      try {
-        const jsonPart = error.message.replace(/^\d+:\s*/, "");
-        const parsed = JSON.parse(jsonPart);
-        message = parsed.message || "";
-      } catch {
-        message = error.message || "";
+      if (data.success) {
+        setLocation(
+          `/verify-email?email=${encodeURIComponent(formData.email)}`,
+        );
+        return;
       }
+
+      setErrors({ general: data.message });
+    } catch (error: any) {
+      console.error("Signup error:", error);
+
+      let message = "";
+
+      if (error?.message) {
+        try {
+          const jsonPart = error.message.replace(/^\d+:\s*/, "");
+          const parsed = JSON.parse(jsonPart);
+          message = parsed.message || "";
+        } catch {
+          message = error.message || "";
+        }
+      }
+
+      setErrors({ general: message });
+    } finally {
+      setIsLoading(false);
     }
-
-    setErrors({ general: message });
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -203,7 +207,9 @@ const Signup: React.FC = () => {
                     />
                   </div>
                   {errors.username && (
-                    <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.username}
+                    </p>
                   )}
                 </div>
 
@@ -220,7 +226,9 @@ const Signup: React.FC = () => {
                         value={formData.firstName}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-4 py-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                          errors.firstName ? "border-red-300" : "border-gray-300"
+                          errors.firstName
+                            ? "border-red-300"
+                            : "border-gray-300"
                         }`}
                         placeholder="John"
                         required
@@ -312,7 +320,9 @@ const Signup: React.FC = () => {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.password}
+                    </p>
                   )}
                 </div>
 
@@ -337,7 +347,9 @@ const Signup: React.FC = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       {showConfirmPassword ? (
