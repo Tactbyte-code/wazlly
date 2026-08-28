@@ -159,7 +159,12 @@ const Signup: React.FC = () => {
         <div className="max-w-md w-full space-y-8 mt-[50px]">
           <div className="text-center">
             <div className="flex justify-center mb-4">
-              {brandSettings?.logo ? (
+              <img
+                src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-bg.png"
+                alt="wazlly-logo"
+                className="h-20 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+              {/* {brandSettings?.logo ? (
                 <img
                   src={brandSettings?.logo}
                   alt="Logo"
@@ -169,7 +174,7 @@ const Signup: React.FC = () => {
                 <div className="bg-green-800 text-primary-foreground rounded-full p-3">
                   <MessageSquare className="h-8 w-8" />
                 </div>
-              )}
+              )} */}
             </div>
             <h1 className="text-3xl font-bold text-gray-900">
               Create your account

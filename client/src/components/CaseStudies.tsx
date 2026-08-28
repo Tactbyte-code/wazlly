@@ -178,7 +178,8 @@ const CaseStudies = () => {
             </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t("caseStudies.hero.subtitle")}
+            {/* {t("caseStudies.hero.subtitle")} */}
+            Discover how businesses across industries are achieving remarkable results with Wazlly WhatsApp marketing platform.
           </p>
         </div>
       </section>

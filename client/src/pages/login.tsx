@@ -169,7 +169,12 @@ export default function LoginPage() {
 
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 text-white w-full">
           <div className="mb-5">
-            {brandSettings?.logo ? (
+            <img
+              src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-light.png"
+              alt="wazlly-logo"
+              className="h-20 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+            />
+            {/* {brandSettings?.logo ? (
               <img
                 src={brandSettings?.logo}
                 alt="Logo"
@@ -177,16 +182,14 @@ export default function LoginPage() {
               />
             ) : (
               <div className="flex items-center gap-3">
-                {/* <div className="bg-green-500/10 backdrop-blur-sm rounded-xl p-2.5">
-                  <MessageSquare className="h-7 w-7 text-green-400" />
-                </div> */}
+                
                 <img
                   src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-light.png"
                   alt="wazlly-logo"
                   className="h-20 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-            )}
+            )} */}
           </div>
 
           <h2 className="text-2xl xl:text-3xl font-bold leading-tight mb-4">
