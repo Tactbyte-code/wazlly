@@ -72,6 +72,8 @@ const Header = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  console.log("brand settings: ", brandSettings);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -234,24 +236,26 @@ const Header = () => {
             }`}
           >
             <Link href="/" className="flex items-center space-x-2.5 group">
-              <img
+              {/* <img
                 src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/1784295536437-LOGO-TEXT.png"
                 alt={t("Landing.header.logoAlt")}
                 className="h-14 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
-              />
+              /> */}
 
               {/* change after api integration */}
-              {/* {brandSettings?.logo ? (
+              {brandSettings?.logo ? (
                 <img
                   src={brandSettings?.logo}
                   alt={t("Landing.header.logoAlt")}
-                  className="h-10 object-contain transition-transform duration-300 group-hover:scale-105"
+                  className="h-16 object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               ) : (
-                <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-xl p-2.5 shadow-lg shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
-                  <MessageSquare className="h-6 w-6" />
-                </div>
-              )} */}
+                <img
+                  src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/1784295536437-LOGO-TEXT.png"
+                  alt={t("Landing.header.logoAlt")}
+                  className="h-14 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
             </Link>
 
             <nav className="hidden lg:flex items-center gap-1">

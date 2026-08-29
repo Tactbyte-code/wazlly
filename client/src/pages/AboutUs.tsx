@@ -72,13 +72,27 @@ const AboutUs: React.FC = () => {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3" />
 
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center bg-white backdrop-blur-md px-2 py-1 rounded-full text-sm font-medium mb-10 border border-white/20">
-            <img
+          <div className="inline-flex items-center bg-white backdrop-blur-md px-3 py-3 rounded-full text-sm font-medium mb-10 border border-white/20">
+            {brandSettings?.logo ? (
+              <img
+                src={brandSettings?.logo}
+                alt={t("Landing.header.logoAlt")}
+                className="h-10 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+            ) : (
+              <img
+                src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/1784295536437-LOGO-TEXT.png"
+                alt={t("Landing.header.logoAlt")}
+                className="h-10 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+            )}
+
+            {/* <img
               src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/1784295608994-Artboard+1.png"
               alt="wazlly-logo"
               className="h-12 object-contain transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="text-xl font-bold text-green-700">Wazlly</span>
+            <span className="text-xl font-bold text-green-700">Wazlly</span> */}
 
             {/* to be changed after api integration */}
             {/* <MessageCircle className="w-4 h-4 mr-2" />

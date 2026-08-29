@@ -665,22 +665,24 @@ export default function Sidebar() {
               href="/dashboard"
               className="flex items-center flex-col space-x-2 sm:space-x-3"
             >
-              <img
+              {/* <img
                 src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-bg.png"
                 alt="wazlly-logo"
                 className="h-16 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
-              />
-              {/* {brandSettings?.logo ? (
+              /> */}
+              {brandSettings?.logo ? (
                 <img
                   src={brandSettings?.logo}
                   alt="Logo"
-                  className=" h-10 object-contain"
+                  className="h-16 w-50 object-contain"
                 />
               ) : (
-                <div className="bg-primary text-primary-foreground rounded-full p-3">
-                  <MessageSquare className="h-8 w-8" />
-                </div>
-              )} */}
+                <img
+                  src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-bg.png"
+                  alt="wazlly-logo"
+                  className="h-16 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
               {/* <span className=" text-[10px] sm:text-xs pl-8">
                 {brandSettings?.tagline}
               </span> */}

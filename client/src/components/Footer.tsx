@@ -113,39 +113,28 @@ const Footer: React.FC = () => {
               href="/"
               className="flex items-center space-x-2 sm:space-x-3 gap-3"
             >
-              <img
-                src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-light.png"
-                alt="wazlly-logo"
-                className="h-16 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
-              />
+              {brandSettings?.logo2 ? (
+                <img
+                  src={brandSettings.logo2}
+                  alt="Logo"
+                  className="h-14 object-contain"
+                  style={{ filter: "brightness(0) invert(1)" }}
+                />
+              ) : (
+                <img
+                  src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/full-logo-light.png"
+                  alt={t("Landing.header.logoAlt")}
+                  className="h-14 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
 
-              <div className="w-[1px] self-stretch bg-white" />
+              <div className="h-12 w-px bg-white/60" />
 
               <img
                 src="https://wazlly.s3.ap-south-2.amazonaws.com/public/uploads/26acae76-1f16-4744-a70a-389d7d615eeb/meta.png"
                 alt="meta-verified-partner"
                 className="h-14 w-50 object-contain transition-transform duration-300 group-hover:scale-105"
               />
-
-              {/* {brandSettings?.logo2 && brandSettings.logo2 !== "/uploads/null" ? (
-                <img
-                  src={brandSettings.logo2}
-                  alt="Logo"
-                  className="h-12 object-contain"
-                  style={{ filter: "brightness(0) invert(1)" }}
-                />
-              ) : brandSettings?.logo ? (
-                <img
-                  src={brandSettings.logo}
-                  alt="Logo"
-                  className="h-12 object-contain"
-                  style={{ filter: "brightness(0) invert(1)" }}
-                />
-              ) : (
-                <div className="bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 rounded-xl p-2.5">
-                  <MessageSquare className="h-7 w-7" />
-                </div>
-              )} */}
             </Link>
 
             <p className="text-gray-400 mt-5 mb-8 max-w-sm text-sm leading-relaxed">
