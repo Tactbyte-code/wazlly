@@ -16,7 +16,7 @@
  */
 
 import { Request, Response } from "express";
-import { DiployError, asyncHandler as _dHandler, diployLogger, HTTP_STATUS } from "@diploy/core";
+import { DiployError, asyncHandler as _dHandler } from "@diploy/core";
 import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { storageSettings } from "@shared/schema";
@@ -50,15 +50,8 @@ export const getActiveStorage = async (req: Request, res: Response) => {
 // ✅ Update or create storage
 export const updateStorageSetting = async (req: Request, res: Response) => {
   try {
-    const {
-      id,
-      spaceName,
-      endpoint,
-      region,
-      accessKey,
-      secretKey,
-      isActive,
-    } = req.body;
+    const { id, spaceName, endpoint, region, accessKey, secretKey, isActive } =
+      req.body;
 
     if (!spaceName || !endpoint || !region || !accessKey || !secretKey) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -112,18 +105,22 @@ export const testStorageConnection = async (req: Request, res: Response) => {
       .limit(1);
 
     if (!config) {
-      return res.json({ success: false, status: "offline", error: "No active storage configuration found" });
+      return res.json({
+        success: false,
+        status: "offline",
+        error: "No active storage configuration found",
+      });
     }
 
-    let cleanEndpoint = config.endpoint.trim().replace(/\/$/, '');
+    let cleanEndpoint = config.endpoint.trim().replace(/\/$/, "");
     if (!/^https?:\/\//i.test(cleanEndpoint)) {
       cleanEndpoint = `https://${cleanEndpoint}`;
     }
     const urlParts = new URL(cleanEndpoint);
-    const hostParts = urlParts.host.split('.');
+    const hostParts = urlParts.host.split(".");
     if (hostParts.length > 3) {
       hostParts.shift();
-      urlParts.host = hostParts.join('.');
+      urlParts.host = hostParts.join(".");
       cleanEndpoint = urlParts.toString();
     }
 
@@ -144,11 +141,13 @@ export const testStorageConnection = async (req: Request, res: Response) => {
       s3Client.destroy();
     }
   } catch (error: any) {
-    const message = error?.name === "NotFound"
-      ? "Bucket not found"
-      : error?.name === "CredentialsProviderError" || error?.Code === "InvalidAccessKeyId"
-        ? "Invalid credentials"
-        : error?.message || "Connection failed";
+    const message =
+      error?.name === "NotFound"
+        ? "Bucket not found"
+        : error?.name === "CredentialsProviderError" ||
+            error?.Code === "InvalidAccessKeyId"
+          ? "Invalid credentials"
+          : error?.message || "Connection failed";
     return res.json({ success: false, status: "offline", error: message });
   }
 };

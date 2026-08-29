@@ -134,7 +134,9 @@ const ContactusLanding = () => {
             </span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            {t("contactUs.hero.subtitle")}
+            {/* {t("contactUs.hero.subtitle")}   */}
+            Have questions about Wazlly? We're here to help you succeed with
+            WhatsApp marketing.
           </p>
         </div>
       </section>
@@ -290,11 +292,9 @@ const ContactusLanding = () => {
                             {details}
                           </p>
                           <p className="text-gray-400 text-xs mt-0.5">
-                            {
-                              (info.title === "Visit Us"
-                                ? "Ganeshguri, Guwahati, 781006"
-                                : "")
-                            }
+                            {info.title === "Visit Us"
+                              ? "Ganeshguri, Guwahati, 781006"
+                              : ""}
                           </p>
                           <p className="text-gray-400 text-xs mt-1">
                             {info.description}
@@ -317,7 +317,7 @@ const ContactusLanding = () => {
               {t("contactUs.faq.heading")}
             </h2>
             <p className="text-lg text-gray-500">
-              {t("contactUs.faq.subtitle")}
+              {t("contactUs.faq.subtitle").replace(/WPSaaS/g, "Wazlly")}
             </p>
           </div>
 
@@ -332,7 +332,7 @@ const ContactusLanding = () => {
                   className="w-full flex items-center justify-between p-5 text-left"
                 >
                   <h3 className="font-semibold text-gray-900 text-sm pr-4">
-                    {faq.q}
+                    {faq.q.replace(/WPSaaS/g, "Wazlly")}
                   </h3>
                   <ChevronDown
                     className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200 ${
@@ -348,7 +348,7 @@ const ContactusLanding = () => {
                   }`}
                 >
                   <p className="px-5 pb-5 text-gray-500 text-sm leading-relaxed">
-                    {faq.a}
+                    {faq.a.replace(/WPSaaS/g, "Wazlly")}
                   </p>
                 </div>
               </div>

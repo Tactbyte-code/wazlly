@@ -6,15 +6,30 @@ import { Request, Response, NextFunction } from "express";
 import { createDOClient } from "../config/digitalOceanConfig";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
-
-
 const allowedTypes = [
-  "image/jpeg", "image/png", "image/gif", "image/webp", "image/jpg", "image/avif",
-  "image/x-icon", "image/vnd.microsoft.icon",
-  "video/mp4", "video/webm", "video/ogg", "video/x-msvideo", "video/quicktime",
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/jpg",
+  "image/avif",
+  "image/x-icon",
+  "image/vnd.microsoft.icon",
+  "video/mp4",
+  "video/webm",
+  "video/ogg",
+  "video/x-msvideo",
+  "video/quicktime",
   "video/3gpp",
-  "audio/mp3", "audio/wav", "audio/ogg", "audio/mpeg", "audio/m4a",
-  "audio/aac", "audio/mp4", "audio/x-m4a", "audio/opus",
+  "audio/mp3",
+  "audio/wav",
+  "audio/ogg",
+  "audio/mpeg",
+  "audio/m4a",
+  "audio/aac",
+  "audio/mp4",
+  "audio/x-m4a",
+  "audio/opus",
   "application/pdf",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -34,7 +49,7 @@ declare global {
       };
     }
   }
-}
+};
 
 // Helper function to ensure directory exists
 const ensureDirectoryExists = (dirPath: string): void => {
@@ -46,12 +61,12 @@ const ensureDirectoryExists = (dirPath: string): void => {
 // Local storage setup with user-specific folders
 const localStorage = multer.diskStorage({
   destination: (req, _file, cb) => {
-    const userId = (req as any).user?.id || (req.body?.userId) || "guest";
+    const userId = (req as any).user?.id || req.body?.userId || "guest";
     const uploadPath = path.join("uploads", userId.toString());
-    
+
     ensureDirectoryExists(uploadPath);
     console.log(`📁 Saving file to local directory: ${uploadPath}`);
-    
+
     cb(null, uploadPath);
   },
   filename: (_req, file, cb) => {
@@ -65,7 +80,7 @@ const localStorage = multer.diskStorage({
 const fileFilter = (
   req: Request & { fileFilterError?: string },
   file: Express.Multer.File,
-  cb: FileFilterCallback
+  cb: FileFilterCallback,
 ) => {
   if (allowedTypes.includes(file.mimetype)) {
     console.log(`✅ File type accepted: ${file.mimetype}`);
@@ -161,20 +176,32 @@ function detectKindFromMagic(buf: Buffer): DetectedKind {
 
   // Images
   if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpeg";
-  if (
-    buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47
-  ) return "png";
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47)
+    return "png";
   if (
     buf.length >= 6 &&
-    buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38 &&
-    (buf[4] === 0x37 || buf[4] === 0x39) && buf[5] === 0x61
-  ) return "gif";
+    buf[0] === 0x47 &&
+    buf[1] === 0x49 &&
+    buf[2] === 0x46 &&
+    buf[3] === 0x38 &&
+    (buf[4] === 0x37 || buf[4] === 0x39) &&
+    buf[5] === 0x61
+  )
+    return "gif";
   if (
     buf.length >= 12 &&
     buf.toString("ascii", 0, 4) === "RIFF" &&
     buf.toString("ascii", 8, 12) === "WEBP"
-  ) return "webp";
-  if (buf.length >= 4 && buf[0] === 0x00 && buf[1] === 0x00 && buf[2] === 0x01 && buf[3] === 0x00) return "ico";
+  )
+    return "webp";
+  if (
+    buf.length >= 4 &&
+    buf[0] === 0x00 &&
+    buf[1] === 0x00 &&
+    buf[2] === 0x01 &&
+    buf[3] === 0x00
+  )
+    return "ico";
 
   // PDF
   if (buf.toString("ascii", 0, 4) === "%PDF") return "pdf";
@@ -188,16 +215,19 @@ function detectKindFromMagic(buf: Buffer): DetectedKind {
     buf.length >= 12 &&
     buf.toString("ascii", 0, 4) === "RIFF" &&
     buf.toString("ascii", 8, 12) === "WAVE"
-  ) return "wav";
+  )
+    return "wav";
   if (
     buf.length >= 12 &&
     buf.toString("ascii", 0, 4) === "RIFF" &&
     buf.toString("ascii", 8, 12) === "AVI "
-  ) return "avi";
+  )
+    return "avi";
   // OGG
   if (buf.toString("ascii", 0, 4) === "OggS") return "ogg";
   // WebM / Matroska — EBML header
-  if (buf[0] === 0x1a && buf[1] === 0x45 && buf[2] === 0xdf && buf[3] === 0xa3) return "webm";
+  if (buf[0] === 0x1a && buf[1] === 0x45 && buf[2] === 0xdf && buf[3] === 0xa3)
+    return "webm";
   // ISO base media (mp4, m4a, 3gp, mov, avif): bytes 4..7 == "ftyp"
   if (buf.length >= 12 && buf.toString("ascii", 4, 8) === "ftyp") {
     const brand = buf.toString("ascii", 8, 12).toLowerCase();
@@ -208,15 +238,26 @@ function detectKindFromMagic(buf: Buffer): DetectedKind {
   }
 
   // Office Open XML containers (zip)
-  if (buf[0] === 0x50 && buf[1] === 0x4b && (buf[2] === 0x03 || buf[2] === 0x05 || buf[2] === 0x07)) {
+  if (
+    buf[0] === 0x50 &&
+    buf[1] === 0x4b &&
+    (buf[2] === 0x03 || buf[2] === 0x05 || buf[2] === 0x07)
+  ) {
     return "office-zip";
   }
   // Legacy Office (CFB): D0 CF 11 E0 A1 B1 1A E1
   if (
     buf.length >= 8 &&
-    buf[0] === 0xd0 && buf[1] === 0xcf && buf[2] === 0x11 && buf[3] === 0xe0 &&
-    buf[4] === 0xa1 && buf[5] === 0xb1 && buf[6] === 0x1a && buf[7] === 0xe1
-  ) return "office-cfb";
+    buf[0] === 0xd0 &&
+    buf[1] === 0xcf &&
+    buf[2] === 0x11 &&
+    buf[3] === 0xe0 &&
+    buf[4] === 0xa1 &&
+    buf[5] === 0xb1 &&
+    buf[6] === 0x1a &&
+    buf[7] === 0xe1
+  )
+    return "office-cfb";
 
   // Plain text — must be valid UTF-8-ish (no NUL in first 512 bytes)
   const slice = buf.subarray(0, Math.min(buf.length, 512));
@@ -232,7 +273,7 @@ function detectKindFromMagic(buf: Buffer): DetectedKind {
  */
 export function assertFileMatchesMime(
   source: string | Buffer,
-  declaredMime: string
+  declaredMime: string,
 ): void {
   let slice: Buffer;
   let fd: number | null = null;
@@ -263,7 +304,7 @@ export function assertFileMatchesMime(
       ];
       if (!looselyAllowed.includes(declaredMime)) {
         throw new Error(
-          `File contents do not match declared type "${declaredMime}" (no recognised signature)`
+          `File contents do not match declared type "${declaredMime}" (no recognised signature)`,
         );
       }
       return;
@@ -272,12 +313,16 @@ export function assertFileMatchesMime(
     const expectedMimes = KIND_TO_MIMES[kind] || [];
     if (!expectedMimes.includes(declaredMime)) {
       throw new Error(
-        `File contents (detected: ${kind}) do not match declared MIME type "${declaredMime}"`
+        `File contents (detected: ${kind}) do not match declared MIME type "${declaredMime}"`,
       );
     }
   } finally {
     if (fd !== null) {
-      try { fs.closeSync(fd); } catch { /* ignore */ }
+      try {
+        fs.closeSync(fd);
+      } catch {
+        /* ignore */
+      }
     }
   }
 }
@@ -289,13 +334,15 @@ export function assertFileMatchesMime(
 export const validateUploadedFiles = (
   req: Request & { fileFilterError?: string },
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const files: Express.Multer.File[] = [];
   if (req.file) files.push(req.file);
   if (req.files) {
     if (Array.isArray(req.files)) files.push(...req.files);
-    else for (const v of Object.values(req.files)) files.push(...(v as Express.Multer.File[]));
+    else
+      for (const v of Object.values(req.files))
+        files.push(...(v as Express.Multer.File[]));
   }
 
   for (const file of files) {
@@ -305,10 +352,17 @@ export const validateUploadedFiles = (
       const source: string | Buffer = file.buffer ?? file.path;
       assertFileMatchesMime(source, file.mimetype);
     } catch (err) {
-      console.error(`[Upload] Magic-byte validation failed for ${file.originalname}:`, (err as Error).message);
+      console.error(
+        `[Upload] Magic-byte validation failed for ${file.originalname}:`,
+        (err as Error).message,
+      );
       // Remove the unsafe file from disk before returning (no-op for buffers).
       if (file.path) {
-        try { fs.unlinkSync(file.path); } catch { /* ignore */ }
+        try {
+          fs.unlinkSync(file.path);
+        } catch {
+          /* ignore */
+        }
       }
       res.status(415).json({
         error: "Unsupported or spoofed file content",
@@ -326,21 +380,21 @@ export const validateUploadedFiles = (
 export const handleDigitalOceanUpload = async (
   req: Request,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     console.log("\n🔍 Checking AWS S3 configuration...");
-    
+
     // Check if DO is active
     const doClient = await createDOClient();
 
     // console.log('doClient:', doClient);
-    
+
     console.log("📊 DO Client Status:", doClient ? "✅ Active" : "❌ Inactive");
-    
+
     // Handle both single file and multiple files
     let files: Express.Multer.File[] = [];
-    
+
     if (req.file) {
       // Single file upload (upload.single())
       files = [req.file];
@@ -370,9 +424,13 @@ export const handleDigitalOceanUpload = async (
       } catch (err) {
         console.error(
           `[Upload] Magic-byte validation failed for ${file.originalname}:`,
-          (err as Error).message
+          (err as Error).message,
         );
-        try { fs.unlinkSync(file.path); } catch { /* ignore */ }
+        try {
+          fs.unlinkSync(file.path);
+        } catch {
+          /* ignore */
+        }
         _res.status(415).json({
           error: "Unsupported or spoofed file content",
           details: (err as Error).message,
@@ -386,9 +444,11 @@ export const handleDigitalOceanUpload = async (
     // so the controller's fallback builds the correct /uploads/userId/filename path
     if (!doClient) {
       console.log("💾 DigitalOcean not configured/active, files saved locally");
-      files.forEach(file => {
+      files.forEach((file) => {
         console.log(`   📍 Local path: ${file.path}`);
-        console.log(`   🌐 Access URL: /uploads/${path.basename(path.dirname(file.path))}/${file.filename}`);
+        console.log(
+          `   🌐 Access URL: /uploads/${path.basename(path.dirname(file.path))}/${file.filename}`,
+        );
       });
       return next();
     }
@@ -401,23 +461,30 @@ export const handleDigitalOceanUpload = async (
       try {
         console.log(`\n📤 Uploading: ${file.originalname}`);
         console.log(`   Local path: ${file.path}`);
-        
+
         // Check if file exists
         if (!fs.existsSync(file.path)) {
           console.error(`   ❌ File not found: ${file.path}`);
           continue;
-        }
-        
+        };
+
         // Read file buffer
         const fileBuffer = fs.readFileSync(file.path);
         const { conversationId } = req.params;
-        console.log(`   File read successfully: ${file.path} , conversationId: ${conversationId}`);
-        const userId = (req as any).user?.id || (req.body?.userId) || conversationId || "guest";
+        console.log(
+          `   File read successfully: ${file.path} , conversationId: ${conversationId}`,
+        );
+        const userId =
+          (req as any).user?.id ||
+          req.body?.userId ||
+          conversationId ||
+          "guest";
         const FileKey = `uploads/${userId}/${Date.now()}-${path.basename(file.originalname)}`;
 
         const isPublic = true; // decide this per-upload, e.g. based on file type or a flag
-        const accessFileKey = isPublic ? `public/${FileKey}` : `private/${FileKey}`;
-
+        const accessFileKey = isPublic
+          ? `public/${FileKey}`
+          : `private/${FileKey}`;
 
         console.log(`   Cloud key: ${accessFileKey}`);
         console.log(`   File size: ${fileBuffer.length} bytes`);
@@ -430,7 +497,7 @@ export const handleDigitalOceanUpload = async (
             Body: fileBuffer,
             // ACL: "public-read",
             ContentType: file.mimetype,
-          })
+          }),
         );
 
         // Construct cloud URL (virtual-hosted–style AWS S3 URL)
@@ -442,9 +509,11 @@ export const handleDigitalOceanUpload = async (
         // Delete local file after successful upload
         // fs.unlinkSync(file.path);
         // console.log(`   🗑️ Local file deleted`);
-        
       } catch (uploadError) {
-        console.error(`   ❌ Upload failed for ${file.originalname}:`, uploadError);
+        console.error(
+          `   ❌ Upload failed for ${file.originalname}:`,
+          uploadError,
+        );
         console.log(`   💾 Keeping local file: ${file.path}`);
         // Keep the local file if upload fails
       }

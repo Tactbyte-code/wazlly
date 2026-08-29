@@ -88,7 +88,7 @@ export default function StorageSettingsModal({
         </DialogHeader>
 
         <div className="space-y-3">
-          <Label>Space Name</Label>
+          <Label>Bucket Name</Label>
           <Input
             value={form.spaceName}
             onChange={(e) => handleChange("spaceName", e.target.value)}

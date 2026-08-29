@@ -499,7 +499,7 @@ export const updateBrandSettings = async (req: Request, res: Response) => {
       | undefined;
 
     let logoPath: string | undefined;
-    let logo2Path: string | undefined; // 👈 ADDED
+    let logo2Path: string | undefined;
     let faviconPath: string | undefined;
 
     // =============================

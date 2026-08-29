@@ -167,10 +167,12 @@ const GeneralSettingsModal: React.FC<GeneralSettingsModalProps> = ({
   const updateBrandMutation = useMutation({
     mutationFn: async (data: FormData) => {
       const res = await apiRequestFormData("PUT", `/api/brand-settings`, data);
+      console.log("general settings updated: ", res);
+
       if (!res.ok) {
         throw new Error("Failed to update settings");
       };
-      
+
       return res.json();
     },
     onSuccess: () => {

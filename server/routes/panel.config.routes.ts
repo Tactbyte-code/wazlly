@@ -36,7 +36,7 @@
 // }
 
 import type { Express } from "express";
-import { diployLogger, HTTP_STATUS, DIPLOY_BRAND } from "@diploy/core";
+// import { diployLogger, HTTP_STATUS, DIPLOY_BRAND } from "@diploy/core";
 import * as panelController from "../controllers/panel.config.controller";
 import {
   handleDigitalOceanUpload,
@@ -86,7 +86,7 @@ export function registerPanelConfigRoutes(app: Express) {
       { name: "logo", maxCount: 1 },
       { name: "favicon", maxCount: 1 },
     ]),
-    handleDigitalOceanUpload,
+    // handleDigitalOceanUpload,
     panelController.create,
   );
 
@@ -111,7 +111,7 @@ export function registerPanelConfigRoutes(app: Express) {
       { name: "logo", maxCount: 1 },
       { name: "favicon", maxCount: 1 },
     ]),
-    handleDigitalOceanUpload,
+    // handleDigitalOceanUpload,
     panelController.update,
   );
 
@@ -123,10 +123,11 @@ export function registerPanelConfigRoutes(app: Express) {
   );
 
   app.get("/api/brand-settings", panelController.getBrandSettings);
+
   app.put(
     "/api/brand-settings",
-    requireAuth,
-    requireRole("superadmin"),
+    requireAuth, //authentication
+    requireRole("superadmin"), //authorization
     upload.fields([
       { name: "logo", maxCount: 1 },
       { name: "logo2", maxCount: 1 },
@@ -135,6 +136,7 @@ export function registerPanelConfigRoutes(app: Express) {
     handleDigitalOceanUpload,
     panelController.updateBrandSettings,
   );
+
   app.post(
     "/api/brand-settings",
     requireAuth,
@@ -144,7 +146,7 @@ export function registerPanelConfigRoutes(app: Express) {
       { name: "logo2", maxCount: 1 },
       { name: "favicon", maxCount: 1 },
     ]),
-    handleDigitalOceanUpload,
+    // handleDigitalOceanUpload,
     panelController.createBrandSettings,
   );
 }

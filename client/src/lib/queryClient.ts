@@ -83,11 +83,10 @@ async function throwIfResNotOk(res: Response) {
   throw new Error(message);
 }
 
-
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown | undefined
+  data?: unknown | undefined,
 ): Promise<Response> {
   const headers: Record<string, string> = {};
   if (data) headers["Content-Type"] = "application/json";
@@ -118,7 +117,7 @@ export async function apiRequest(
 export async function apiRequestStream(
   method: string,
   url: string,
-  data?: unknown | undefined
+  data?: unknown | undefined,
 ): Promise<Response> {
   const headers: Record<string, string> = {};
   if (data) headers["Content-Type"] = "application/json";
@@ -142,7 +141,7 @@ export async function apiRequestStream(
 export async function apiRequestFormData(
   method: string,
   url: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<Response> {
   const headers: Record<string, string> = {};
   if (isMutatingMethod(method)) {
@@ -159,8 +158,6 @@ export async function apiRequestFormData(
   await throwIfResNotOk(res);
   return res;
 }
-
-
 
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
