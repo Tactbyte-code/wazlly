@@ -25,17 +25,20 @@ import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
 import { useQuery } from "@tanstack/react-query";
 import { PlansDataTypes } from "@/types/types";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+// import Header from "@/components/Header";
+// import Footer from "@/components/Footer";
 
 const Home = () => {
-  const { data: paymentProviders } = useQuery<PlansDataTypes>({
+  const { data: pricingPlans } = useQuery<PlansDataTypes>({
     queryKey: ["/api/admin/plans"],
     queryFn: async () => {
       const res = await fetch("/api/admin/plans");
       return res.json();
     },
   });
+
+  console.log("pricing plans: ", pricingPlans);
+
   return (
     <>
       {/* <Header /> */}
@@ -44,9 +47,7 @@ const Home = () => {
       <HowItWorks />
       <UseCases />
       <Testimonials />
-      {paymentProviders?.success && paymentProviders?.data?.length > 0 && (
-        <Pricing />
-      )}
+      {pricingPlans?.success && pricingPlans?.data?.length > 0 && <Pricing />}
       <CTA />
       {/* <Footer /> */}
     </>

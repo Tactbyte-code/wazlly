@@ -1,20 +1,3 @@
-/**
- * ============================================================
- * © 2025 Diploy — a brand of Bisht Technologies Private Limited
- * Original Author: BTPL Engineering Team
- * Website: https://diploy.in
- * Contact: cs@diploy.in
- *
- * Distributed under the Envato / CodeCanyon License Agreement.
- * Licensed to the purchaser for use as defined by the
- * Envato Market (CodeCanyon) Regular or Extended License.
- *
- * You are NOT permitted to redistribute, resell, sublicense,
- * or share this source code, in whole or in part.
- * Respect the author's rights and Envato licensing terms.
- * ============================================================
- */
-
 import React, { useEffect, useState } from "react";
 import {
   Check,
@@ -64,13 +47,19 @@ const Pricing = () => {
   const { data: currencyMapData } = useQuery<{
     success: boolean;
     data: {
-      currencyMap: Record<string, { providerKey: string; providerId: string; providerName: string }[]>;
+      currencyMap: Record<
+        string,
+        { providerKey: string; providerId: string; providerName: string }[]
+      >;
       availableCurrencies: string[];
     };
   }>({
     queryKey: ["/api/payment-providers/currency-map"],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/payment-providers/currency-map");
+      const res = await apiRequest(
+        "GET",
+        "/api/payment-providers/currency-map",
+      );
       return res.json();
     },
     enabled: !!user?.id,
@@ -80,9 +69,11 @@ const Pricing = () => {
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
 
   // Filter currencies to only show those configured by admin, plus default/USD
-  const displayedCurrencies = availableCurrencies.filter(cur => {
+  const displayedCurrencies = availableCurrencies.filter((cur) => {
     if (cur === "USD" || cur === currency?.toUpperCase()) return true;
-    return plans.some(p => p.multiCurrencyPrices && p.multiCurrencyPrices[cur]);
+    return plans.some(
+      (p) => p.multiCurrencyPrices && p.multiCurrencyPrices[cur],
+    );
   });
 
   useEffect(() => {
@@ -116,9 +107,9 @@ const Pricing = () => {
     ZAR: "R",
   };
 
-  const activeCurrencySymbol = selectedCurrency
-    ? (currencySymbolMap[selectedCurrency] || selectedCurrency + " ")
-    : currencySymbol;
+  // const activeCurrencySymbol = selectedCurrency
+  //   ? currencySymbolMap[selectedCurrency] || selectedCurrency + " "
+  //   : currencySymbol;
 
   // Icon mapping
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -197,6 +188,7 @@ const Pricing = () => {
       const priceB = Number(isAnnual ? b.annualPrice : b.monthlyPrice);
       return priceA - priceB;
     });
+
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 mb-16">
         {sortedPlans.map((plan, index) => {
@@ -209,7 +201,7 @@ const Pricing = () => {
               className={`bg-white p-8 rounded-2xl shadow-lg border-2 ${
                 isPopular ? "relative transform scale-105" : ""
               } hover:shadow-xl transition-all flex flex-col h-full`}
-              style={{ borderColor: plan.color || '#e5e7eb' }}
+              style={{ borderColor: plan.color || "#e5e7eb" }}
             >
               {/* Popular Badge */}
               {plan.badge && (
@@ -244,10 +236,18 @@ const Pricing = () => {
                       let annualPrice = plan.annualPrice;
                       let planCurrencySymbol = currencySymbol; // Default to brand symbol
 
-                      if (selectedCurrency && plan.multiCurrencyPrices && plan.multiCurrencyPrices[selectedCurrency]) {
-                        monthlyPrice = plan.multiCurrencyPrices[selectedCurrency].monthly;
-                        annualPrice = plan.multiCurrencyPrices[selectedCurrency].annual;
-                        planCurrencySymbol = currencySymbolMap[selectedCurrency] || selectedCurrency + " ";
+                      if (
+                        selectedCurrency &&
+                        plan.multiCurrencyPrices &&
+                        plan.multiCurrencyPrices[selectedCurrency]
+                      ) {
+                        monthlyPrice =
+                          plan.multiCurrencyPrices[selectedCurrency].monthly;
+                        annualPrice =
+                          plan.multiCurrencyPrices[selectedCurrency].annual;
+                        planCurrencySymbol =
+                          currencySymbolMap[selectedCurrency] ||
+                          selectedCurrency + " ";
                       }
 
                       return (
@@ -341,7 +341,7 @@ const Pricing = () => {
               <button
                 onClick={() => handleSelectPlan(plan)}
                 className="w-full py-3 rounded-xl font-semibold transition-all transform hover:scale-105 text-white flex-shrink-0 hover:opacity-90"
-                style={{ backgroundColor: plan.buttonColor || '#10b981' }}
+                style={{ backgroundColor: plan.buttonColor || "#10b981" }}
               >
                 {Number.parseFloat(plan.monthlyPrice) === 0
                   ? t("Landing.pricingSec.planCTA.freeButton")

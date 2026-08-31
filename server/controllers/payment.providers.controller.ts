@@ -15,18 +15,26 @@
  * ============================================================
  */
 
-import { Request, Response } from 'express';
-import { DiployError, asyncHandler as _dHandler, diployLogger, HTTP_STATUS } from "@diploy/core";
-import { db } from '../db';
-import { eq } from 'drizzle-orm';
-import { paymentProviders, plans } from '@shared/schema';
+import { Request, Response } from "express";
+import {
+  DiployError,
+  asyncHandler as _dHandler,
+  diployLogger,
+  HTTP_STATUS,
+} from "@diploy/core";
+import { db } from "../db";
+import { eq } from "drizzle-orm";
+import { paymentProviders, plans } from "@shared/schema";
 
 // Plan columns whose values are produced by syncing to a specific provider
 // in a specific mode (live vs sandbox). When the operator flips the mode
 // these IDs become invalid (e.g. a sandbox PayPal plan_id sent to the live
 // API returns 404), so they must be cleared so the next checkout/sync
 // recreates them in the new mode.
-const SYNCED_ID_COLUMNS_BY_PROVIDER: Record<string, (keyof typeof plans.$inferSelect)[]> = {
+const SYNCED_ID_COLUMNS_BY_PROVIDER: Record<
+  string,
+  (keyof typeof plans.$inferSelect)[]
+> = {
   stripe: ["stripeProductId", "stripePriceIdMonthly", "stripePriceIdAnnual"],
   paypal: ["paypalProductId", "paypalPlanIdMonthly", "paypalPlanIdAnnual"],
   razorpay: ["razorpayPlanIdMonthly", "razorpayPlanIdAnnual"],
@@ -44,7 +52,10 @@ export const getCurrencyGatewayMap = async (req: Request, res: Response) => {
       .from(paymentProviders)
       .where(eq(paymentProviders.isActive, true));
 
-    const currencyMap: Record<string, { providerKey: string; providerId: string; providerName: string }[]> = {};
+    const currencyMap: Record<
+      string,
+      { providerKey: string; providerId: string; providerName: string }[]
+    > = {};
 
     for (const provider of providers) {
       const currencies = Array.isArray(provider.supportedCurrencies)
@@ -69,7 +80,7 @@ export const getCurrencyGatewayMap = async (req: Request, res: Response) => {
       data: {
         currencyMap,
         availableCurrencies,
-        providers: providers.map(p => ({
+        providers: providers.map((p) => ({
           id: p.id,
           name: p.name,
           providerKey: p.providerKey,
@@ -80,7 +91,13 @@ export const getCurrencyGatewayMap = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching currency gateway map', error });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error fetching currency gateway map",
+        error,
+      });
   }
 };
 
@@ -91,11 +108,11 @@ export const getCurrencyGatewayMap = async (req: Request, res: Response) => {
 export const getAllProviders = async (req: Request, res: Response) => {
   try {
     const providers = await db.select().from(paymentProviders);
-    const isSuper = req.user?.role === 'superadmin';
+    const isSuper = req.user?.role === "superadmin";
 
     const data = isSuper
       ? providers
-      : providers.map(p => ({
+      : providers.map((p) => ({
           id: p.id,
           name: p.name,
           providerKey: p.providerKey,
@@ -105,15 +122,21 @@ export const getAllProviders = async (req: Request, res: Response) => {
           // Surface only the non-sensitive mode flag so the checkout UI
           // can render the correct Live/Test badge without exposing keys.
           isLive: p.config?.isLive === true,
-          supportedCurrencies: Array.isArray(p.supportedCurrencies) ? p.supportedCurrencies : [],
-          supportedMethods: Array.isArray(p.supportedMethods) ? p.supportedMethods : [],
+          supportedCurrencies: Array.isArray(p.supportedCurrencies)
+            ? p.supportedCurrencies
+            : [],
+          supportedMethods: Array.isArray(p.supportedMethods)
+            ? p.supportedMethods
+            : [],
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
         }));
 
     res.status(200).json({ success: true, data });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching providers', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching providers", error });
   }
 };
 
@@ -148,14 +171,18 @@ export const getProviderById = async (req: Request, res: Response) => {
       .select()
       .from(paymentProviders)
       .where(eq(paymentProviders.id, id));
-    
+
     if (provider.length === 0) {
-      return res.status(404).json({ success: false, message: 'Provider not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Provider not found" });
     }
-    
+
     res.status(200).json({ success: true, data: provider[0] });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching provider', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching provider", error });
   }
 };
 
@@ -167,14 +194,18 @@ export const getProviderByKey = async (req: Request, res: Response) => {
       .select()
       .from(paymentProviders)
       .where(eq(paymentProviders.providerKey, key));
-    
+
     if (provider.length === 0) {
-      return res.status(404).json({ success: false, message: 'Provider not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Provider not found" });
     }
-    
+
     res.status(200).json({ success: true, data: provider[0] });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching provider', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching provider", error });
   }
 };
 
@@ -189,7 +220,7 @@ export const createProvider = async (req: Request, res: Response) => {
       isActive,
       config,
       supportedCurrencies,
-      supportedMethods
+      supportedMethods,
     } = req.body;
 
     const newProvider = await db
@@ -202,13 +233,15 @@ export const createProvider = async (req: Request, res: Response) => {
         isActive: isActive ?? true,
         config,
         supportedCurrencies,
-        supportedMethods
+        supportedMethods,
       })
       .returning();
 
     res.status(201).json({ success: true, data: newProvider[0] });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error creating provider', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error creating provider", error });
   }
 };
 
@@ -228,7 +261,9 @@ export const updateProvider = async (req: Request, res: Response) => {
       .limit(1);
     const existing = existingRows[0];
     if (!existing) {
-      return res.status(404).json({ success: false, message: 'Provider not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Provider not found" });
     }
 
     const updatedProvider = await db
@@ -244,17 +279,20 @@ export const updateProvider = async (req: Request, res: Response) => {
     if (wasLive !== isLive) {
       const cols = SYNCED_ID_COLUMNS_BY_PROVIDER[after.providerKey];
       if (cols && cols.length > 0) {
-        const clears = Object.fromEntries(cols.map(c => [c, null]));
+        const clears = Object.fromEntries(cols.map((c) => [c, null]));
         await db.update(plans).set({ ...clears, updatedAt: new Date() });
       }
     }
 
-    const { resetGatewayInstances } = await import("../services/payment-gateway.service");
+    const { resetGatewayInstances } =
+      await import("../services/payment-gateway.service");
     resetGatewayInstances();
 
     res.status(200).json({ success: true, data: after });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error updating provider', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating provider", error });
   }
 };
 
@@ -271,19 +309,28 @@ export const toggleProviderStatus = async (req: Request, res: Response) => {
       .returning();
 
     if (updatedProvider.length === 0) {
-      return res.status(404).json({ success: false, message: 'Provider not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Provider not found" });
     }
 
-    const { resetGatewayInstances } = await import("../services/payment-gateway.service");
+    const { resetGatewayInstances } =
+      await import("../services/payment-gateway.service");
     resetGatewayInstances();
 
-    res.status(200).json({ 
-      success: true, 
-      message: `Provider ${isActive ? 'activated' : 'deactivated'} successfully`,
-      data: updatedProvider[0] 
+    res.status(200).json({
+      success: true,
+      message: `Provider ${isActive ? "activated" : "deactivated"} successfully`,
+      data: updatedProvider[0],
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error toggling provider status', error });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error toggling provider status",
+        error,
+      });
   }
 };
 
@@ -298,11 +345,17 @@ export const deleteProvider = async (req: Request, res: Response) => {
       .returning();
 
     if (deletedProvider.length === 0) {
-      return res.status(404).json({ success: false, message: 'Provider not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Provider not found" });
     }
 
-    res.status(200).json({ success: true, message: 'Provider deleted successfully' });
+    res
+      .status(200)
+      .json({ success: true, message: "Provider deleted successfully" });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error deleting provider', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error deleting provider", error });
   }
 };

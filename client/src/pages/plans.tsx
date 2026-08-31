@@ -86,21 +86,30 @@ export default function Plans() {
   // userPlans from auth context is loosely typed (`any[]`) but at runtime is
   // a SubscriptionResponse once the query resolves, or an empty array before
   // it resolves. Normalize to a typed list of items for safe access.
-  const userPlansResponse = userPlans as SubscriptionResponse | SubscriptionData[] | undefined;
+  const userPlansResponse = userPlans as
+    | SubscriptionResponse
+    | SubscriptionData[]
+    | undefined;
   const userPlanItems: SubscriptionData[] = Array.isArray(userPlansResponse)
     ? []
-    : userPlansResponse?.data ?? [];
+    : (userPlansResponse?.data ?? []);
 
   const { data: currencyMapData } = useQuery<{
     success: boolean;
     data: {
-      currencyMap: Record<string, { providerKey: string; providerId: string; providerName: string }[]>;
+      currencyMap: Record<
+        string,
+        { providerKey: string; providerId: string; providerName: string }[]
+      >;
       availableCurrencies: string[];
     };
   }>({
     queryKey: ["/api/payment-providers/currency-map"],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/payment-providers/currency-map");
+      const res = await apiRequest(
+        "GET",
+        "/api/payment-providers/currency-map",
+      );
       return res.json();
     },
     enabled: !!user?.id,
@@ -110,9 +119,11 @@ export default function Plans() {
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
 
   // Filter currencies to only show those configured by admin, plus default/USD
-  const displayedCurrencies = availableCurrencies.filter(cur => {
+  const displayedCurrencies = availableCurrencies.filter((cur) => {
     if (cur === "USD" || cur === currency?.toUpperCase()) return true;
-    return plans.some(p => p.multiCurrencyPrices && p.multiCurrencyPrices[cur]);
+    return plans.some(
+      (p) => p.multiCurrencyPrices && p.multiCurrencyPrices[cur],
+    );
   });
 
   useEffect(() => {
@@ -146,7 +157,7 @@ export default function Plans() {
     ZAR: "R",
   };
   const activeCurrencySymbol = selectedCurrency
-    ? (currencySymbolMap[selectedCurrency] || selectedCurrency + " ")
+    ? currencySymbolMap[selectedCurrency] || selectedCurrency + " "
     : currencySymbol;
 
   const purchasedPlans = userPlanItems
@@ -228,7 +239,7 @@ export default function Plans() {
     }
 
     const activeSub = userPlanItems.find(
-      (p) => p?.subscription?.status === "active"
+      (p) => p?.subscription?.status === "active",
     )?.subscription;
 
     if (!activeSub) {
@@ -247,15 +258,24 @@ export default function Plans() {
       return;
     }
 
-    if (!confirm(`Are you sure you want to downgrade to ${plan.name}? Your plan features will be reduced.`)) return;
+    if (
+      !confirm(
+        `Are you sure you want to downgrade to ${plan.name}? Your plan features will be reduced.`,
+      )
+    )
+      return;
 
     setChangingPlanId(plan.id);
     try {
-      const response = await apiRequest("POST", "/api/subscriptions/change-plan", {
-        userId: user.id,
-        newPlanId: plan.id,
-        billingCycle: activeSub.billingCycle || "monthly",
-      });
+      const response = await apiRequest(
+        "POST",
+        "/api/subscriptions/change-plan",
+        {
+          userId: user.id,
+          newPlanId: plan.id,
+          billingCycle: activeSub.billingCycle || "monthly",
+        },
+      );
       const data = await response.json();
       if (data.success) {
         toast({
@@ -282,6 +302,7 @@ export default function Plans() {
       setLoading(true);
       const response = await apiRequest("GET", "/api/admin/plans");
       const data: PlansDataTypes = await response.json();
+      console.log("plans: ", data);
       if (data.success) {
         setPlans(data.data);
       }
@@ -305,7 +326,11 @@ export default function Plans() {
 
       const method = editingPlan ? "PUT" : "POST";
 
-      const response = await apiRequest(method as "POST" | "PUT", url, formData);
+      const response = await apiRequest(
+        method as "POST" | "PUT",
+        url,
+        formData,
+      );
 
       const data = await response.json();
 
@@ -362,7 +387,11 @@ export default function Plans() {
   const handleSyncPlan = async (planId: string): Promise<void> => {
     setSyncingPlanId(planId);
     try {
-      const response = await apiRequest("POST", `/api/admin/plans/${planId}/sync-gateway`, {});
+      const response = await apiRequest(
+        "POST",
+        `/api/admin/plans/${planId}/sync-gateway`,
+        {},
+      );
       const data = await response.json();
       if (data.success) {
         toast({
@@ -387,8 +416,14 @@ export default function Plans() {
   const handleSyncAllPlans = async (): Promise<void> => {
     setSyncingAll(true);
     try {
-      const response = await apiRequest("POST", "/api/admin/plans/sync-all-gateways", {});
+      const response = await apiRequest(
+        "POST",
+        "/api/admin/plans/sync-all-gateways",
+        {},
+      );
       const data = await response.json();
+      console.log("sync plans response: ", data);
+      
       if (data.success) {
         toast({
           title: "All Plans Synced",
@@ -462,7 +497,14 @@ export default function Plans() {
       monthlyPrice: "0",
       annualPrice: "0",
       multiCurrencyPrices: {},
-      permissions: { channel: "", contacts: "", automation: "", campaign: "", apiRequestsPerMonth: "", apiRateLimitPerMinute: "" },
+      permissions: {
+        channel: "",
+        contacts: "",
+        automation: "",
+        campaign: "",
+        apiRequestsPerMonth: "",
+        apiRateLimitPerMinute: "",
+      },
       features: [],
     });
     setEditingPlan(null);
@@ -479,7 +521,7 @@ export default function Plans() {
   const updateFeature = (
     index: number,
     field: keyof Feature,
-    value: string | boolean
+    value: string | boolean,
   ): void => {
     const newFeatures = [...formData.features];
     newFeatures[index] = { ...newFeatures[index], [field]: value };
@@ -653,7 +695,9 @@ export default function Plans() {
                         disabled={syncingAll}
                         className="flex items-center justify-center"
                       >
-                        <RefreshCw className={`w-4 h-4 mr-2 ${syncingAll ? "animate-spin" : ""}`} />
+                        <RefreshCw
+                          className={`w-4 h-4 mr-2 ${syncingAll ? "animate-spin" : ""}`}
+                        />
                         {syncingAll ? "Syncing..." : "Sync All to Gateways"}
                       </Button>
                       <Button
@@ -797,7 +841,9 @@ export default function Plans() {
                   {/* Multi-Currency Pricing */}
                   <div className="space-y-4 p-4 bg-white rounded-lg border border-gray-200">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold text-gray-900">Multi-Currency Pricing (Optional)</h4>
+                      <h4 className="text-sm font-semibold text-gray-900">
+                        Multi-Currency Pricing (Optional)
+                      </h4>
                       <div className="flex items-center gap-2">
                         <select
                           id="new-currency-select"
@@ -805,13 +851,20 @@ export default function Plans() {
                           value={newCurrencyToAdd}
                           onChange={(e) => setNewCurrencyToAdd(e.target.value)}
                         >
-                          <option value="" disabled>Add Currency...</option>
+                          <option value="" disabled>
+                            Add Currency...
+                          </option>
                           {availableCurrencies
-                            .filter(cur => cur !== currency && !formData.multiCurrencyPrices[cur])
-                            .map(cur => (
-                              <option key={cur} value={cur}>{cur}</option>
-                            ))
-                          }
+                            .filter(
+                              (cur) =>
+                                cur !== currency &&
+                                !formData.multiCurrencyPrices[cur],
+                            )
+                            .map((cur) => (
+                              <option key={cur} value={cur}>
+                                {cur}
+                              </option>
+                            ))}
                         </select>
                         <Button
                           type="button"
@@ -823,8 +876,11 @@ export default function Plans() {
                                 ...formData,
                                 multiCurrencyPrices: {
                                   ...formData.multiCurrencyPrices,
-                                  [newCurrencyToAdd]: { monthly: "0", annual: "0" }
-                                }
+                                  [newCurrencyToAdd]: {
+                                    monthly: "0",
+                                    annual: "0",
+                                  },
+                                },
                               });
                               setNewCurrencyToAdd("");
                             }
@@ -836,56 +892,82 @@ export default function Plans() {
                     </div>
 
                     <div className="space-y-3">
-                      {Object.entries(formData.multiCurrencyPrices).map(([cur, prices]) => (
-                        <div key={cur} className="flex items-center gap-4 p-3 bg-gray-50 rounded-md border border-gray-200">
-                          <span className="font-bold text-gray-700 min-w-[50px]">{cur}</span>
-                          <div className="flex-1 grid grid-cols-2 gap-2">
-                            <div>
-                              <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">Monthly</label>
-                              <input
-                                type="number"
-                                step="0.01"
-                                value={prices.monthly}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  multiCurrencyPrices: {
-                                    ...formData.multiCurrencyPrices,
-                                    [cur]: { ...prices, monthly: e.target.value }
-                                  }
-                                })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">Annual</label>
-                              <input
-                                type="number"
-                                step="0.01"
-                                value={prices.annual}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  multiCurrencyPrices: {
-                                    ...formData.multiCurrencyPrices,
-                                    [cur]: { ...prices, annual: e.target.value }
-                                  }
-                                })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
-                              />
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newPrices = { ...formData.multiCurrencyPrices };
-                              delete newPrices[cur];
-                              setFormData({ ...formData, multiCurrencyPrices: newPrices });
-                            }}
-                            className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors self-end"
+                      {Object.entries(formData.multiCurrencyPrices).map(
+                        ([cur, prices]) => (
+                          <div
+                            key={cur}
+                            className="flex items-center gap-4 p-3 bg-gray-50 rounded-md border border-gray-200"
                           >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
+                            <span className="font-bold text-gray-700 min-w-[50px]">
+                              {cur}
+                            </span>
+                            <div className="flex-1 grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">
+                                  Monthly
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={prices.monthly}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      multiCurrencyPrices: {
+                                        ...formData.multiCurrencyPrices,
+                                        [cur]: {
+                                          ...prices,
+                                          monthly: e.target.value,
+                                        },
+                                      },
+                                    })
+                                  }
+                                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">
+                                  Annual
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={prices.annual}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      multiCurrencyPrices: {
+                                        ...formData.multiCurrencyPrices,
+                                        [cur]: {
+                                          ...prices,
+                                          annual: e.target.value,
+                                        },
+                                      },
+                                    })
+                                  }
+                                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                />
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newPrices = {
+                                  ...formData.multiCurrencyPrices,
+                                };
+                                delete newPrices[cur];
+                                setFormData({
+                                  ...formData,
+                                  multiCurrencyPrices: newPrices,
+                                });
+                              }}
+                              className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors self-end"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
 
@@ -955,7 +1037,7 @@ export default function Plans() {
                           })
                         }
                         placeholder={t(
-                          "plans.form.permissions.channelsPlaceholder"
+                          "plans.form.permissions.channelsPlaceholder",
                         )}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
@@ -977,7 +1059,7 @@ export default function Plans() {
                           })
                         }
                         placeholder={t(
-                          "plans.form.permissions.contactsPlaceholder"
+                          "plans.form.permissions.contactsPlaceholder",
                         )}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
@@ -999,7 +1081,7 @@ export default function Plans() {
                           })
                         }
                         placeholder={t(
-                          "plans.form.permissions.automationPlaceholder"
+                          "plans.form.permissions.automationPlaceholder",
                         )}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
@@ -1021,7 +1103,7 @@ export default function Plans() {
                           })
                         }
                         placeholder={t(
-                          "plans.form.permissions.campaignPlaceholder"
+                          "plans.form.permissions.campaignPlaceholder",
                         )}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
@@ -1043,7 +1125,7 @@ export default function Plans() {
                           })
                         }
                         placeholder={t(
-                          "plans.form.permissions.apiRequestsPerMonthPlaceholder"
+                          "plans.form.permissions.apiRequestsPerMonthPlaceholder",
                         )}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
@@ -1065,7 +1147,7 @@ export default function Plans() {
                           })
                         }
                         placeholder={t(
-                          "plans.form.permissions.apiRateLimitPerMinutePlaceholder"
+                          "plans.form.permissions.apiRateLimitPerMinutePlaceholder",
                         )}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       />
@@ -1140,7 +1222,7 @@ export default function Plans() {
                                   updateFeature(
                                     index,
                                     "included",
-                                    e.target.checked
+                                    e.target.checked,
                                   )
                                 }
                                 className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
@@ -1169,12 +1251,15 @@ export default function Plans() {
                     >
                       {t("plans.buttons.cancel")}
                     </Button>
-                    <Button onClick={handleSubmit} className="flex-1" disabled={user?.username === "demoadmin"}>
+                    <Button
+                      onClick={handleSubmit}
+                      className="flex-1"
+                      disabled={user?.username === "demoadmin"}
+                    >
                       <Save className="w-4 h-4 mr-2" />
                       {editingPlan
                         ? t("plans.buttons.updatePlan")
                         : t("plans.buttons.createPlan")}
-                        
                     </Button>
                   </div>
                 </div>
@@ -1218,17 +1303,17 @@ export default function Plans() {
                     const isActivePlan = userPlanItems.some(
                       (p) =>
                         p?.subscription?.planId === plan.id &&
-                        p?.subscription?.status === "active"
+                        p?.subscription?.status === "active",
                     );
 
                     const activePlan = userPlanItems.find(
-                      (p) => p?.subscription?.status === "active"
+                      (p) => p?.subscription?.status === "active",
                     )?.subscription;
 
                     // console.log("Active Plan@@@@@@@@@@@@@:", activePlan);
 
                     const currentPlanPrice = Number(
-                      activePlan?.planData?.monthlyPrice || 0
+                      activePlan?.planData?.monthlyPrice || 0,
                     );
                     const thisPlanPrice = Number(plan.monthlyPrice);
 
@@ -1239,10 +1324,18 @@ export default function Plans() {
                     let annualPrice = plan.annualPrice;
                     let planCurrencySymbol = currencySymbol; // Default to brand symbol
 
-                    if (selectedCurrency && plan.multiCurrencyPrices && plan.multiCurrencyPrices[selectedCurrency]) {
-                      monthlyPrice = plan.multiCurrencyPrices[selectedCurrency].monthly;
-                      annualPrice = plan.multiCurrencyPrices[selectedCurrency].annual;
-                      planCurrencySymbol = currencySymbolMap[selectedCurrency] || selectedCurrency + " ";
+                    if (
+                      selectedCurrency &&
+                      plan.multiCurrencyPrices &&
+                      plan.multiCurrencyPrices[selectedCurrency]
+                    ) {
+                      monthlyPrice =
+                        plan.multiCurrencyPrices[selectedCurrency].monthly;
+                      annualPrice =
+                        plan.multiCurrencyPrices[selectedCurrency].annual;
+                      planCurrencySymbol =
+                        currencySymbolMap[selectedCurrency] ||
+                        selectedCurrency + " ";
                     }
 
                     return (
@@ -1274,9 +1367,7 @@ export default function Plans() {
                             <div className="flex items-baseline gap-1">
                               <span className="text-3xl font-black text-gray-900">
                                 {planCurrencySymbol}
-                                {isAnnual
-                                  ? annualPrice
-                                  : monthlyPrice}
+                                {isAnnual ? annualPrice : monthlyPrice}
                               </span>
                               <span className="text-sm text-gray-600 font-medium">
                                 /
@@ -1288,15 +1379,30 @@ export default function Plans() {
                             {plan.permissions && (
                               <div className="mt-2 space-y-1">
                                 {Object.entries(plan.permissions)
-                                  .filter(([_, value]) => value && String(value).trim() !== "")
+                                  .filter(
+                                    ([_, value]) =>
+                                      value && String(value).trim() !== "",
+                                  )
                                   .map(([key, value]) => {
                                     const labelMap: Record<string, string> = {
-                                      channel: t("plans.form.permissions.channels"),
-                                      contacts: t("plans.form.permissions.contacts"),
-                                      automation: t("plans.form.permissions.automation"),
-                                      campaign: t("plans.form.permissions.campaign"),
-                                      apiRequestsPerMonth: t("plans.form.permissions.apiRequestsPerMonth"),
-                                      apiRateLimitPerMinute: t("plans.form.permissions.apiRateLimitPerMinute"),
+                                      channel: t(
+                                        "plans.form.permissions.channels",
+                                      ),
+                                      contacts: t(
+                                        "plans.form.permissions.contacts",
+                                      ),
+                                      automation: t(
+                                        "plans.form.permissions.automation",
+                                      ),
+                                      campaign: t(
+                                        "plans.form.permissions.campaign",
+                                      ),
+                                      apiRequestsPerMonth: t(
+                                        "plans.form.permissions.apiRequestsPerMonth",
+                                      ),
+                                      apiRateLimitPerMinute: t(
+                                        "plans.form.permissions.apiRateLimitPerMinute",
+                                      ),
                                     };
                                     return (
                                       <div
@@ -1375,7 +1481,9 @@ export default function Plans() {
                                     onClick={() => handleChangePlan(plan)}
                                     disabled={changingPlanId === plan.id}
                                   >
-                                    {changingPlanId === plan.id ? "Processing..." : "Upgrade"}
+                                    {changingPlanId === plan.id
+                                      ? "Processing..."
+                                      : "Upgrade"}
                                   </Button>
                                 ) : (
                                   <Button
@@ -1383,7 +1491,9 @@ export default function Plans() {
                                     onClick={() => handleChangePlan(plan)}
                                     disabled={changingPlanId === plan.id}
                                   >
-                                    {changingPlanId === plan.id ? "Processing..." : "Downgrade"}
+                                    {changingPlanId === plan.id
+                                      ? "Processing..."
+                                      : "Downgrade"}
                                   </Button>
                                 )}
                               </>
@@ -1417,8 +1527,12 @@ export default function Plans() {
                                   onClick={() => handleSyncPlan(plan.id)}
                                   disabled={syncingPlanId === plan.id}
                                 >
-                                  <RefreshCw className={`w-3 h-3 mr-1 ${syncingPlanId === plan.id ? "animate-spin" : ""}`} />
-                                  {syncingPlanId === plan.id ? "Syncing..." : "Sync to Gateways"}
+                                  <RefreshCw
+                                    className={`w-3 h-3 mr-1 ${syncingPlanId === plan.id ? "animate-spin" : ""}`}
+                                  />
+                                  {syncingPlanId === plan.id
+                                    ? "Syncing..."
+                                    : "Sync to Gateways"}
                                 </Button>
                               </div>
                             )}

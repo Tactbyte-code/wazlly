@@ -1,20 +1,3 @@
-/**
- * ============================================================
- * © 2025 Diploy — a brand of Bisht Technologies Private Limited
- * Original Author: BTPL Engineering Team
- * Website: https://diploy.in
- * Contact: cs@diploy.in
- *
- * Distributed under the Envato / CodeCanyon License Agreement.
- * Licensed to the purchaser for use as defined by the
- * Envato Market (CodeCanyon) Regular or Extended License.
- *
- * You are NOT permitted to redistribute, resell, sublicense,
- * or share this source code, in whole or in part.
- * Respect the author's rights and Envato licensing terms.
- * ============================================================
- */
-
 import React, { useState, useEffect } from "react";
 import {
   Check,
@@ -106,7 +89,15 @@ const StripePaymentForm: React.FC<{
   clientSecret: string;
   onSuccess: () => void;
   onError: (error: string) => void;
-}> = ({ transactionId, subscriptionId, amount, currencySymbol, planName, onSuccess, onError }) => {
+}> = ({
+  transactionId,
+  subscriptionId,
+  amount,
+  currencySymbol,
+  planName,
+  onSuccess,
+  onError,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -126,12 +117,16 @@ const StripePaymentForm: React.FC<{
         redirect: "if_required",
       });
 
-
       if (error) {
         if (error.type === "card_error" || error.type === "validation_error") {
-          onError(error.message || "Payment authentication failed. Please try another card.");
+          onError(
+            error.message ||
+              "Payment authentication failed. Please try another card.",
+          );
         } else {
-          onError(error.message || "An unexpected error occurred during payment.");
+          onError(
+            error.message || "An unexpected error occurred during payment.",
+          );
         }
       } else if (paymentIntent) {
         const verifyResponse = await apiRequest(
@@ -140,9 +135,13 @@ const StripePaymentForm: React.FC<{
           {
             transactionId,
             subscription_id: subscriptionId,
-            payment_intent_id: paymentIntent.id.startsWith("pi_") ? paymentIntent.id : null,
-            setup_intent_id: paymentIntent.id.startsWith("seti_") ? paymentIntent.id : null,
-          }
+            payment_intent_id: paymentIntent.id.startsWith("pi_")
+              ? paymentIntent.id
+              : null,
+            setup_intent_id: paymentIntent.id.startsWith("seti_")
+              ? paymentIntent.id
+              : null,
+          },
         );
 
         const verifyData = await verifyResponse.json();
@@ -165,7 +164,11 @@ const StripePaymentForm: React.FC<{
       <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-800 mb-2">
           You are subscribing to <strong>{planName}</strong> for{" "}
-          <strong>{currencySymbol}{(amount / 100).toFixed(2)}</strong>/period
+          <strong>
+            {currencySymbol}
+            {(amount / 100).toFixed(2)}
+          </strong>
+          /period
         </p>
       </div>
 
@@ -180,7 +183,8 @@ const StripePaymentForm: React.FC<{
         ) : (
           <>
             <Lock className="w-4 h-4 mr-2" />
-            Subscribe - {currencySymbol}{(amount / 100).toFixed(2)}
+            Subscribe - {currencySymbol}
+            {(amount / 100).toFixed(2)}
           </>
         )}
       </Button>
@@ -207,7 +211,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     useState<Promise<Stripe | null> | null>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
   const [transactionId, setTransactionId] = useState<string>("");
-  const [gatewaySubscriptionId, setGatewaySubscriptionId] = useState<string>("");
+  const [gatewaySubscriptionId, setGatewaySubscriptionId] =
+    useState<string>("");
 
   const { currency, currencySymbol } = useAuth();
   const checkoutCurrency = propCurrency || currency;
@@ -231,12 +236,18 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   // Determine the actual currency to use for this plan
   const upperCheckoutCur = checkoutCurrency?.toUpperCase();
-  const hasSpecificPrice = upperCheckoutCur && plan.multiCurrencyPrices && plan.multiCurrencyPrices[upperCheckoutCur];
-  const finalCurrency = hasSpecificPrice ? upperCheckoutCur : (currency?.toUpperCase() || "USD");
+  const hasSpecificPrice =
+    upperCheckoutCur &&
+    plan.multiCurrencyPrices &&
+    plan.multiCurrencyPrices[upperCheckoutCur];
+  const finalCurrency = hasSpecificPrice
+    ? upperCheckoutCur
+    : currency?.toUpperCase() || "USD";
 
-  const activeCurrencySymbol = finalCurrency === currency?.toUpperCase()
-    ? currencySymbol
-    : (currencySymbolMap[finalCurrency] || finalCurrency + " ");
+  const activeCurrencySymbol =
+    finalCurrency === currency?.toUpperCase()
+      ? currencySymbol
+      : currencySymbolMap[finalCurrency] || finalCurrency + " ";
 
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Zap,
@@ -252,9 +263,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     ? parseFloat(plan.annualPrice)
     : parseFloat(plan.monthlyPrice);
 
-  if (checkoutCurrency && plan.multiCurrencyPrices && plan.multiCurrencyPrices[checkoutCurrency.toUpperCase()]) {
+  if (
+    checkoutCurrency &&
+    plan.multiCurrencyPrices &&
+    plan.multiCurrencyPrices[checkoutCurrency.toUpperCase()]
+  ) {
     const multiPrice = plan.multiCurrencyPrices[checkoutCurrency.toUpperCase()];
-    price = isAnnual ? parseFloat(multiPrice.annual) : parseFloat(multiPrice.monthly);
+    price = isAnnual
+      ? parseFloat(multiPrice.annual)
+      : parseFloat(multiPrice.monthly);
   }
 
   const total = price;
@@ -264,13 +281,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   // Filter strictly by what the operator has configured for each provider.
   // No hardcoded currency fallback — a provider with no explicitly
   // supported currencies never matches.
+
+  // modified code for only Indian currency
+  // const activeProviders = allActiveProviders.filter((p) => {
+  //   const currencies = Array.isArray(p.supportedCurrencies)
+  //     ? p.supportedCurrencies.map((c) => c.toUpperCase())
+  //     : [];
+  //   return currencies.includes(finalCurrency.toUpperCase());
+  // });
+
+  // original code for all cuurencies
   const activeProviders = finalCurrency
     ? allActiveProviders.filter((p) => {
-      const currencies = Array.isArray(p.supportedCurrencies)
-        ? p.supportedCurrencies.map((c) => c.toUpperCase())
-        : [];
-      return currencies.includes(finalCurrency.toUpperCase());
-    })
+        const currencies = Array.isArray(p.supportedCurrencies)
+          ? p.supportedCurrencies.map((c) => c.toUpperCase())
+          : [];
+        return currencies.includes(finalCurrency.toUpperCase());
+      })
     : allActiveProviders;
 
   useEffect(() => {
@@ -279,7 +306,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     } else {
       // Prioritize Stripe if currency is USD
       if (finalCurrency === "USD") {
-        const stripeProvider = activeProviders.find(p => p.providerKey.toLowerCase() === "stripe");
+        const stripeProvider = activeProviders.find(
+          (p) => p.providerKey.toLowerCase() === "stripe",
+        );
         if (stripeProvider) {
           setSelectedProvider(stripeProvider);
           return;
@@ -289,7 +318,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       if (activeProviders.length === 1) {
         setSelectedProvider(activeProviders[0]);
       } else if (selectedProvider) {
-        const stillAvailable = activeProviders.find(p => p.id === selectedProvider.id);
+        const stillAvailable = activeProviders.find(
+          (p) => p.id === selectedProvider.id,
+        );
         if (!stillAvailable) {
           setSelectedProvider(activeProviders[0]);
         }
@@ -297,7 +328,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         setSelectedProvider(activeProviders[0]);
       }
     }
-  }, [finalCurrency, JSON.stringify(activeProviders.map(p => p.id))]);
+  }, [finalCurrency, JSON.stringify(activeProviders.map((p) => p.id))]);
 
   const getProviderIcon = (providerKey: string) => {
     const key = providerKey.toLowerCase();
@@ -311,7 +342,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       case "paystack":
         return <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-teal-600" />;
       case "mercadopago":
-        return <SiMercadopago className="w-6 h-6 sm:w-7 sm:h-7 text-[#009ee3]" />;
+        return (
+          <SiMercadopago className="w-6 h-6 sm:w-7 sm:h-7 text-[#009ee3]" />
+        );
       default:
         return <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-gray-600" />;
     }
@@ -360,9 +393,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const initiateRazorpayPayment = async (
-    paymentData: PaymentInitiationData
+    paymentData: PaymentInitiationData,
   ) => {
     try {
+      console.log("intiate razorpay payment function entered");
+
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.async = true;
@@ -389,7 +424,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_subscription_id: response.razorpay_subscription_id,
                 razorpay_signature: response.razorpay_signature,
-              }
+              },
             );
 
             const verifyData = await verifyResponse.json();
@@ -407,7 +442,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               }, 100);
             } else {
               throw new Error(
-                verifyData.message || "Payment verification failed"
+                verifyData.message || "Payment verification failed",
               );
             }
           } catch (error: any) {
@@ -445,8 +480,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         },
       };
 
-
-      console.log("RAZORPAY OPTIONS =>", options);
+      console.log("RAZORPAY OPTIONS => ", options);
 
       const razorpay = new window.Razorpay(options);
       razorpay.open();
@@ -468,7 +502,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         variant: "destructive",
       });
       return;
-    }
+    };
 
     setLoading(true);
 
@@ -484,13 +518,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       const response = await apiRequest(
         "POST",
         "/api/payment/initiate",
-        paymentData
+        paymentData,
       );
+
       const data: PaymentInitiationResponse = await response.json();
+      console.log("payment initiation response: ", data);
 
       if (!data.success) {
         throw new Error(data.message || "Payment initiation failed");
-      }
+      };
 
       const provider = data.data.provider.toLowerCase();
 
@@ -508,7 +544,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         console.log("STRIPE DATA =>", data.data);
 
         if (!data.data.clientSecret || !data.data.publishableKey) {
-          throw new Error("Missing Stripe payment details. Please ensure the Stripe gateway is configured correctly.");
+          throw new Error(
+            "Missing Stripe payment details. Please ensure the Stripe gateway is configured correctly.",
+          );
         }
         const stripe = await loadStripe(data.data.publishableKey);
         setStripePromise(Promise.resolve(stripe));
@@ -524,17 +562,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         setLoading(false);
       } else if (provider === "paypal") {
         if (!data.data.approvalUrl) {
-          throw new Error("Missing PayPal approval URL. Please ensure the plan is synced to PayPal.");
+          throw new Error(
+            "Missing PayPal approval URL. Please ensure the plan is synced to PayPal.",
+          );
         }
         window.location.href = data.data.approvalUrl;
       } else if (provider === "paystack") {
         if (!data.data.authorizationUrl) {
-          throw new Error("Missing Paystack authorization URL. Please ensure the plan is synced to Paystack.");
+          throw new Error(
+            "Missing Paystack authorization URL. Please ensure the plan is synced to Paystack.",
+          );
         }
         window.location.href = data.data.authorizationUrl;
       } else if (provider === "mercadopago") {
         if (!data.data.initPoint) {
-          throw new Error("Missing Mercado Pago checkout URL. Please ensure the plan is synced to Mercado Pago.");
+          throw new Error(
+            "Missing Mercado Pago checkout URL. Please ensure the plan is synced to Mercado Pago.",
+          );
         }
         window.location.href = data.data.initPoint;
       } else {
@@ -727,6 +771,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                 );
               }
+
               if (activeProviders.length === 0) {
                 return (
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -744,10 +789,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                 );
               }
+
               return (
                 <div
-                  className={`grid gap-2 sm:gap-3 ${activeProviders.length === 1 ? "grid-cols-1" : "grid-cols-2"
-                    }`}
+                  className={`grid gap-2 sm:gap-3 ${
+                    activeProviders.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                  }`}
                 >
                   {activeProviders.map((provider) => {
                     const colors = getProviderColor(provider.providerKey);
@@ -757,10 +804,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       <button
                         key={provider.id}
                         onClick={() => setSelectedProvider(provider)}
-                        className={`p-3 sm:p-4 border-2 rounded-lg sm:rounded-xl transition-all ${isSelected
-                          ? `${colors.border} ${colors.bg}`
-                          : "border-gray-200 hover:border-gray-300"
-                          }`}
+                        className={`p-3 sm:p-4 border-2 rounded-lg sm:rounded-xl transition-all ${
+                          isSelected
+                            ? `${colors.border} ${colors.bg}`
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
                       >
                         <div className="flex flex-col items-center gap-1.5 sm:gap-2">
                           {getProviderIcon(provider.providerKey)}
