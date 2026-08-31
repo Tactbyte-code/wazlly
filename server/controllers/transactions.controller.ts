@@ -16,7 +16,12 @@
  */
 
 import { Request, Response } from "express";
-import { DiployError, asyncHandler as _dHandler, diployLogger, HTTP_STATUS } from "@diploy/core";
+import {
+  DiployError,
+  asyncHandler as _dHandler,
+  diployLogger,
+  HTTP_STATUS,
+} from "@diploy/core";
 import { db } from "../db";
 import {
   transactions,
@@ -68,8 +73,8 @@ export const getAllTransactions = async (req: Request, res: Response) => {
         or(
           like(users.email, `%${search}%`),
           like(transactions.providerTransactionId, `%${search}%`),
-          like(transactions.providerOrderId, `%${search}%`)
-        )
+          like(transactions.providerOrderId, `%${search}%`),
+        ),
       );
     }
 
@@ -139,7 +144,7 @@ export const getAllTransactions = async (req: Request, res: Response) => {
       .leftJoin(plans, eq(transactions.planId, plans.id))
       .leftJoin(
         paymentProviders,
-        eq(transactions.paymentProviderId, paymentProviders.id)
+        eq(transactions.paymentProviderId, paymentProviders.id),
       )
       .where(whereClause)
       .orderBy(desc(transactions.createdAt))
@@ -196,7 +201,7 @@ export const getTransactionStats = async (req: Request, res: Response) => {
       .where(
         whereClause
           ? and(whereClause, eq(transactions.status, "completed"))
-          : eq(transactions.status, "completed")
+          : eq(transactions.status, "completed"),
       );
 
     const statusCounts = await db
@@ -217,7 +222,7 @@ export const getTransactionStats = async (req: Request, res: Response) => {
       .where(
         whereClause
           ? and(whereClause, eq(transactions.status, "completed"))
-          : eq(transactions.status, "completed")
+          : eq(transactions.status, "completed"),
       )
       .groupBy(transactions.billingCycle);
 
@@ -261,7 +266,7 @@ export const getTransactionById = async (req: Request, res: Response) => {
       .leftJoin(plans, eq(transactions.planId, plans.id))
       .leftJoin(
         paymentProviders,
-        eq(transactions.paymentProviderId, paymentProviders.id)
+        eq(transactions.paymentProviderId, paymentProviders.id),
       )
       .where(eq(transactions.id, id))
       .limit(1);
@@ -302,7 +307,7 @@ export const exportTransactions = async (req: Request, res: Response) => {
       .leftJoin(plans, eq(transactions.planId, plans.id))
       .leftJoin(
         paymentProviders,
-        eq(transactions.paymentProviderId, paymentProviders.id)
+        eq(transactions.paymentProviderId, paymentProviders.id),
       )
       .orderBy(desc(transactions.createdAt));
 
@@ -375,12 +380,13 @@ export const exportTransactions = async (req: Request, res: Response) => {
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=transactions_${new Date().toISOString().split("T")[0]
-      }.xlsx`
+      `attachment; filename=transactions_${
+        new Date().toISOString().split("T")[0]
+      }.xlsx`,
     );
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.send(Buffer.from(buffer));
@@ -407,7 +413,7 @@ export const getTransactionsByUserId = async (req: Request, res: Response) => {
       .leftJoin(plans, eq(transactions.planId, plans.id))
       .leftJoin(
         paymentProviders,
-        eq(transactions.paymentProviderId, paymentProviders.id)
+        eq(transactions.paymentProviderId, paymentProviders.id),
       )
       .where(eq(transactions.userId, userId))
       .orderBy(desc(transactions.createdAt));
@@ -465,9 +471,15 @@ export const createTransaction = async (req: Request, res: Response) => {
     const requestedCurrency = currency ? String(currency).toUpperCase() : null;
 
     if (requestedCurrency && plan.multiCurrencyPrices) {
-      const multiPrices = plan.multiCurrencyPrices as Record<string, { monthly: string; annual: string }>;
+      const multiPrices = plan.multiCurrencyPrices as Record<
+        string,
+        { monthly: string; annual: string }
+      >;
       if (multiPrices[requestedCurrency]) {
-        amount = billingCycle === "annual" ? multiPrices[requestedCurrency].annual : multiPrices[requestedCurrency].monthly;
+        amount =
+          billingCycle === "annual"
+            ? multiPrices[requestedCurrency].annual
+            : multiPrices[requestedCurrency].monthly;
       }
     }
 
@@ -642,13 +654,11 @@ export const completeTransaction = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error completing transaction",
-        error,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error completing transaction",
+      error,
+    });
   }
 };
 
@@ -709,13 +719,8 @@ export const refundTransaction = async (req: Request, res: Response) => {
 
 export const initiatePayment = async (req: Request, res: Response) => {
   try {
-    const {
-      userId,
-      planId,
-      currency,
-      paymentProviderId,
-      billingCycle,
-    } = req.body;
+    const { userId, planId, currency, paymentProviderId, billingCycle } =
+      req.body;
 
     const planData = await db.select().from(plans).where(eq(plans.id, planId));
     if (planData.length === 0) {
@@ -723,6 +728,8 @@ export const initiatePayment = async (req: Request, res: Response) => {
         .status(404)
         .json({ success: false, message: "Plan not found" });
     }
+
+    // console.log('plan data: ', planData);
 
     const providerData = await db
       .select()
@@ -733,7 +740,7 @@ export const initiatePayment = async (req: Request, res: Response) => {
       return res
         .status(404)
         .json({ success: false, message: "Payment provider not found" });
-    }
+    };
 
     const provider = providerData[0];
 
@@ -741,28 +748,33 @@ export const initiatePayment = async (req: Request, res: Response) => {
       return res
         .status(400)
         .json({ success: false, message: "Payment provider is not active" });
-    }
+    };
 
     const plan = planData[0];
     const cycle = billingCycle === "annual" ? "annual" : "monthly";
-    let amount =
-      cycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
+    let amount = cycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
 
     const requestedCurrency = currency ? String(currency).toUpperCase() : null;
 
     if (requestedCurrency && plan.multiCurrencyPrices) {
-      const multiPrices = plan.multiCurrencyPrices as Record<string, { monthly: string; annual: string }>;
+      const multiPrices = plan.multiCurrencyPrices as Record<
+        string,
+        { monthly: string; annual: string }
+      >;
       if (multiPrices[requestedCurrency]) {
-        amount = cycle === "annual" ? multiPrices[requestedCurrency].annual : multiPrices[requestedCurrency].monthly;
+        amount =
+          cycle === "annual"
+            ? multiPrices[requestedCurrency].annual
+            : multiPrices[requestedCurrency].monthly;
       }
-    }
+    };
 
     if (!requestedCurrency) {
       return res.status(400).json({
         success: false,
         message: "currency is required",
       });
-    }
+    };
 
     assertProviderSupportsCurrency(provider, requestedCurrency);
 
@@ -781,11 +793,18 @@ export const initiatePayment = async (req: Request, res: Response) => {
       .returning();
 
     const transaction = newTransaction[0];
+    // console.log("new transaction: ", transaction);
 
     let paymentData: any;
 
     if (provider.providerKey === "stripe") {
-      const result = await createStripeSubscription(userId, planId, cycle, requestedCurrency, transaction.id);
+      const result = await createStripeSubscription(
+        userId,
+        planId,
+        cycle,
+        requestedCurrency,
+        transaction.id,
+      );
 
       await db
         .update(transactions)
@@ -805,7 +824,12 @@ export const initiatePayment = async (req: Request, res: Response) => {
         gatewayStatus: result.status,
       };
     } else if (provider.providerKey === "razorpay") {
-      const result = await createRazorpaySubscription(userId, planId, cycle, requestedCurrency);
+      const result = await createRazorpaySubscription(
+        userId,
+        planId,
+        cycle,
+        requestedCurrency,
+      );
 
       await db
         .update(transactions)
@@ -824,7 +848,12 @@ export const initiatePayment = async (req: Request, res: Response) => {
         gatewayStatus: result.status,
       };
     } else if (provider.providerKey === "paypal") {
-      const result = await createPayPalSubscription(userId, planId, cycle, requestedCurrency);
+      const result = await createPayPalSubscription(
+        userId,
+        planId,
+        cycle,
+        requestedCurrency,
+      );
 
       await db
         .update(transactions)
@@ -840,7 +869,12 @@ export const initiatePayment = async (req: Request, res: Response) => {
         gatewayStatus: result.status,
       };
     } else if (provider.providerKey === "paystack") {
-      const result = await createPaystackSubscription(userId, planId, cycle, requestedCurrency);
+      const result = await createPaystackSubscription(
+        userId,
+        planId,
+        cycle,
+        requestedCurrency,
+      );
 
       await db
         .update(transactions)
@@ -858,7 +892,12 @@ export const initiatePayment = async (req: Request, res: Response) => {
         publicKey,
       };
     } else if (provider.providerKey === "mercadopago") {
-      const result = await createMercadoPagoSubscription(userId, planId, cycle, requestedCurrency);
+      const result = await createMercadoPagoSubscription(
+        userId,
+        planId,
+        cycle,
+        requestedCurrency,
+      );
 
       await db
         .update(transactions)
@@ -896,7 +935,9 @@ export const initiatePayment = async (req: Request, res: Response) => {
     if (error instanceof CurrencyNotSupportedError) {
       return res.status(400).json({ success: false, message: error.message });
     }
-    console.error("Error initiating payment:", error);
+
+    console.error("Error initiating payment: ", error);
+
     res.status(500).json({
       success: false,
       message: error.message || "Error initiating payment",
@@ -928,8 +969,9 @@ export const verifyRazorpayPayment = async (req: Request, res: Response) => {
     const provider = providerData[0];
 
     const isLive = provider.isLive === true;
-    const secret = isLive ? (provider.config.apiSecret || process.env.RAZORPAY_KEY_SECRET) : (provider.config.apiSecretTest || process.env.RAZORPAY_KEY_SECRET);
-
+    const secret = isLive
+      ? provider.config.apiSecret || process.env.RAZORPAY_KEY_SECRET
+      : provider.config.apiSecretTest || process.env.RAZORPAY_KEY_SECRET;
 
     // console.log("RAZORPAY MODE =>", isLive ? "LIVE" : "TEST"); console.log("RAZORPAY SECRET =>", secret);
 
@@ -938,9 +980,6 @@ export const verifyRazorpayPayment = async (req: Request, res: Response) => {
       .update(razorpay_payment_id + "|" + razorpay_subscription_id)
       .digest("hex");
 
-
-
-
     console.log("RAZORPAY DEBUG", {
       secret,
       payload: razorpay_payment_id + "|" + razorpay_subscription_id,
@@ -948,8 +987,6 @@ export const verifyRazorpayPayment = async (req: Request, res: Response) => {
       razorpay_signature,
       matched: generated_signature === razorpay_signature,
     });
-
-
 
     const transactionData = await db
       .select()
@@ -1024,8 +1061,8 @@ export const verifyRazorpayPayment = async (req: Request, res: Response) => {
       .where(
         and(
           eq(subscriptions.userId, transaction.userId),
-          eq(subscriptions.status, "active")
-        )
+          eq(subscriptions.status, "active"),
+        ),
       );
 
     const newSubscription = await db
@@ -1054,7 +1091,6 @@ export const verifyRazorpayPayment = async (req: Request, res: Response) => {
         updatedAt: new Date(),
       })
       .returning();
-
 
     await db
       .update(transactions)
@@ -1089,7 +1125,8 @@ export const verifyRazorpayPayment = async (req: Request, res: Response) => {
 
 export const verifyStripePayment = async (req: Request, res: Response) => {
   try {
-    const { subscription_id, payment_intent_id, transactionId, session_id } = req.body;
+    const { subscription_id, payment_intent_id, transactionId, session_id } =
+      req.body;
 
     if (!transactionId) {
       return res.status(400).json({
@@ -1135,12 +1172,13 @@ export const verifyStripePayment = async (req: Request, res: Response) => {
     if (!gatewaySubId) {
       return res.status(400).json({
         success: false,
-        message: "No subscription ID found. Payment might still be processing or failed.",
+        message:
+          "No subscription ID found. Payment might still be processing or failed.",
       });
     }
 
     const stripeSub = (await stripe.subscriptions.retrieve(
-      gatewaySubId
+      gatewaySubId,
     )) as any;
 
     const isActive =
@@ -1188,8 +1226,8 @@ export const verifyStripePayment = async (req: Request, res: Response) => {
         .where(
           and(
             eq(subscriptions.userId, transaction.userId),
-            eq(subscriptions.status, "active")
-          )
+            eq(subscriptions.status, "active"),
+          ),
         );
 
       const newSubscription = await db
@@ -1219,7 +1257,6 @@ export const verifyStripePayment = async (req: Request, res: Response) => {
         })
         .returning();
 
-
       await db
         .update(transactions)
         .set({
@@ -1247,8 +1284,7 @@ export const verifyStripePayment = async (req: Request, res: Response) => {
       await db
         .update(transactions)
         .set({
-          status:
-            stripeSub.status === "incomplete" ? "pending" : "failed",
+          status: stripeSub.status === "incomplete" ? "pending" : "failed",
           metadata: {
             stripeStatus: stripeSub.status,
             error: "Subscription not active",
@@ -1282,7 +1318,8 @@ export const verifyPayPalPayment = async (req: Request, res: Response) => {
     if (!transactionId && !subscription_id) {
       return res.status(400).json({
         success: false,
-        message: "Missing required parameters (transactionId or subscription_id)",
+        message:
+          "Missing required parameters (transactionId or subscription_id)",
       });
     }
 
@@ -1318,10 +1355,12 @@ export const verifyPayPalPayment = async (req: Request, res: Response) => {
       });
     }
 
-    const { getPayPalSubscriptionStatus } = await import("../services/payment-gateway.service");
+    const { getPayPalSubscriptionStatus } =
+      await import("../services/payment-gateway.service");
     const subStatus = await getPayPalSubscriptionStatus(gatewaySubId);
 
-    const isActive = subStatus.status === "ACTIVE" || subStatus.status === "APPROVED";
+    const isActive =
+      subStatus.status === "ACTIVE" || subStatus.status === "APPROVED";
 
     if (isActive) {
       await db
@@ -1364,8 +1403,8 @@ export const verifyPayPalPayment = async (req: Request, res: Response) => {
         .where(
           and(
             eq(subscriptions.userId, transaction.userId),
-            eq(subscriptions.status, "active")
-          )
+            eq(subscriptions.status, "active"),
+          ),
         );
 
       const newSubscription = await db
@@ -1489,8 +1528,7 @@ export const verifyPaystackPayment = async (req: Request, res: Response) => {
 
     const provider = providerData[0];
     const secretKey =
-      provider.config?.apiSecret ||
-      provider.config?.apiSecretTest;
+      provider.config?.apiSecret || provider.config?.apiSecretTest;
 
     if (!secretKey) {
       return res.status(500).json({
@@ -1505,10 +1543,10 @@ export const verifyPaystackPayment = async (req: Request, res: Response) => {
         headers: {
           Authorization: `Bearer ${secretKey}`,
         },
-      }
+      },
     );
 
-    const verifyData = await verifyResponse.json() as any;
+    const verifyData = (await verifyResponse.json()) as any;
 
     if (!verifyData.status || verifyData.data?.status !== "success") {
       await db
@@ -1573,11 +1611,12 @@ export const verifyPaystackPayment = async (req: Request, res: Response) => {
       .where(
         and(
           eq(subscriptions.userId, transaction.userId),
-          eq(subscriptions.status, "active")
-        )
+          eq(subscriptions.status, "active"),
+        ),
       );
 
-    const subscriptionCode = paystackData.authorization?.authorization_code || verifyReference;
+    const subscriptionCode =
+      paystackData.authorization?.authorization_code || verifyReference;
 
     const newSubscription = await db
       .insert(subscriptions)
@@ -1637,7 +1676,8 @@ export const verifyMercadoPagoPayment = async (req: Request, res: Response) => {
     if (!transactionId && !preapproval_id) {
       return res.status(400).json({
         success: false,
-        message: "Missing required parameters (transactionId or preapproval_id)",
+        message:
+          "Missing required parameters (transactionId or preapproval_id)",
       });
     }
 
@@ -1673,10 +1713,12 @@ export const verifyMercadoPagoPayment = async (req: Request, res: Response) => {
       });
     }
 
-    const { getMercadoPagoSubscriptionStatus } = await import("../services/payment-gateway.service");
+    const { getMercadoPagoSubscriptionStatus } =
+      await import("../services/payment-gateway.service");
     const subStatus = await getMercadoPagoSubscriptionStatus(gatewaySubId);
 
-    const isActive = subStatus.status === "authorized" || subStatus.status === "pending";
+    const isActive =
+      subStatus.status === "authorized" || subStatus.status === "pending";
 
     if (isActive) {
       await db
@@ -1719,8 +1761,8 @@ export const verifyMercadoPagoPayment = async (req: Request, res: Response) => {
         .where(
           and(
             eq(subscriptions.userId, transaction.userId),
-            eq(subscriptions.status, "active")
-          )
+            eq(subscriptions.status, "active"),
+          ),
         );
 
       const newSubscription = await db

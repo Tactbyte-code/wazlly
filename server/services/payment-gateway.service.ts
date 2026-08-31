@@ -29,7 +29,7 @@ async function requirePublicOrigin(context: string): Promise<string> {
   if (!origin) {
     throw new Error(
       `${context}: public origin has not been captured yet. ` +
-      `An authenticated HTTP request must be observed before payment return URLs can be built.`
+        `An authenticated HTTP request must be observed before payment return URLs can be built.`,
     );
   }
   return origin;
@@ -46,8 +46,8 @@ async function getProviderConfig(providerKey: string) {
     .where(
       and(
         eq(paymentProviders.providerKey, providerKey),
-        eq(paymentProviders.isActive, true)
-      )
+        eq(paymentProviders.isActive, true),
+      ),
     )
     .limit(1);
   return result[0] || null;
@@ -63,7 +63,7 @@ export async function getStripe(): Promise<Stripe | null> {
     : provider.config?.apiSecretTest;
   if (!secretKey) {
     throw new Error(
-      `Stripe ${isLive ? "live" : "test"} secret key not configured`
+      `Stripe ${isLive ? "live" : "test"} secret key not configured`,
     );
   }
   stripeInstance = new Stripe(secretKey);
@@ -71,22 +71,23 @@ export async function getStripe(): Promise<Stripe | null> {
 }
 
 export async function getRazorpay(): Promise<Razorpay | null> {
-  if (razorpayInstance) return razorpayInstance;
+  // if (razorpayInstance) return razorpayInstance;
   const provider = await getProviderConfig("razorpay");
+  console.log("provider: ", provider);
+
   if (!provider) return null;
   const isLive = provider.config?.isLive === true;
-  const keyId = isLive
-    ? provider.config?.apiKey
-    : provider.config?.apiKeyTest;
+  const keyId = isLive ? provider.config?.apiKey : provider.config?.apiKeyTest;
   const keySecret = isLive
     ? provider.config?.apiSecret
     : provider.config?.apiSecretTest;
   if (!keyId || !keySecret) {
     throw new Error(
-      `Razorpay ${isLive ? "live" : "test"} credentials not configured`
+      `Razorpay ${isLive ? "live" : "test"} credentials not configured`,
     );
   }
   razorpayInstance = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  console.log("raz instance: ", razorpayInstance);
   return razorpayInstance;
 }
 
@@ -100,7 +101,11 @@ export class CurrencyNotSupportedError extends Error {
   readonly providerName: string;
   readonly currency: string;
   readonly reason: "unsupported" | "unconfigured";
-  constructor(providerName: string, currency: string, reason: "unsupported" | "unconfigured") {
+  constructor(
+    providerName: string,
+    currency: string,
+    reason: "unsupported" | "unconfigured",
+  ) {
     const msg =
       reason === "unconfigured"
         ? `${providerName} has no supportedCurrencies configured. Set them in Gateway Settings before accepting payments.`
@@ -125,14 +130,21 @@ export function assertProviderSupportsCurrency(
     ? provider.supportedCurrencies.map((c) => String(c).toUpperCase())
     : [];
   if (supported.length === 0) {
-    throw new CurrencyNotSupportedError(provider.name, currency, "unconfigured");
+    throw new CurrencyNotSupportedError(
+      provider.name,
+      currency,
+      "unconfigured",
+    );
   }
   if (!supported.includes(String(currency).toUpperCase())) {
     throw new CurrencyNotSupportedError(provider.name, currency, "unsupported");
   }
 }
 
-async function getProviderCurrency(providerKey: string, fallback: string): Promise<string> {
+async function getProviderCurrency(
+  providerKey: string,
+  fallback: string,
+): Promise<string> {
   const provider = await getProviderConfig(providerKey);
   const currencies = provider?.supportedCurrencies;
   if (Array.isArray(currencies) && currencies.length > 0) {
@@ -157,7 +169,11 @@ async function retrieveStripeInvoiceForPayment(
 async function extractStripeInvoiceClientSecret(
   stripe: Stripe,
   invoice: Stripe.Invoice | null,
-): Promise<{ clientSecret: string | null; intentType: string; paymentIntentId: string | null }> {
+): Promise<{
+  clientSecret: string | null;
+  intentType: string;
+  paymentIntentId: string | null;
+}> {
   const confirmationSecret = (invoice as any)?.confirmation_secret as
     | { client_secret?: string; type?: string }
     | null
@@ -177,7 +193,10 @@ async function extractStripeInvoiceClientSecret(
     | null
     | undefined;
 
-  if (typeof directPaymentIntent === "object" && directPaymentIntent?.client_secret) {
+  if (
+    typeof directPaymentIntent === "object" &&
+    directPaymentIntent?.client_secret
+  ) {
     return {
       clientSecret: directPaymentIntent.client_secret,
       intentType: "payment_intent",
@@ -187,10 +206,15 @@ async function extractStripeInvoiceClientSecret(
 
   const invoicePayments = ((invoice as any)?.payments?.data || []) as any[];
   const invoicePaymentIntent = invoicePayments.find(
-    (payment) => payment?.payment?.type === "payment_intent" && payment?.payment?.payment_intent
+    (payment) =>
+      payment?.payment?.type === "payment_intent" &&
+      payment?.payment?.payment_intent,
   )?.payment?.payment_intent as string | Stripe.PaymentIntent | undefined;
 
-  if (typeof invoicePaymentIntent === "object" && invoicePaymentIntent?.client_secret) {
+  if (
+    typeof invoicePaymentIntent === "object" &&
+    invoicePaymentIntent?.client_secret
+  ) {
     return {
       clientSecret: invoicePaymentIntent.client_secret,
       intentType: "payment_intent",
@@ -214,14 +238,22 @@ async function extractStripeInvoiceClientSecret(
     };
   }
 
-  return { clientSecret: null, intentType: "payment_intent", paymentIntentId: null };
+  return {
+    clientSecret: null,
+    intentType: "payment_intent",
+    paymentIntentId: null,
+  };
 }
 
 export async function syncPlanToStripe(planId: string) {
   const stripe = await getStripe();
   if (!stripe) throw new Error("Stripe is not configured or inactive");
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
@@ -320,7 +352,11 @@ export async function syncPlanToRazorpay(planId: string) {
   const razorpay = await getRazorpay();
   if (!razorpay) throw new Error("Razorpay is not configured or inactive");
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
@@ -373,7 +409,14 @@ export async function syncPlanToRazorpay(planId: string) {
 }
 
 export async function syncPlanToAllGateways(planId: string) {
-  const results: { stripe?: any; razorpay?: any; paypal?: any; paystack?: any; mercadopago?: any; errors: string[] } = { errors: [] };
+  const results: {
+    stripe?: any;
+    razorpay?: any;
+    paypal?: any;
+    paystack?: any;
+    mercadopago?: any;
+    errors: string[];
+  } = { errors: [] };
 
   const activeProviders = await db
     .select({ providerKey: paymentProviders.providerKey })
@@ -382,7 +425,11 @@ export async function syncPlanToAllGateways(planId: string) {
   const activeKeys = new Set(activeProviders.map((p) => p.providerKey));
 
   const formatError = (gateway: string, err: any) => {
-    const msg = err.message || err.error?.description || err.error?.message || (typeof err === "string" ? err : JSON.stringify(err));
+    const msg =
+      err.message ||
+      err.error?.description ||
+      err.error?.message ||
+      (typeof err === "string" ? err : JSON.stringify(err));
     return `${gateway}: ${msg}`;
   };
 
@@ -429,11 +476,17 @@ export async function syncPlanToAllGateways(planId: string) {
   return results;
 }
 
-export async function getOrCreateStripeCustomer(userId: string): Promise<string> {
+export async function getOrCreateStripeCustomer(
+  userId: string,
+): Promise<string> {
   const stripe = await getStripe();
   if (!stripe) throw new Error("Stripe is not configured");
 
-  const userData = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  const userData = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
   if (!userData.length) throw new Error("User not found");
   const user = userData[0];
 
@@ -448,7 +501,9 @@ export async function getOrCreateStripeCustomer(userId: string): Promise<string>
 
   const customer = await stripe.customers.create({
     email: user.email,
-    name: [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username,
+    name:
+      [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+      user.username,
     metadata: { platformUserId: user.id },
   });
 
@@ -460,18 +515,26 @@ export async function getOrCreateStripeCustomer(userId: string): Promise<string>
   return customer.id;
 }
 
-export async function getOrCreateRazorpayCustomer(userId: string): Promise<string> {
+export async function getOrCreateRazorpayCustomer(
+  userId: string,
+): Promise<string> {
   const razorpay = await getRazorpay();
   if (!razorpay) throw new Error("Razorpay is not configured");
 
-  const userData = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  const userData = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
   if (!userData.length) throw new Error("User not found");
   const user = userData[0];
 
   if (user.razorpayCustomerId) return user.razorpayCustomerId;
 
   const customer = await (razorpay as any).customers.create({
-    name: [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username,
+    name:
+      [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+      user.username,
     email: user.email,
     notes: { platformUserId: user.id },
   });
@@ -498,15 +561,21 @@ export async function createStripeSubscription(
   if (!stripeProvider) throw new Error("Stripe is not configured");
   assertProviderSupportsCurrency(stripeProvider, currency);
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
   const priceId =
-    billingCycle === "annual" ? plan.stripePriceIdAnnual : plan.stripePriceIdMonthly;
+    billingCycle === "annual"
+      ? plan.stripePriceIdAnnual
+      : plan.stripePriceIdMonthly;
   if (!priceId) {
     throw new Error(
-      `Plan "${plan.name}" has no Stripe price for ${billingCycle} cycle. Please sync the plan to Stripe first.`
+      `Plan "${plan.name}" has no Stripe price for ${billingCycle} cycle. Please sync the plan to Stripe first.`,
     );
   }
 
@@ -538,7 +607,9 @@ export async function createStripeSubscription(
   });
 
   if (!checkoutSession.url) {
-    throw new Error("Stripe did not return a Checkout URL for this subscription.");
+    throw new Error(
+      "Stripe did not return a Checkout URL for this subscription.",
+    );
   }
 
   return {
@@ -554,10 +625,6 @@ export async function createStripeSubscription(
   };
 }
 
-
-
-
-
 export async function createRazorpaySubscription(
   userId: string,
   planId: string,
@@ -565,23 +632,64 @@ export async function createRazorpaySubscription(
   currency: string,
 ) {
   const razorpay = await getRazorpay();
+  console.log("razorpay key_id in use:", (razorpay as any)?.key_id);
+
   if (!razorpay) throw new Error("Razorpay is not configured");
 
   const razorpayProvider = await getProviderConfig("razorpay");
+  console.log("raz provider config: ", razorpayProvider);
   if (!razorpayProvider) throw new Error("Razorpay is not configured");
+
   assertProviderSupportsCurrency(razorpayProvider, currency);
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
-  const rzpPlanId =
-    billingCycle === "annual" ? plan.razorpayPlanIdAnnual : plan.razorpayPlanIdMonthly;
+  console.log("plan selected 1: ", plan);
+
+  let rzpPlanId =
+    billingCycle === "annual"
+      ? plan.razorpayPlanIdAnnual
+      : plan.razorpayPlanIdMonthly;
+
+  console.log("raz plan id: ", rzpPlanId);
+
   if (!rzpPlanId) {
-    throw new Error(
-      `Plan "${plan.name}" has no Razorpay plan for ${billingCycle} cycle. Please sync the plan to Razorpay first.`
-    );
+    const price =
+      billingCycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
+    const amountInSubunits = Math.round(Number(price) * 100); // Razorpay expects smallest currency unit
+
+    const createdPlan = await razorpay.plans.create({
+      period: billingCycle === "annual" ? "yearly" : "monthly",
+      interval: 1,
+      item: {
+        name: `${plan.name} (${billingCycle})`,
+        amount: amountInSubunits,
+        currency,
+      },
+      notes: { platformPlanId: planId },
+    });
+
+    rzpPlanId = createdPlan.id;
+
+    await db
+      .update(plans)
+      .set(
+        billingCycle === "annual"
+          ? { razorpayPlanIdAnnual: rzpPlanId, updatedAt: new Date() }
+          : { razorpayPlanIdMonthly: rzpPlanId, updatedAt: new Date() },
+      )
+      .where(eq(plans.id, planId));
+
+    console.log(`created & saved razorpay plan (${billingCycle}): `, rzpPlanId);
   }
+
+  console.log("plan selected 2: ", plan);
 
   const existingSubs = await db
     .select()
@@ -590,19 +698,23 @@ export async function createRazorpaySubscription(
       and(
         eq(subscriptions.userId, userId),
         eq(subscriptions.status, "active"),
-        eq(subscriptions.gatewayProvider, "razorpay")
-      )
+        eq(subscriptions.gatewayProvider, "razorpay"),
+      ),
     );
 
   for (const sub of existingSubs) {
     if (sub.gatewaySubscriptionId) {
       try {
         await razorpay.subscriptions.cancel(sub.gatewaySubscriptionId);
-      } catch { }
+      } catch {}
     }
     await db
       .update(subscriptions)
-      .set({ status: "cancelled", gatewayStatus: "cancelled", updatedAt: new Date() })
+      .set({
+        status: "cancelled",
+        gatewayStatus: "cancelled",
+        updatedAt: new Date(),
+      })
       .where(eq(subscriptions.id, sub.id));
   }
 
@@ -623,24 +735,32 @@ export async function createRazorpaySubscription(
 export async function upgradeOrDowngradeStripe(
   subscriptionGatewayId: string,
   newPlanId: string,
-  billingCycle: "monthly" | "annual"
+  billingCycle: "monthly" | "annual",
 ) {
   const stripe = await getStripe();
   if (!stripe) throw new Error("Stripe is not configured");
 
-  const planData = await db.select().from(plans).where(eq(plans.id, newPlanId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, newPlanId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
   const newPriceId =
-    billingCycle === "annual" ? plan.stripePriceIdAnnual : plan.stripePriceIdMonthly;
+    billingCycle === "annual"
+      ? plan.stripePriceIdAnnual
+      : plan.stripePriceIdMonthly;
   if (!newPriceId) {
     throw new Error(
-      `Plan "${plan.name}" has no Stripe price for ${billingCycle} cycle. Please sync the plan first.`
+      `Plan "${plan.name}" has no Stripe price for ${billingCycle} cycle. Please sync the plan first.`,
     );
   }
 
-  const existingSub = await stripe.subscriptions.retrieve(subscriptionGatewayId);
+  const existingSub = await stripe.subscriptions.retrieve(
+    subscriptionGatewayId,
+  );
 
   const updated = await stripe.subscriptions.update(subscriptionGatewayId, {
     items: [
@@ -656,7 +776,9 @@ export async function upgradeOrDowngradeStripe(
   return {
     subscriptionId: updated.id,
     status: updated.status,
-    currentPeriodEnd: new Date(((updated as any).current_period_end || 0) * 1000),
+    currentPeriodEnd: new Date(
+      ((updated as any).current_period_end || 0) * 1000,
+    ),
   };
 }
 
@@ -664,23 +786,28 @@ export async function upgradeOrDowngradeRazorpay(
   userId: string,
   oldSubscriptionGatewayId: string,
   newPlanId: string,
-  billingCycle: "monthly" | "annual"
+  billingCycle: "monthly" | "annual",
 ) {
   const razorpay = await getRazorpay();
   if (!razorpay) throw new Error("Razorpay is not configured");
 
   try {
     await razorpay.subscriptions.cancel(oldSubscriptionGatewayId);
-  } catch { }
+  } catch {}
 
   const currency = (await getProviderCurrency("razorpay", "INR")).toUpperCase();
-  const result = await createRazorpaySubscription(userId, newPlanId, billingCycle, currency);
+  const result = await createRazorpaySubscription(
+    userId,
+    newPlanId,
+    billingCycle,
+    currency,
+  );
   return result;
 }
 
 export async function cancelStripeSubscription(
   gatewaySubscriptionId: string,
-  immediately: boolean = false
+  immediately: boolean = false,
 ) {
   const stripe = await getStripe();
   if (!stripe) throw new Error("Stripe is not configured");
@@ -695,34 +822,48 @@ export async function cancelStripeSubscription(
     return {
       status: updated.status,
       cancelAtPeriodEnd: true,
-      currentPeriodEnd: new Date(((updated as any).current_period_end || 0) * 1000),
+      currentPeriodEnd: new Date(
+        ((updated as any).current_period_end || 0) * 1000,
+      ),
     };
   }
 }
 
 export async function cancelRazorpaySubscription(
   gatewaySubscriptionId: string,
-  immediately: boolean = false
+  immediately: boolean = false,
 ) {
   const razorpay = await getRazorpay();
   if (!razorpay) throw new Error("Razorpay is not configured");
 
   if (immediately) {
-    const cancelled = await razorpay.subscriptions.cancel(gatewaySubscriptionId);
+    const cancelled = await razorpay.subscriptions.cancel(
+      gatewaySubscriptionId,
+    );
     return { status: (cancelled as any).status || "cancelled" };
   } else {
-    const cancelled = await razorpay.subscriptions.cancel(gatewaySubscriptionId, {
-      cancel_at_cycle_end: 1,
-    } as any);
-    return { status: (cancelled as any).status || "cancelled", cancelAtPeriodEnd: true };
+    const cancelled = await razorpay.subscriptions.cancel(
+      gatewaySubscriptionId,
+      {
+        cancel_at_cycle_end: 1,
+      } as any,
+    );
+    return {
+      status: (cancelled as any).status || "cancelled",
+      cancelAtPeriodEnd: true,
+    };
   }
 }
 
-export async function getStripeSubscriptionStatus(gatewaySubscriptionId: string) {
+export async function getStripeSubscriptionStatus(
+  gatewaySubscriptionId: string,
+) {
   const stripe = await getStripe();
   if (!stripe) throw new Error("Stripe is not configured");
 
-  const sub = await stripe.subscriptions.retrieve(gatewaySubscriptionId) as any;
+  const sub = (await stripe.subscriptions.retrieve(
+    gatewaySubscriptionId,
+  )) as any;
   return {
     status: sub.status,
     currentPeriodStart: new Date((sub.current_period_start || 0) * 1000),
@@ -731,7 +872,9 @@ export async function getStripeSubscriptionStatus(gatewaySubscriptionId: string)
   };
 }
 
-export async function getRazorpaySubscriptionStatus(gatewaySubscriptionId: string) {
+export async function getRazorpaySubscriptionStatus(
+  gatewaySubscriptionId: string,
+) {
   const razorpay = await getRazorpay();
   if (!razorpay) throw new Error("Razorpay is not configured");
 
@@ -747,14 +890,18 @@ export async function getStripePublishableKey(): Promise<string | null> {
   const provider = await getProviderConfig("stripe");
   if (!provider) return null;
   const isLive = provider.config?.isLive === true;
-  return (isLive ? provider.config?.apiKey : provider.config?.apiKeyTest) || null;
+  return (
+    (isLive ? provider.config?.apiKey : provider.config?.apiKeyTest) || null
+  );
 }
 
 export async function getRazorpayKeyId(): Promise<string | null> {
   const provider = await getProviderConfig("razorpay");
   if (!provider) return null;
   const isLive = provider.config?.isLive === true;
-  return (isLive ? provider.config?.apiKey : provider.config?.apiKeyTest) || null;
+  return (
+    (isLive ? provider.config?.apiKey : provider.config?.apiKeyTest) || null
+  );
 }
 
 // ═══════════════════════════════════════════════
@@ -787,7 +934,7 @@ export async function getPayPalAccessToken(): Promise<string> {
 
   if (!clientId || !clientSecret) {
     throw new Error(
-      `PayPal ${isLive ? "live" : "sandbox"} credentials not configured`
+      `PayPal ${isLive ? "live" : "sandbox"} credentials not configured`,
     );
   }
 
@@ -802,7 +949,7 @@ export async function getPayPalAccessToken(): Promise<string> {
         Authorization: `Basic ${auth}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
-    }
+    },
   );
 
   paypalAccessToken = {
@@ -842,7 +989,11 @@ export async function syncPlanToPayPal(planId: string) {
   const provider = await getProviderConfig("paypal");
   if (!provider) throw new Error("PayPal is not configured or inactive");
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
@@ -876,7 +1027,10 @@ export async function syncPlanToPayPal(planId: string) {
           sequence: 1,
           total_cycles: 0,
           pricing_scheme: {
-            fixed_price: { value: monthlyAmount.toFixed(2), currency_code: currency },
+            fixed_price: {
+              value: monthlyAmount.toFixed(2),
+              currency_code: currency,
+            },
           },
         },
       ],
@@ -899,7 +1053,10 @@ export async function syncPlanToPayPal(planId: string) {
           sequence: 1,
           total_cycles: 0,
           pricing_scheme: {
-            fixed_price: { value: annualAmount.toFixed(2), currency_code: currency },
+            fixed_price: {
+              value: annualAmount.toFixed(2),
+              currency_code: currency,
+            },
           },
         },
       ],
@@ -934,19 +1091,29 @@ export async function createPayPalSubscription(
   if (!provider) throw new Error("PayPal is not configured");
   assertProviderSupportsCurrency(provider, currency);
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
   const paypalPlanId =
-    billingCycle === "annual" ? plan.paypalPlanIdAnnual : plan.paypalPlanIdMonthly;
+    billingCycle === "annual"
+      ? plan.paypalPlanIdAnnual
+      : plan.paypalPlanIdMonthly;
   if (!paypalPlanId) {
     throw new Error(
-      `Plan "${plan.name}" has no PayPal plan for ${billingCycle} cycle. Please sync the plan to PayPal first.`
+      `Plan "${plan.name}" has no PayPal plan for ${billingCycle} cycle. Please sync the plan to PayPal first.`,
     );
   }
 
-  const userData = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  const userData = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
   if (!userData.length) throw new Error("User not found");
   const user = userData[0];
 
@@ -957,47 +1124,61 @@ export async function createPayPalSubscription(
       and(
         eq(subscriptions.userId, userId),
         eq(subscriptions.status, "active"),
-        eq(subscriptions.gatewayProvider, "paypal")
-      )
+        eq(subscriptions.gatewayProvider, "paypal"),
+      ),
     );
 
   for (const sub of existingSubs) {
     if (sub.gatewaySubscriptionId) {
       try {
-        await paypalRequest("POST", `/v1/billing/subscriptions/${sub.gatewaySubscriptionId}/cancel`, {
-          reason: "Upgrading to new plan",
-        });
-      } catch { }
+        await paypalRequest(
+          "POST",
+          `/v1/billing/subscriptions/${sub.gatewaySubscriptionId}/cancel`,
+          {
+            reason: "Upgrading to new plan",
+          },
+        );
+      } catch {}
     }
     await db
       .update(subscriptions)
-      .set({ status: "cancelled", gatewayStatus: "CANCELLED", updatedAt: new Date() })
+      .set({
+        status: "cancelled",
+        gatewayStatus: "CANCELLED",
+        updatedAt: new Date(),
+      })
       .where(eq(subscriptions.id, sub.id));
   }
 
   const appUrl = await requirePublicOrigin("createPayPalSubscription");
 
-  const subscription = await paypalRequest("POST", "/v1/billing/subscriptions", {
-    plan_id: paypalPlanId,
-    subscriber: {
-      name: {
-        given_name: user.firstName || user.username,
-        surname: user.lastName || "",
+  const subscription = await paypalRequest(
+    "POST",
+    "/v1/billing/subscriptions",
+    {
+      plan_id: paypalPlanId,
+      subscriber: {
+        name: {
+          given_name: user.firstName || user.username,
+          surname: user.lastName || "",
+        },
+        email_address: user.email,
       },
-      email_address: user.email,
+      application_context: {
+        brand_name: "WhatsApp Marketing Platform",
+        locale: "en-US",
+        shipping_preference: "NO_SHIPPING",
+        user_action: "SUBSCRIBE_NOW",
+        return_url: `${appUrl}/payment/success?provider=paypal`,
+        cancel_url: `${appUrl}/plans`,
+      },
+      custom_id: JSON.stringify({ userId, planId, billingCycle }),
     },
-    application_context: {
-      brand_name: "WhatsApp Marketing Platform",
-      locale: "en-US",
-      shipping_preference: "NO_SHIPPING",
-      user_action: "SUBSCRIBE_NOW",
-      return_url: `${appUrl}/payment/success?provider=paypal`,
-      cancel_url: `${appUrl}/plans`,
-    },
-    custom_id: JSON.stringify({ userId, planId, billingCycle }),
-  });
+  );
 
-  const approvalLink = subscription.links?.find((l: any) => l.rel === "approve");
+  const approvalLink = subscription.links?.find(
+    (l: any) => l.rel === "approve",
+  );
 
   return {
     subscriptionId: subscription.id,
@@ -1008,27 +1189,44 @@ export async function createPayPalSubscription(
 
 export async function cancelPayPalSubscription(
   gatewaySubscriptionId: string,
-  immediately: boolean = false
+  immediately: boolean = false,
 ) {
   if (immediately) {
-    await paypalRequest("POST", `/v1/billing/subscriptions/${gatewaySubscriptionId}/cancel`, {
-      reason: "Cancelled by user",
-    });
+    await paypalRequest(
+      "POST",
+      `/v1/billing/subscriptions/${gatewaySubscriptionId}/cancel`,
+      {
+        reason: "Cancelled by user",
+      },
+    );
     return { status: "CANCELLED" };
   } else {
-    await paypalRequest("POST", `/v1/billing/subscriptions/${gatewaySubscriptionId}/suspend`, {
-      reason: "Cancelling at end of period",
-    });
+    await paypalRequest(
+      "POST",
+      `/v1/billing/subscriptions/${gatewaySubscriptionId}/suspend`,
+      {
+        reason: "Cancelling at end of period",
+      },
+    );
     return { status: "SUSPENDED", cancelAtPeriodEnd: true };
   }
 }
 
-export async function getPayPalSubscriptionStatus(gatewaySubscriptionId: string) {
-  const sub = await paypalRequest("GET", `/v1/billing/subscriptions/${gatewaySubscriptionId}`);
+export async function getPayPalSubscriptionStatus(
+  gatewaySubscriptionId: string,
+) {
+  const sub = await paypalRequest(
+    "GET",
+    `/v1/billing/subscriptions/${gatewaySubscriptionId}`,
+  );
   return {
     status: sub.status,
-    currentPeriodStart: sub.billing_info?.last_payment?.time ? new Date(sub.billing_info.last_payment.time) : null,
-    currentPeriodEnd: sub.billing_info?.next_billing_time ? new Date(sub.billing_info.next_billing_time) : null,
+    currentPeriodStart: sub.billing_info?.last_payment?.time
+      ? new Date(sub.billing_info.last_payment.time)
+      : null,
+    currentPeriodEnd: sub.billing_info?.next_billing_time
+      ? new Date(sub.billing_info.next_billing_time)
+      : null,
   };
 }
 
@@ -1036,13 +1234,17 @@ export async function upgradeOrDowngradePayPal(
   userId: string,
   oldSubscriptionGatewayId: string,
   newPlanId: string,
-  billingCycle: "monthly" | "annual"
+  billingCycle: "monthly" | "annual",
 ) {
   try {
-    await paypalRequest("POST", `/v1/billing/subscriptions/${oldSubscriptionGatewayId}/cancel`, {
-      reason: "Upgrading/downgrading plan",
-    });
-  } catch { }
+    await paypalRequest(
+      "POST",
+      `/v1/billing/subscriptions/${oldSubscriptionGatewayId}/cancel`,
+      {
+        reason: "Upgrading/downgrading plan",
+      },
+    );
+  } catch {}
   const currency = (await getProviderCurrency("paypal", "USD")).toUpperCase();
   return createPayPalSubscription(userId, newPlanId, billingCycle, currency);
 }
@@ -1060,7 +1262,7 @@ export async function getPaystackSecretKey(): Promise<string> {
     : provider.config?.apiSecretTest;
   if (!key) {
     throw new Error(
-      `Paystack ${isLive ? "live" : "test"} secret key not configured`
+      `Paystack ${isLive ? "live" : "test"} secret key not configured`,
     );
   }
   return key;
@@ -1093,7 +1295,11 @@ export async function syncPlanToPaystack(planId: string) {
   const provider = await getProviderConfig("paystack");
   if (!provider) throw new Error("Paystack is not configured or inactive");
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
@@ -1139,8 +1345,14 @@ export async function syncPlanToPaystack(planId: string) {
   return { monthlyPlanCode, annualPlanCode };
 }
 
-export async function getOrCreatePaystackCustomer(userId: string): Promise<string> {
-  const userData = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+export async function getOrCreatePaystackCustomer(
+  userId: string,
+): Promise<string> {
+  const userData = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
   if (!userData.length) throw new Error("User not found");
   const user = userData[0];
 
@@ -1173,19 +1385,29 @@ export async function createPaystackSubscription(
   if (!provider) throw new Error("Paystack is not configured");
   assertProviderSupportsCurrency(provider, currency);
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
   const planCode =
-    billingCycle === "annual" ? plan.paystackPlanCodeAnnual : plan.paystackPlanCodeMonthly;
+    billingCycle === "annual"
+      ? plan.paystackPlanCodeAnnual
+      : plan.paystackPlanCodeMonthly;
   if (!planCode) {
     throw new Error(
-      `Plan "${plan.name}" has no Paystack plan for ${billingCycle} cycle. Please sync the plan to Paystack first.`
+      `Plan "${plan.name}" has no Paystack plan for ${billingCycle} cycle. Please sync the plan to Paystack first.`,
     );
   }
 
-  const userData = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  const userData = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
   if (!userData.length) throw new Error("User not found");
   const user = userData[0];
 
@@ -1196,8 +1418,8 @@ export async function createPaystackSubscription(
       and(
         eq(subscriptions.userId, userId),
         eq(subscriptions.status, "active"),
-        eq(subscriptions.gatewayProvider, "paystack")
-      )
+        eq(subscriptions.gatewayProvider, "paystack"),
+      ),
     );
 
   for (const sub of existingSubs) {
@@ -1207,25 +1429,36 @@ export async function createPaystackSubscription(
           code: sub.gatewaySubscriptionId,
           token: sub.gatewaySubscriptionId,
         });
-      } catch { }
+      } catch {}
     }
     await db
       .update(subscriptions)
-      .set({ status: "cancelled", gatewayStatus: "cancelled", updatedAt: new Date() })
+      .set({
+        status: "cancelled",
+        gatewayStatus: "cancelled",
+        updatedAt: new Date(),
+      })
       .where(eq(subscriptions.id, sub.id));
   }
 
   const appUrl = await requirePublicOrigin("createPaystackSubscription");
 
-  let baseAmount = billingCycle === "annual"
-    ? parseFloat(plan.annualPrice || "0")
-    : parseFloat(plan.monthlyPrice || "0");
+  let baseAmount =
+    billingCycle === "annual"
+      ? parseFloat(plan.annualPrice || "0")
+      : parseFloat(plan.monthlyPrice || "0");
 
   if (currency && plan.multiCurrencyPrices) {
-    const multiPrices = plan.multiCurrencyPrices as Record<string, { monthly: string; annual: string }>;
+    const multiPrices = plan.multiCurrencyPrices as Record<
+      string,
+      { monthly: string; annual: string }
+    >;
     const upperCur = String(currency).toUpperCase();
     if (multiPrices[upperCur]) {
-      baseAmount = billingCycle === "annual" ? parseFloat(multiPrices[upperCur].annual) : parseFloat(multiPrices[upperCur].monthly);
+      baseAmount =
+        billingCycle === "annual"
+          ? parseFloat(multiPrices[upperCur].annual)
+          : parseFloat(multiPrices[upperCur].monthly);
     }
   }
 
@@ -1240,7 +1473,11 @@ export async function createPaystackSubscription(
       custom_fields: [
         { display_name: "User ID", variable_name: "user_id", value: userId },
         { display_name: "Plan ID", variable_name: "plan_id", value: planId },
-        { display_name: "Billing Cycle", variable_name: "billing_cycle", value: billingCycle },
+        {
+          display_name: "Billing Cycle",
+          variable_name: "billing_cycle",
+          value: billingCycle,
+        },
       ],
     },
   });
@@ -1254,7 +1491,7 @@ export async function createPaystackSubscription(
 
 export async function cancelPaystackSubscription(
   subscriptionCode: string,
-  emailToken?: string
+  emailToken?: string,
 ) {
   await paystackRequest("POST", "/subscription/disable", {
     code: subscriptionCode,
@@ -1264,10 +1501,15 @@ export async function cancelPaystackSubscription(
 }
 
 export async function getPaystackSubscriptionStatus(subscriptionCode: string) {
-  const result = await paystackRequest("GET", `/subscription/${subscriptionCode}`);
+  const result = await paystackRequest(
+    "GET",
+    `/subscription/${subscriptionCode}`,
+  );
   return {
     status: result.data.status,
-    nextPaymentDate: result.data.next_payment_date ? new Date(result.data.next_payment_date) : null,
+    nextPaymentDate: result.data.next_payment_date
+      ? new Date(result.data.next_payment_date)
+      : null,
     email_token: result.data.email_token,
   };
 }
@@ -1276,14 +1518,14 @@ export async function upgradeOrDowngradePaystack(
   userId: string,
   oldSubscriptionCode: string,
   newPlanId: string,
-  billingCycle: "monthly" | "annual"
+  billingCycle: "monthly" | "annual",
 ) {
   try {
     await paystackRequest("POST", "/subscription/disable", {
       code: oldSubscriptionCode,
       token: oldSubscriptionCode,
     });
-  } catch { }
+  } catch {}
   const currency = (await getProviderCurrency("paystack", "NGN")).toUpperCase();
   return createPaystackSubscription(userId, newPlanId, billingCycle, currency);
 }
@@ -1301,7 +1543,7 @@ export async function getMercadoPagoAccessToken(): Promise<string> {
     : provider.config?.apiSecretTest;
   if (!token) {
     throw new Error(
-      `Mercado Pago ${isLive ? "live" : "test"} access token not configured`
+      `Mercado Pago ${isLive ? "live" : "test"} access token not configured`,
     );
   }
   return token;
@@ -1334,11 +1576,17 @@ export async function syncPlanToMercadoPago(planId: string) {
   const provider = await getProviderConfig("mercadopago");
   if (!provider) throw new Error("Mercado Pago is not configured or inactive");
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
-  const currency = (await getProviderCurrency("mercadopago", "BRL")).toUpperCase();
+  const currency = (
+    await getProviderCurrency("mercadopago", "BRL")
+  ).toUpperCase();
 
   const monthlyAmount = parseFloat(plan.monthlyPrice || "0");
   const annualAmount = parseFloat(plan.annualPrice || "0");
@@ -1396,19 +1644,29 @@ export async function createMercadoPagoSubscription(
   if (!provider) throw new Error("Mercado Pago is not configured");
   assertProviderSupportsCurrency(provider, currency);
 
-  const planData = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+  const planData = await db
+    .select()
+    .from(plans)
+    .where(eq(plans.id, planId))
+    .limit(1);
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
   const mpPlanId =
-    billingCycle === "annual" ? plan.mercadopagoPlanIdAnnual : plan.mercadopagoPlanIdMonthly;
+    billingCycle === "annual"
+      ? plan.mercadopagoPlanIdAnnual
+      : plan.mercadopagoPlanIdMonthly;
   if (!mpPlanId) {
     throw new Error(
-      `Plan "${plan.name}" has no Mercado Pago plan for ${billingCycle} cycle. Please sync the plan to Mercado Pago first.`
+      `Plan "${plan.name}" has no Mercado Pago plan for ${billingCycle} cycle. Please sync the plan to Mercado Pago first.`,
     );
   }
 
-  const userData = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  const userData = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
   if (!userData.length) throw new Error("User not found");
   const user = userData[0];
 
@@ -1419,21 +1677,29 @@ export async function createMercadoPagoSubscription(
       and(
         eq(subscriptions.userId, userId),
         eq(subscriptions.status, "active"),
-        eq(subscriptions.gatewayProvider, "mercadopago")
-      )
+        eq(subscriptions.gatewayProvider, "mercadopago"),
+      ),
     );
 
   for (const sub of existingSubs) {
     if (sub.gatewaySubscriptionId) {
       try {
-        await mercadopagoRequest("PUT", `/preapproval/${sub.gatewaySubscriptionId}`, {
-          status: "cancelled",
-        });
-      } catch { }
+        await mercadopagoRequest(
+          "PUT",
+          `/preapproval/${sub.gatewaySubscriptionId}`,
+          {
+            status: "cancelled",
+          },
+        );
+      } catch {}
     }
     await db
       .update(subscriptions)
-      .set({ status: "cancelled", gatewayStatus: "cancelled", updatedAt: new Date() })
+      .set({
+        status: "cancelled",
+        gatewayStatus: "cancelled",
+        updatedAt: new Date(),
+      })
       .where(eq(subscriptions.id, sub.id));
   }
 
@@ -1454,18 +1720,27 @@ export async function createMercadoPagoSubscription(
   };
 }
 
-export async function cancelMercadoPagoSubscription(gatewaySubscriptionId: string) {
+export async function cancelMercadoPagoSubscription(
+  gatewaySubscriptionId: string,
+) {
   await mercadopagoRequest("PUT", `/preapproval/${gatewaySubscriptionId}`, {
     status: "cancelled",
   });
   return { status: "cancelled" };
 }
 
-export async function getMercadoPagoSubscriptionStatus(gatewaySubscriptionId: string) {
-  const sub = await mercadopagoRequest("GET", `/preapproval/${gatewaySubscriptionId}`);
+export async function getMercadoPagoSubscriptionStatus(
+  gatewaySubscriptionId: string,
+) {
+  const sub = await mercadopagoRequest(
+    "GET",
+    `/preapproval/${gatewaySubscriptionId}`,
+  );
   return {
     status: sub.status,
-    nextPaymentDate: sub.next_payment_date ? new Date(sub.next_payment_date) : null,
+    nextPaymentDate: sub.next_payment_date
+      ? new Date(sub.next_payment_date)
+      : null,
   };
 }
 
@@ -1473,11 +1748,20 @@ export async function upgradeOrDowngradeMercadoPago(
   userId: string,
   oldSubId: string,
   newPlanId: string,
-  billingCycle: "monthly" | "annual"
+  billingCycle: "monthly" | "annual",
 ) {
   try {
-    await mercadopagoRequest("PUT", `/preapproval/${oldSubId}`, { status: "cancelled" });
-  } catch { }
-  const currency = (await getProviderCurrency("mercadopago", "BRL")).toUpperCase();
-  return createMercadoPagoSubscription(userId, newPlanId, billingCycle, currency);
+    await mercadopagoRequest("PUT", `/preapproval/${oldSubId}`, {
+      status: "cancelled",
+    });
+  } catch {}
+  const currency = (
+    await getProviderCurrency("mercadopago", "BRL")
+  ).toUpperCase();
+  return createMercadoPagoSubscription(
+    userId,
+    newPlanId,
+    billingCycle,
+    currency,
+  );
 }
