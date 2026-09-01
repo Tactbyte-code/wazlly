@@ -16,11 +16,17 @@
  */
 
 process.on("uncaughtException", (err) => {
-  console.error("[Process] Uncaught exception — server will keep running:", err);
+  console.error(
+    "[Process] Uncaught exception — server will keep running:",
+    err,
+  );
 });
 
 process.on("unhandledRejection", (reason) => {
-  console.error("[Process] Unhandled promise rejection — server will keep running:", reason);
+  console.error(
+    "[Process] Unhandled promise rejection — server will keep running:",
+    reason,
+  );
 });
 
 import express, { type Request, Response, NextFunction } from "express";
@@ -47,12 +53,20 @@ import { db } from "./db";
 import { campaigns as campaignsTable, messageQueue } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 import { executionService } from "./services/automation-execution-service";
-import { diployLogger, DIPLOY_HEADER_KEY, DIPLOY_HEADER_VALUE, DIPLOY_VERSION, DIPLOY_PRODUCT_NAME } from "@diploy/core";
+import {
+  diployLogger,
+  DIPLOY_HEADER_KEY,
+  DIPLOY_HEADER_VALUE,
+  DIPLOY_VERSION,
+  DIPLOY_PRODUCT_NAME,
+} from "@diploy/core";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { runStartupMigration } from "./startup-migration";
 import { capturePublicOriginMiddleware } from "./services/public-origin.ts";
-import { csrfMiddleware, csrfTokenEndpoint } from "./middlewares/csrf.middleware.ts";
-
+import {
+  csrfMiddleware,
+  csrfTokenEndpoint,
+} from "./middlewares/csrf.middleware.ts";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -82,16 +96,21 @@ if (process.env.REDIS_URL) {
         maxRetriesPerRequest: 3,
         enableOfflineQueue: false,
         lazyConnect: true,
-        retryStrategy() { return null; },
+        retryStrategy() {
+          return null;
+        },
       };
 
       const pubClient = new Redis(redisUrl, redisOpts);
       const subClient = new Redis(redisUrl, redisOpts);
 
-      pubClient.on("error", () => { });
-      subClient.on("error", () => { });
+      pubClient.on("error", () => {});
+      subClient.on("error", () => {});
 
-      const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms));
+      const timeout = (ms: number) =>
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("timeout")), ms),
+        );
 
       await Promise.all([
         Promise.race([pubClient.connect(), timeout(5000)]),
@@ -99,9 +118,13 @@ if (process.env.REDIS_URL) {
       ]);
 
       io.adapter(createAdapter(pubClient, subClient));
-      console.log("[Socket.IO] Redis adapter attached for multi-instance support");
+      console.log(
+        "[Socket.IO] Redis adapter attached for multi-instance support",
+      );
     } catch {
-      console.warn("[Socket.IO] Redis not available — using in-memory adapter (this is fine for single-instance)");
+      console.warn(
+        "[Socket.IO] Redis not available — using in-memory adapter (this is fine for single-instance)",
+      );
     }
   })();
 }
@@ -139,7 +162,6 @@ io.on("connection", (socket) => {
     socket.join(`site:${siteId}`);
   }
 
-
   socket.on("test_event", (data) => {
     console.log("🔥 TEST EVENT RECEIVED:", data);
 
@@ -155,8 +177,6 @@ io.on("connection", (socket) => {
     console.log("📤 Left:", room);
   });
 
-
-
   // ============================================
   // GET CONVERSATIONS LIST (AGENT SIDE)
   // ============================================
@@ -169,15 +189,10 @@ io.on("connection", (socket) => {
       console.log("🔥 conversations_list sending:", list?.length || 0);
 
       socket.emit("conversations_list", list);
-
     } catch (err) {
       console.error("Error fetching conversations via socket:", err);
     }
   });
-
-
-
-
 
   // ==========================================
   // AGENT EVENTS
@@ -192,7 +207,7 @@ io.on("connection", (socket) => {
 
       // Join BOTH room formats
       socket.join(`conversation:${conversationId}`);
-      socket.join(`conversation_${conversationId}`);  // ADD THIS LINE
+      socket.join(`conversation_${conversationId}`); // ADD THIS LINE
 
       const user = connectedUsers.get(socket.id);
       if (user) {
@@ -224,7 +239,7 @@ io.on("connection", (socket) => {
       }
 
       console.log(`✅ Agent joined both room formats for ${conversationId}`);
-    }
+    },
   );
   socket.on(
     "agent_join_conversationOLD",
@@ -263,7 +278,7 @@ io.on("connection", (socket) => {
       } catch (error) {
         console.error("Error updating conversation:", error);
       }
-    }
+    },
   );
 
   // Agent is typing
@@ -318,7 +333,7 @@ io.on("connection", (socket) => {
           error: "Failed to send message",
         });
       }
-    }
+    },
   );
 
   // Close conversation
@@ -337,29 +352,29 @@ io.on("connection", (socket) => {
         {
           conversationId,
           status: "closed",
-        }
+        },
       );
     } catch (error) {
       console.error("Error closing conversation:", error);
     }
   });
 
-
-
-  socket.on('join_all_conversations', ({ channelId, userId }) => {
-    console.log(`✅ JOIN_ALL_CONVERSATIONS: User ${userId} joining channel ${channelId}`);
+  socket.on("join_all_conversations", ({ channelId, userId }) => {
+    console.log(
+      `✅ JOIN_ALL_CONVERSATIONS: User ${userId} joining channel ${channelId}`,
+    );
     socket.join(`channel:${channelId}`);
     socket.join(`user:${userId}`);
     console.log(`✅ Successfully joined channel:${channelId}`);
 
-    socket.emit('joined_channel', {
+    socket.emit("joined_channel", {
       channelId,
       userId,
-      message: 'Successfully joined channel room'
+      message: "Successfully joined channel room",
     });
   });
 
-  socket.on('join_conversation', ({ conversationId, userId }) => {
+  socket.on("join_conversation", ({ conversationId, userId }) => {
     console.log(`✅ JOIN_CONVERSATION: ${userId} joining ${conversationId}`);
     socket.join(`conversation_${conversationId}`);
     socket.join(`conversation:${conversationId}`);
@@ -371,7 +386,7 @@ io.on("connection", (socket) => {
     console.log(`✅ Joined conversation_${conversationId}`);
   });
 
-  socket.on('leave_conversation', ({ conversationId, userId }) => {
+  socket.on("leave_conversation", ({ conversationId, userId }) => {
     socket.leave(`conversation_${conversationId}`);
     socket.leave(`conversation:${conversationId}`);
     const room = conversationRooms.get(conversationId);
@@ -486,20 +501,18 @@ app.use((_req, res, next) => {
   next();
 });
 
-
-
 app.get("/api/version", (_req, res) => {
   res.json({ version: DIPLOY_VERSION, product: DIPLOY_PRODUCT_NAME });
 });
 
-app.use('/webhooks/stripe', express.raw({ type: 'application/json' }));
-app.use('/webhooks/razorpay', express.raw({ type: 'application/json' }));
-app.use('/webhooks/paypal', express.raw({ type: 'application/json' }));
-app.use('/webhooks/paystack', express.raw({ type: 'application/json' }));
-app.use('/webhooks/mercadopago', express.raw({ type: 'application/json' }));
+app.use("/webhooks/stripe", express.raw({ type: "application/json" }));
+app.use("/webhooks/razorpay", express.raw({ type: "application/json" }));
+app.use("/webhooks/paypal", express.raw({ type: "application/json" }));
+app.use("/webhooks/paystack", express.raw({ type: "application/json" }));
+app.use("/webhooks/mercadopago", express.raw({ type: "application/json" }));
 app.use(
   express.json({
-    limit: '50mb',
+    limit: "50mb",
     // Stash the raw request body on the request object so signature-
     // verifying webhook handlers (e.g. Meta/WhatsApp X-Hub-Signature-256)
     // can hash the exact bytes Meta signed. Without this, the JSON
@@ -508,11 +521,14 @@ app.use(
     verify: (req: any, _res, buf) => {
       if (buf && buf.length) req.rawBody = buf;
     },
-  })
+  }),
 );
-app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use("/uploads", express.static("uploads"));
-app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(process.cwd(), "public", "uploads")),
+);
 
 app.use(
   "/widget",
@@ -522,7 +538,7 @@ app.use(
       res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
       res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     },
-  })
+  }),
 );
 
 // Get online agents
@@ -547,15 +563,15 @@ if (isProd && sessionSecretIsPlaceholder) {
   // Fail fast: a production app with a default/missing session secret is a critical
   // security defect (session forgery, privilege escalation).
   throw new Error(
-    "SESSION_SECRET env var must be set to a strong random value in production."
+    "SESSION_SECRET env var must be set to a strong random value in production.",
   );
 }
 if (!isProd && sessionSecretIsPlaceholder) {
   // Loud dev-time warning so operators notice before deploying.
   console.warn(
     "\n⚠️  [SECURITY] SESSION_SECRET is unset or using the default placeholder value.\n" +
-    "    Generate a strong random value (e.g. `openssl rand -hex 32`) and set\n" +
-    "    SESSION_SECRET in your environment before running in production.\n"
+      "    Generate a strong random value (e.g. `openssl rand -hex 32`) and set\n" +
+      "    SESSION_SECRET in your environment before running in production.\n",
   );
 }
 
@@ -574,7 +590,7 @@ app.use(
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
-  })
+  }),
 );
 
 // Capture the public origin from authenticated traffic. MUST be mounted
@@ -633,9 +649,8 @@ app.use((req, res, next) => {
   // Application Update, before the controller could write the terminal
   // status). Non-fatal — failures are logged and swallowed inside.
   try {
-    const { reconcileStartupRuns, getAppVersion } = await import(
-      "./controllers/app-update.controller"
-    );
+    const { reconcileStartupRuns, getAppVersion } =
+      await import("./controllers/app-update.controller");
     await reconcileStartupRuns(getAppVersion());
   } catch (err) {
     console.warn(
@@ -660,8 +675,6 @@ app.use((req, res, next) => {
     res.status(status).json({ message });
   });
 
-
-
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
@@ -676,7 +689,6 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
-
 
   const listenOptions: any = {
     port,
@@ -696,20 +708,26 @@ app.use((req, res, next) => {
     try {
       const { rowCount } = await pool.query(
         `UPDATE users SET status = 'inactive'
-         WHERE is_email_verified IS NOT TRUE AND status NOT IN ('inactive', 'banned')`
+         WHERE is_email_verified IS NOT TRUE AND status NOT IN ('inactive', 'banned')`,
       );
       if (rowCount && rowCount > 0) {
-        diployLogger.success(`[Startup] Set ${rowCount} unverified user(s) to inactive`);
+        diployLogger.success(
+          `[Startup] Set ${rowCount} unverified user(s) to inactive`,
+        );
       }
     } catch (err) {
-      diployLogger.error(`[Startup] Failed to fix unverified user statuses: ${err}`);
+      diployLogger.error(
+        `[Startup] Failed to fix unverified user statuses: ${err}`,
+      );
     }
 
     const instanceId = process.env.NODE_APP_INSTANCE;
     const isCronLeader = !instanceId || instanceId === "0";
 
     if (isCronLeader) {
-      diployLogger.success(`Worker ${instanceId ?? "main"} is the cron leader — starting scheduled jobs`);
+      diployLogger.success(
+        `Worker ${instanceId ?? "main"} is the cron leader — starting scheduled jobs`,
+      );
 
       // Recover campaigns stuck in "queued" with no messages yet in the queue.
       // The in-memory setImmediate queue population is lost on restart, so campaigns
@@ -727,28 +745,40 @@ app.use((req, res, next) => {
                 SELECT 1 FROM ${messageQueue}
                 WHERE ${messageQueue.campaignId} = ${campaignsTable.id}
               )
-            `
+            `,
           );
 
         if (orphaned.length > 0) {
-          diployLogger.warn(`[Startup] Found ${orphaned.length} campaign(s) stuck in "queued" — recovering...`);
+          diployLogger.warn(
+            `[Startup] Found ${orphaned.length} campaign(s) stuck in "queued" — recovering...`,
+          );
           for (const c of orphaned) {
             try {
               await storage.updateCampaign(c.id, { status: "active" });
-              diployLogger.warn(`[Startup] Recovering stuck campaign: ${c.id} (${c.name})`);
+              diployLogger.warn(
+                `[Startup] Recovering stuck campaign: ${c.id} (${c.name})`,
+              );
               void startCampaignExecution(c.id).catch((err) => {
-                diployLogger.error(`[Startup] Failed to recover campaign ${c.id}: ${err}`);
-                storage.updateCampaign(c.id, { status: "failed" }).catch(() => { });
+                diployLogger.error(
+                  `[Startup] Failed to recover campaign ${c.id}: ${err}`,
+                );
+                storage
+                  .updateCampaign(c.id, { status: "failed" })
+                  .catch(() => {});
               });
             } catch (err) {
-              diployLogger.error(`[Startup] Error recovering campaign ${c.id}: ${err}`);
+              diployLogger.error(
+                `[Startup] Error recovering campaign ${c.id}: ${err}`,
+              );
             }
           }
         } else {
           diployLogger.success(`[Startup] No stuck campaigns found`);
         }
       } catch (err) {
-        diployLogger.error(`[Startup] Failed to check for stuck campaigns: ${err}`);
+        diployLogger.error(
+          `[Startup] Failed to check for stuck campaigns: ${err}`,
+        );
       }
 
       // Backfill campaign delivery/read/failed counts from message_queue.
@@ -782,21 +812,29 @@ app.use((req, res, next) => {
           ) q
           WHERE c.id = q.campaign_id
         `);
-        diployLogger.success(`[Startup] Campaign stats backfilled from message_queue`);
+        diployLogger.success(
+          `[Startup] Campaign stats backfilled from message_queue`,
+        );
       } catch (err) {
-        diployLogger.error(`[Startup] Failed to backfill campaign stats: ${err}`);
+        diployLogger.error(
+          `[Startup] Failed to backfill campaign stats: ${err}`,
+        );
       }
 
       try {
         await executionService.recoverTimeGapExecutions();
       } catch (err) {
-        diployLogger.error(`[Startup] Failed to recover time_gap executions: ${err}`);
+        diployLogger.error(
+          `[Startup] Failed to recover time_gap executions: ${err}`,
+        );
       }
 
       try {
         await executionService.recoverUserReplyExecutions();
       } catch (err) {
-        diployLogger.error(`[Startup] Failed to recover user_reply executions: ${err}`);
+        diployLogger.error(
+          `[Startup] Failed to recover user_reply executions: ${err}`,
+        );
       }
 
       // Re-subscribe all active channels to Meta webhook events.
@@ -804,17 +842,24 @@ app.use((req, res, next) => {
       // ensuring delivery/read receipts start arriving immediately.
       try {
         const activeChannels = await storage.getChannels();
-        const activeOnes = activeChannels.filter((c: any) => c.isActive && c.whatsappBusinessAccountId && c.accessToken);
+        const activeOnes = activeChannels.filter(
+          (c: any) =>
+            c.isActive && c.whatsappBusinessAccountId && c.accessToken,
+        );
         let subOk = 0;
         for (const ch of activeOnes) {
           const result = await subscribeChannelToWebhook(ch);
           if (result.success) subOk++;
         }
         if (activeOnes.length > 0) {
-          diployLogger.success(`[Startup] Re-subscribed ${subOk}/${activeOnes.length} channel(s) to Meta webhooks`);
+          diployLogger.success(
+            `[Startup] Re-subscribed ${subOk}/${activeOnes.length} channel(s) to Meta webhooks`,
+          );
         }
       } catch (err) {
-        diployLogger.error(`[Startup] Failed to re-subscribe channels to webhooks: ${err}`);
+        diployLogger.error(
+          `[Startup] Failed to re-subscribe channels to webhooks: ${err}`,
+        );
       }
 
       // startScheduledCampaignCron();
@@ -826,26 +871,26 @@ app.use((req, res, next) => {
 
       await MessageQueueService.startProcessing();
 
-console.log("✅ Message queue processor started");
+      console.log("✅ Message queue processor started");
 
-startScheduledCampaignCron();
+      startScheduledCampaignCron();
 
-console.log("✅ Scheduled campaign cron started");
+      console.log("✅ Scheduled campaign cron started");
 
-const messageStatusUpdater = new MessageStatusUpdater();
-messageStatusUpdater.startCronJob(60);
+      const messageStatusUpdater = new MessageStatusUpdater();
+      messageStatusUpdater.startCronJob(60);
 
-      const { channelHealthMonitor } = await import(
-        "./cron/channel-health-monitor"
-      );
+      const { channelHealthMonitor } =
+        await import("./cron/channel-health-monitor");
       channelHealthMonitor.start();
 
-      const { paymentReconciler } = await import(
-        "./cron/payment-reconciler.cron.ts"
-      );
+      const { paymentReconciler } =
+        await import("./cron/payment-reconciler.cron.ts");
       paymentReconciler.start();
     } else {
-      diployLogger.success(`Worker ${instanceId} skipping cron jobs (not the leader)`);
+      diployLogger.success(
+        `Worker ${instanceId} skipping cron jobs (not the leader)`,
+      );
     }
   });
 })();

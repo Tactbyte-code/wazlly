@@ -1,27 +1,26 @@
-/**
- * ============================================================
- * © 2025 Diploy — a brand of Bisht Technologies Private Limited
- * Original Author: BTPL Engineering Team
- * Website: https://diploy.in
- * Contact: cs@diploy.in
- *
- * Distributed under the Envato / CodeCanyon License Agreement.
- * Licensed to the purchaser for use as defined by the
- * Envato Market (CodeCanyon) Regular or Extended License.
- *
- * You are NOT permitted to redistribute, resell, sublicense,
- * or share this source code, in whole or in part.
- * Respect the author's rights and Envato licensing terms.
- * ============================================================
- */
-
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Webhook, Plus, Copy, RefreshCw, CheckCircle, AlertCircle, HelpCircle, Edit, Trash2 } from "lucide-react";
+import {
+  Webhook,
+  Plus,
+  Copy,
+  RefreshCw,
+  CheckCircle,
+  AlertCircle,
+  HelpCircle,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { WebhookConfig } from "@shared/schema";
@@ -34,7 +33,9 @@ import { useTranslation } from "@/lib/i18n";
 export function WebhookSettings() {
   const { t } = useTranslation();
   const [showWebhookDialog, setShowWebhookDialog] = useState(false);
-  const [editingWebhook, setEditingWebhook] = useState<WebhookConfig | null>(null);
+  const [editingWebhook, setEditingWebhook] = useState<WebhookConfig | null>(
+    null,
+  );
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -77,7 +78,10 @@ export function WebhookSettings() {
 
   const testWebhookMutation = useMutation({
     mutationFn: async (webhookId: string) => {
-      const res = await apiRequest("POST", `/api/webhook-configs/${webhookId}/test`);
+      const res = await apiRequest(
+        "POST",
+        `/api/webhook-configs/${webhookId}/test`,
+      );
       try {
         return await res.json();
       } catch {
@@ -129,7 +133,8 @@ export function WebhookSettings() {
 
     const lastPingDate = new Date(webhook.lastPingAt);
     const now = new Date();
-    const hoursSinceLastPing = (now.getTime() - lastPingDate.getTime()) / (1000 * 60 * 60);
+    const hoursSinceLastPing =
+      (now.getTime() - lastPingDate.getTime()) / (1000 * 60 * 60);
 
     if (hoursSinceLastPing < 24) {
       return {
@@ -160,42 +165,63 @@ export function WebhookSettings() {
           <CardContent className="space-y-6">
             <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-4">
               <div>
-                <Label className="text-sm font-semibold">{t("settings.webhook_setting.yourWebhookUrl")}</Label>
+                <Label className="text-sm font-semibold">
+                  {t("settings.webhook_setting.yourWebhookUrl")}
+                </Label>
                 <div className="flex items-center gap-2 mt-1">
                   <code className="text-xs bg-white dark:bg-gray-900 px-3 py-2 rounded border flex-1 break-all">
                     {webhookUrl}
                   </code>
-                  <Button variant="outline" size="sm" onClick={() => copyToClipboard(webhookUrl)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(webhookUrl)}
+                  >
                     <Copy className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
 
               <div>
-                <Label className="text-sm font-semibold">{t("settings.webhook_setting.yourVerifyToken")}</Label>
+                <Label className="text-sm font-semibold">
+                  {t("settings.webhook_setting.yourVerifyToken")}
+                </Label>
                 <div className="flex items-center gap-2 mt-1">
                   {activeConfig ? (
                     <>
                       <code className="text-xs bg-white dark:bg-gray-900 px-3 py-2 rounded border flex-1 break-all">
                         {activeConfig.verifyToken}
                       </code>
-                      <Button variant="outline" size="sm" onClick={() => copyToClipboard(activeConfig.verifyToken)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          copyToClipboard(activeConfig.verifyToken)
+                        }
+                      >
                         <Copy className="w-4 h-4" />
                       </Button>
                     </>
                   ) : (
-                    <span className="text-sm text-gray-500">{t("settings.webhook_setting.noActiveConfig")}</span>
+                    <span className="text-sm text-gray-500">
+                      {t("settings.webhook_setting.noActiveConfig")}
+                    </span>
                   )}
                 </div>
               </div>
 
               {activeConfig && (
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm font-semibold">{t("settings.webhook_setting.statusLabel")}</Label>
+                  <Label className="text-sm font-semibold">
+                    {t("settings.webhook_setting.statusLabel")}
+                  </Label>
                   {(() => {
                     const status = getWebhookStatus(activeConfig);
                     return (
-                      <Badge variant="secondary" className="text-xs flex items-center">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs flex items-center"
+                      >
                         {status.icon}
                         <span className="ml-1">{status.text}</span>
                       </Badge>
@@ -203,14 +229,20 @@ export function WebhookSettings() {
                   })()}
                   {activeConfig.lastPingAt && (
                     <span className="text-xs text-gray-500">
-                      {t("settings.webhook_setting.lastEventLabel")} {new Date(activeConfig.lastPingAt).toLocaleString()}
+                      {t("settings.webhook_setting.lastEventLabel")}{" "}
+                      {new Date(activeConfig.lastPingAt).toLocaleString()}
                     </span>
                   )}
                 </div>
               )}
 
               <div className="text-sm text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900 rounded p-3">
-                <strong>{t("settings.webhook_setting.instructionsLabel", "Instructions:")}</strong>{" "}
+                <strong>
+                  {t(
+                    "settings.webhook_setting.instructionsLabel",
+                    "Instructions:",
+                  )}
+                </strong>{" "}
                 {t("settings.webhook_setting.instructionsText")}
               </div>
             </div>
@@ -283,7 +315,10 @@ export function WebhookSettings() {
                           <h3 className="font-semibold truncate">
                             {t("settings.webhook_setting.globalWebhook")}
                           </h3>
-                          <Badge variant="secondary" className="text-xs flex items-center whitespace-nowrap">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs flex items-center whitespace-nowrap"
+                          >
                             {status.icon}
                             <span className="ml-1">{status.text}</span>
                           </Badge>
@@ -300,7 +335,9 @@ export function WebhookSettings() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => copyToClipboard(webhook.webhookUrl)}
+                              onClick={() =>
+                                copyToClipboard(webhook.webhookUrl)
+                              }
                               className="mt-1 sm:mt-0 flex items-center"
                             >
                               <Copy className="w-3 h-3" />
@@ -313,7 +350,11 @@ export function WebhookSettings() {
                             </Label>
                             <div className="flex flex-wrap gap-1">
                               {webhook.events.map((event) => (
-                                <Badge key={event} variant="outline" className="text-xs">
+                                <Badge
+                                  key={event}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   {event}
                                 </Badge>
                               ))}
@@ -389,7 +430,9 @@ export function WebhookSettings() {
                 {t("settings.webhook_setting.setupInstructions.step1.title")}
               </h4>
               <p>
-                {t("settings.webhook_setting.setupInstructions.step1.description")}
+                {t(
+                  "settings.webhook_setting.setupInstructions.step1.description",
+                )}
               </p>
             </div>
             <div>
@@ -397,7 +440,9 @@ export function WebhookSettings() {
                 {t("settings.webhook_setting.setupInstructions.step2.title")}
               </h4>
               <p>
-                {t("settings.webhook_setting.setupInstructions.step2.description")}
+                {t(
+                  "settings.webhook_setting.setupInstructions.step2.description",
+                )}
               </p>
             </div>
             <div>
@@ -405,7 +450,9 @@ export function WebhookSettings() {
                 {t("settings.webhook_setting.setupInstructions.step3.title")}
               </h4>
               <p>
-                {t("settings.webhook_setting.setupInstructions.step3.description")}
+                {t(
+                  "settings.webhook_setting.setupInstructions.step3.description",
+                )}
               </p>
             </div>
             <div>
@@ -413,7 +460,9 @@ export function WebhookSettings() {
                 {t("settings.webhook_setting.setupInstructions.step4.title")}
               </h4>
               <p>
-                {t("settings.webhook_setting.setupInstructions.step4.description")}
+                {t(
+                  "settings.webhook_setting.setupInstructions.step4.description",
+                )}
               </p>
             </div>
           </CardContent>
