@@ -632,12 +632,12 @@ export async function createRazorpaySubscription(
   currency: string,
 ) {
   const razorpay = await getRazorpay();
-  console.log("razorpay key_id in use:", (razorpay as any)?.key_id);
+  // console.log("razorpay key_id in use:", (razorpay as any)?.key_id);
 
   if (!razorpay) throw new Error("Razorpay is not configured");
 
   const razorpayProvider = await getProviderConfig("razorpay");
-  console.log("raz provider config: ", razorpayProvider);
+  // console.log("raz provider config: ", razorpayProvider);
   if (!razorpayProvider) throw new Error("Razorpay is not configured");
 
   assertProviderSupportsCurrency(razorpayProvider, currency);
@@ -650,14 +650,14 @@ export async function createRazorpaySubscription(
   if (!planData.length) throw new Error("Plan not found");
   const plan = planData[0];
 
-  console.log("plan selected 1: ", plan);
+  // console.log("plan selected 1: ", plan);
 
   let rzpPlanId =
     billingCycle === "annual"
       ? plan.razorpayPlanIdAnnual
       : plan.razorpayPlanIdMonthly;
 
-  console.log("raz plan id: ", rzpPlanId);
+  // console.log("raz plan id: ", rzpPlanId);
 
   if (!rzpPlanId) {
     const price =
@@ -686,10 +686,10 @@ export async function createRazorpaySubscription(
       )
       .where(eq(plans.id, planId));
 
-    console.log(`created & saved razorpay plan (${billingCycle}): `, rzpPlanId);
+    // console.log(`created & saved razorpay plan (${billingCycle}): `, rzpPlanId);
   }
 
-  console.log("plan selected 2: ", plan);
+  // console.log("plan selected 2: ", plan);
 
   const existingSubs = await db
     .select()
