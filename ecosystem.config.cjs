@@ -10,7 +10,7 @@ module.exports = {
       instance_var: "NODE_APP_INSTANCE",
       env: {
         NODE_ENV: "production",
-        PORT: 5050,
+        PORT: 5000,
       },
       max_memory_restart: "1500M",
       restart_delay: 1000,
