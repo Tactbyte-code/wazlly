@@ -270,6 +270,17 @@ const Header = () => {
                 {t("Landing.header.Navlinks.0")}
               </Link>
 
+              <Link
+                href="/pricing"
+                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  location === "/pricing"
+                    ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
+                    : "text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                }`}
+              >
+                Pricing
+              </Link>
+
               <div
                 className="relative group"
                 onMouseEnter={() => setShowAboutMega(true)}
@@ -481,6 +492,18 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               {t("Landing.header.Navlinks.0")}
+            </Link>
+
+            <Link
+              href="/pricing"
+              className={`block px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                location === "/pricing"
+                  ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-900/20"
+                  : "text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
             </Link>
 
             <div>
