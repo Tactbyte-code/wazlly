@@ -107,10 +107,6 @@ const Pricing = () => {
     ZAR: "R",
   };
 
-  // const activeCurrencySymbol = selectedCurrency
-  //   ? currencySymbolMap[selectedCurrency] || selectedCurrency + " "
-  //   : currencySymbol;
-
   // Icon mapping
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Zap,
@@ -148,11 +144,6 @@ const Pricing = () => {
   const handleSelectPlan = (plan: Plan) => {
     if (!user) {
       setLocation("/login");
-      // return toast({
-      //   title: t("Landing.pricingSec.authRequired.title"),
-      //   description: t("Landing.pricingSec.authRequired.description"),
-      //   variant: "destructive",
-      // });
     }
     setSelectedPlan(plan);
     setCheckoutOpen(true);
@@ -191,7 +182,7 @@ const Pricing = () => {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 mb-16">
-        {sortedPlans.map((plan, index) => {
+        {sortedPlans.map((plan) => {
           const IconComponent = iconMap[plan.icon] || Zap;
           const isPopular = plan.popular;
 
@@ -250,10 +241,21 @@ const Pricing = () => {
                           selectedCurrency + " ";
                       }
 
+                      // If annual, calculate the monthly equivalent price (annual price / 12)
+                      let finalPrice = monthlyPrice;
+                      if (isAnnual) {
+                        const parsedAnnual = Number(annualPrice);
+                        if (!isNaN(parsedAnnual)) {
+                          finalPrice = (parsedAnnual / 12).toFixed(2);
+                        } else {
+                          finalPrice = annualPrice;
+                        }
+                      }
+
                       return (
                         <>
                           {planCurrencySymbol}
-                          {isAnnual ? annualPrice : monthlyPrice}
+                          {finalPrice}
                         </>
                       );
                     })()}
