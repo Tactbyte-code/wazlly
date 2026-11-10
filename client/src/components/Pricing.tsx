@@ -259,10 +259,7 @@ const Pricing = () => {
                     })()}
                   </span>
                   <span className="text-gray-600 ml-2">
-                    /
-                    {isAnnual
-                      ? t("Landing.pricingSec.pricing.year")
-                      : t("Landing.pricingSec.pricing.month")}
+                    /{t("Landing.pricingSec.pricing.month")}
                   </span>
                 </div>
 
