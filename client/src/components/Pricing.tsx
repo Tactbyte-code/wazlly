@@ -359,216 +359,227 @@ const Pricing = () => {
 
     return (
       <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        {plans.map((plan) => {
-          const IconComponent = iconMap[plan.icon] || Zap;
-          const pricing = getPlanPricing(plan);
-          const isPopular = plan.popular;
-          const isFree = pricing.monthlyEquivalent === 0;
+        {[...plans]
+          .sort((a, b) => {
+            const order = ["free", "growth", "professional", "enterprise"];
 
-          return (
-            <div
-              key={plan.id}
-              className={`relative flex flex-col rounded-2xl bg-white transition-all duration-300 ${
-                isPopular
-                  ? "border-2 border-green-600 shadow-[0_12px_40px_rgba(22,163,74,0.10)]"
-                  : "border border-gray-200 shadow-sm hover:-translate-y-1 hover:border-gray-300 hover:shadow-xl"
-              }`}
-            >
-              {isPopular && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-green-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    {plan.badge || "Most Popular"}
-                  </span>
-                </div>
-              )}
+            return (
+              order.indexOf(a.name?.toLowerCase()) -
+              order.indexOf(b.name?.toLowerCase())
+            );
+          })
+          .map((plan) => {
+            console.log("plans: ", plans);
 
-              <div className="flex flex-1 flex-col p-6 sm:p-7">
-                {/* Plan identity */}
-                <div className="mb-2">
-                  <div
-                    className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl"
-                    style={{
-                      backgroundColor: `${plan.color || "#16a34a"}12`,
-                    }}
-                  >
-                    <IconComponent
-                      className="h-6 w-6"
-                      style={{
-                        color: plan.color || "#16a34a",
-                      }}
-                    />
-                  </div>
+            const IconComponent = iconMap[plan.icon] || Zap;
+            const pricing = getPlanPricing(plan);
+            const isPopular = plan.popular;
+            const isFree = pricing.monthlyEquivalent === 0;
 
-                  <h3 className="text-xl font-bold tracking-tight text-gray-950">
-                    {plan.name}
-                  </h3>
-
-                  <p className="mt-2 min-h-[42px] text-sm leading-6 text-gray-500">
-                    {plan.description}
-                  </p>
-                </div>
-
-                {/* Price */}
-                <div className="mb-6 border-b border-gray-100 pb-6">
-                  <div className="flex min-h-[52px] items-baseline gap-1">
-                    <span className="text-3xl font-bold tracking-tight text-gray-950">
-                      {pricing.planCurrencySymbol}
-                      {formatPrice(pricing.monthlyEquivalent)}
+            return (
+              <div
+                key={plan.id}
+                className={`relative flex flex-col rounded-2xl bg-white transition-all duration-300 ${
+                  isPopular
+                    ? "border-2 border-green-600 shadow-[0_12px_40px_rgba(22,163,74,0.10)]"
+                    : "border border-gray-200 shadow-sm hover:-translate-y-1 hover:border-gray-300 hover:shadow-xl"
+                }`}
+              >
+                {isPopular && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {plan.badge || "Most Popular"}
                     </span>
-
-                    <span className="text-sm text-gray-500">
-                      /{t("Landing.pricingSec.pricing.month")}
-                    </span>
-                  </div>
-
-                  <p className="mt-0 text-xs font-medium text-gray-500">
-                    {getBillingDescription(pricing)}
-                  </p>
-
-                  {billingCycle !== "monthly" && (
-                    <p className="mt-1 text-xs text-gray-400">
-                      {billingCycle === "quarterly"
-                        ? "Charged once every 3 months"
-                        : "Charged once every 12 months"}
-                    </p>
-                  )}
-
-                  {billingDiscount > 0 && (
-                    <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-700">
-                      <Check className="h-3.5 w-3.5" />
-                      You save {billingDiscount}% on this plan
-                    </div>
-                  )}
-                </div>
-
-                {/* Permissions */}
-                {plan.permissions && (
-                  <div className="mb-6 space-y-3">
-                    <div className="flex items-center justify-between gap-2 text-sm">
-                      <span className="text-gray-500">
-                        {t("Landing.pricingSec.pricing.contacts")}
-                      </span>
-
-                      <span className="font-semibold text-gray-900">
-                        {t("Landing.pricingSec.pricing.upTo")}{" "}
-                        {plan.permissions.contacts}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-2 text-sm">
-                      <span className="text-gray-500">
-                        {t("Landing.pricingSec.pricing.channels")}
-                      </span>
-
-                      <span className="font-semibold text-gray-900">
-                        {plan.permissions.channel}
-                      </span>
-                    </div>
-
-                    {plan.permissions.automation && (
-                      <div className="flex items-center justify-between gap-2 text-sm">
-                        <span className="text-gray-500">
-                          {t("Landing.pricingSec.pricing.automation")}
-                        </span>
-
-                        <span className="font-semibold text-gray-900">
-                          {plan.permissions.automation}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 )}
 
-                {/* Features */}
-                <div className="flex-1 border-t border-gray-100 pt-6">
-                  <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    What's included
-                  </p>
+                <div className="flex flex-1 flex-col p-6 sm:p-7">
+                  {/* Plan identity */}
+                  <div className="mb-2">
+                    <div
+                      className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl"
+                      style={{
+                        backgroundColor: `${plan.color || "#16a34a"}12`,
+                      }}
+                    >
+                      <IconComponent
+                        className="h-6 w-6"
+                        style={{
+                          color: plan.color || "#16a34a",
+                        }}
+                      />
+                    </div>
 
-                  <ul className="space-y-3.5">
-                    {plan.features && plan.features.length > 0 ? (
-                      plan.features.map((feature, index) => (
-                        <li
-                          key={`${feature.name}-${index}`}
-                          className="flex items-start gap-2.5"
-                        >
-                          {feature.included ? (
-                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                          ) : (
-                            <X className="mt-0.5 h-4 w-4 shrink-0 text-gray-300" />
-                          )}
+                    <h3 className="text-xl font-bold tracking-tight text-gray-950">
+                      {plan.name}
+                    </h3>
 
-                          <span
-                            className={`text-sm leading-5 ${
-                              feature.included
-                                ? "text-gray-600"
-                                : "text-gray-400"
-                            }`}
-                          >
-                            {feature.name}
-                          </span>
-                        </li>
-                      ))
-                    ) : (
-                      <>
-                        <li className="flex items-start gap-2.5">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                          <span className="text-sm text-gray-600">
-                            {plan.permissions?.contacts}{" "}
-                            {t("Landing.pricingSec.pricing.contacts")}
-                          </span>
-                        </li>
+                    <p className="mt-2 min-h-[42px] text-sm leading-6 text-gray-500">
+                      {plan.description}
+                    </p>
+                  </div>
 
-                        <li className="flex items-start gap-2.5">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                          <span className="text-sm text-gray-600">
-                            {plan.permissions?.channel}{" "}
-                            {t("Landing.pricingSec.pricing.channels")}
-                          </span>
-                        </li>
+                  {/* Price */}
+                  <div className="mb-6 border-b border-gray-100 pb-6">
+                    <div className="flex min-h-[52px] items-baseline gap-1">
+                      <span className="text-3xl font-bold tracking-tight text-gray-950">
+                        {pricing.planCurrencySymbol}
+                        {formatPrice(pricing.monthlyEquivalent)}
+                      </span>
 
-                        <li className="flex items-start gap-2.5">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                          <span className="text-sm text-gray-600">
-                            {plan.permissions?.automation}{" "}
+                      <span className="text-sm text-gray-500">
+                        /{t("Landing.pricingSec.pricing.month")}
+                      </span>
+                    </div>
+
+                    <p className="mt-0 text-xs font-medium text-gray-500">
+                      {getBillingDescription(pricing)}
+                    </p>
+
+                    {billingCycle !== "monthly" && (
+                      <p className="mt-1 text-xs text-gray-400">
+                        {billingCycle === "quarterly"
+                          ? "Charged once every 3 months"
+                          : "Charged once every 12 months"}
+                      </p>
+                    )}
+
+                    {billingDiscount > 0 && (
+                      <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-700">
+                        <Check className="h-3.5 w-3.5" />
+                        You save {billingDiscount}% on this plan
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Permissions */}
+                  {plan.permissions && (
+                    <div className="mb-6 space-y-3">
+                      <div className="flex items-center justify-between gap-2 text-sm">
+                        <span className="text-gray-500">
+                          {t("Landing.pricingSec.pricing.contacts")}
+                        </span>
+
+                        <span className="font-semibold text-gray-900">
+                          {t("Landing.pricingSec.pricing.upTo")}{" "}
+                          {plan.permissions.contacts}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 text-sm">
+                        <span className="text-gray-500">
+                          {t("Landing.pricingSec.pricing.channels")}
+                        </span>
+
+                        <span className="font-semibold text-gray-900">
+                          {plan.permissions.channel}
+                        </span>
+                      </div>
+
+                      {plan.permissions.automation && (
+                        <div className="flex items-center justify-between gap-2 text-sm">
+                          <span className="text-gray-500">
                             {t("Landing.pricingSec.pricing.automation")}
                           </span>
-                        </li>
-                      </>
-                    )}
-                  </ul>
-                </div>
 
-                {/* CTA */}
-                <div className="mt-8">
-                  <button
-                    type="button"
-                    onClick={() => handleSelectPlan(plan)}
-                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 ${
-                      isPopular
-                        ? "bg-green-600 text-white shadow-sm hover:bg-green-700"
-                        : "bg-gray-900 text-white hover:bg-gray-800"
-                    }`}
-                    style={
-                      isPopular
-                        ? {
-                            backgroundColor: plan.buttonColor || "#16a34a",
-                          }
-                        : {}
-                    }
-                  >
-                    {isFree
-                      ? t("Landing.pricingSec.planCTA.freeButton")
-                      : t("Landing.pricingSec.planCTA.paidButton")}
+                          <span className="font-semibold text-gray-900">
+                            {plan.permissions.automation}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
+                  {/* Features */}
+                  <div className="flex-1 border-t border-gray-100 pt-6">
+                    <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      What's included
+                    </p>
+
+                    <ul className="space-y-3.5">
+                      {plan.features && plan.features.length > 0 ? (
+                        plan.features.map((feature, index) => (
+                          <li
+                            key={`${feature.name}-${index}`}
+                            className="flex items-start gap-2.5"
+                          >
+                            {feature.included ? (
+                              <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                            ) : (
+                              <X className="mt-0.5 h-4 w-4 shrink-0 text-gray-300" />
+                            )}
+
+                            <span
+                              className={`text-sm leading-5 ${
+                                feature.included
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
+                              }`}
+                            >
+                              {feature.name}
+                            </span>
+                          </li>
+                        ))
+                      ) : (
+                        <>
+                          <li className="flex items-start gap-2.5">
+                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                            <span className="text-sm text-gray-600">
+                              {plan.permissions?.contacts}{" "}
+                              {t("Landing.pricingSec.pricing.contacts")}
+                            </span>
+                          </li>
+
+                          <li className="flex items-start gap-2.5">
+                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                            <span className="text-sm text-gray-600">
+                              {plan.permissions?.channel}{" "}
+                              {t("Landing.pricingSec.pricing.channels")}
+                            </span>
+                          </li>
+
+                          <li className="flex items-start gap-2.5">
+                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                            <span className="text-sm text-gray-600">
+                              {plan.permissions?.automation}{" "}
+                              {t("Landing.pricingSec.pricing.automation")}
+                            </span>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="mt-8">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectPlan(plan)}
+                      className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 ${
+                        isPopular
+                          ? "bg-green-600 text-white shadow-sm hover:bg-green-700"
+                          : "bg-gray-900 text-white hover:bg-gray-800"
+                      }`}
+                      style={
+                        isPopular
+                          ? {
+                              backgroundColor: plan.buttonColor || "#16a34a",
+                            }
+                          : {}
+                      }
+                    >
+                      {isFree
+                        ? t("Landing.pricingSec.planCTA.freeButton")
+                        : t("Landing.pricingSec.planCTA.paidButton")}
+
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     );
   };
