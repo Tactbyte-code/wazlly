@@ -16,7 +16,12 @@
  */
 
 import { Request, Response } from "express";
-import { DiployError, asyncHandler as _dHandler, diployLogger, HTTP_STATUS } from "@diploy/core";
+import {
+  DiployError,
+  asyncHandler as _dHandler,
+  diployLogger,
+  HTTP_STATUS,
+} from "@diploy/core";
 import { db } from "../db";
 import { subscriptions, users, plans, transactions } from "@shared/schema";
 import { eq, and, desc, lt, sql } from "drizzle-orm";
@@ -32,6 +37,54 @@ import {
   createRazorpaySubscription,
 } from "../services/payment-gateway.service";
 
+type BillingCycle = "monthly" | "quarterly" | "annual";
+
+const normalizeBillingCycle = (value: unknown): BillingCycle | null => {
+  const cycle = String(value || "").toLowerCase();
+
+  if (cycle === "monthly") return "monthly";
+  if (cycle === "quarterly") return "quarterly";
+  if (cycle === "annual" || cycle === "yearly") return "annual";
+
+  return null;
+};
+
+const addBillingPeriod = (date: Date, billingCycle: BillingCycle): Date => {
+  const result = new Date(date);
+
+  const monthsToAdd =
+    billingCycle === "monthly" ? 1 : billingCycle === "quarterly" ? 3 : 12;
+
+  // Preserve the original day where possible.
+  // For example, adding one month to January 31
+  // should result in February 28/29, not March 3.
+  const originalDay = result.getDate();
+
+  result.setDate(1);
+  result.setMonth(result.getMonth() + monthsToAdd);
+
+  const lastDayOfMonth = new Date(
+    result.getFullYear(),
+    result.getMonth() + 1,
+    0,
+  ).getDate();
+
+  result.setDate(Math.min(originalDay, lastDayOfMonth));
+
+  return result;
+};
+
+const createPlanSnapshot = (plan: any) => ({
+  name: plan.name,
+  description: plan.description,
+  monthlyPrice: plan.monthlyPrice,
+  quarterlyPrice: plan.quarterlyPrice,
+  annualPrice: plan.annualPrice,
+  multiCurrencyPrices: plan.multiCurrencyPrices,
+  permissions: plan.permissions,
+  features: plan.features,
+});
+
 export const getAllSubscriptions = async (req: Request, res: Response) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -45,36 +98,12 @@ export const getAllSubscriptions = async (req: Request, res: Response) => {
     const total = Number(count);
     const totalPages = Math.ceil(total / limit);
 
-    // const paginatedSubscriptions = await db
-    //   .select({
-    //     subscription: subscriptions,
-    //     user: {
-    //       id: users.id,
-    //       username: users.username,
-    //     },
-    //     plan: {
-    //       id: plans.id,
-    //       name: plans.name,
-    //       description: plans.description,
-    //       icon: plans.icon,
-    //       monthlyPrice: plans.monthlyPrice,
-    //       annualPrice: plans.annualPrice,
-    //       features: plans.features,
-    //       permissions: plans.permissions,
-    //     },
-    //   })
-    //   .from(subscriptions)
-    //   .leftJoin(users, eq(subscriptions.userId, users.id))
-    //   .leftJoin(plans, eq(subscriptions.planId, plans.id))
-    //   .orderBy(desc(subscriptions.createdAt))
-    //   .limit(limit)
-    //   .offset(offset);
-
-
     const latestTransactionSubquery = db
       .select({
         subscriptionId: transactions.subscriptionId,
-        latestCreatedAt: sql<string>`MAX(${transactions.createdAt})`.as("latest_created_at"),
+        latestCreatedAt: sql<string>`MAX(${transactions.createdAt})`.as(
+          "latest_created_at",
+        ),
       })
       .from(transactions)
       .groupBy(transactions.subscriptionId)
@@ -110,24 +139,23 @@ export const getAllSubscriptions = async (req: Request, res: Response) => {
       .leftJoin(plans, eq(subscriptions.planId, plans.id))
       .leftJoin(
         latestTransactionSubquery,
-        eq(subscriptions.id, latestTransactionSubquery.subscriptionId)
+        eq(subscriptions.id, latestTransactionSubquery.subscriptionId),
       )
       .leftJoin(
         transactions,
         and(
-          eq(transactions.subscriptionId, latestTransactionSubquery.subscriptionId),
-          eq(transactions.createdAt, latestTransactionSubquery.latestCreatedAt)
-        )
+          eq(
+            transactions.subscriptionId,
+            latestTransactionSubquery.subscriptionId,
+          ),
+          eq(transactions.createdAt, latestTransactionSubquery.latestCreatedAt),
+        ),
       )
       .orderBy(desc(subscriptions.createdAt))
       .limit(limit)
       .offset(offset);
 
-
-
-  console.log("CHECK SUBSCRIPTION DATA", paginatedSubscriptions)
-
-
+    console.log("CHECK SUBSCRIPTION DATA", paginatedSubscriptions);
 
     res.status(200).json({
       success: true,
@@ -183,17 +211,16 @@ export const getSubscriptionById = async (req: Request, res: Response) => {
   }
 };
 
-export const getSubscriptionsByUserId = async (
-  req: Request,
-  res: Response
-) => {
+export const getSubscriptionsByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
 
     const latestTransactionSubquery = db
       .select({
         subscriptionId: transactions.subscriptionId,
-        latestCreatedAt: sql<string>`MAX(${transactions.createdAt})`.as("latest_created_at"),
+        latestCreatedAt: sql<string>`MAX(${transactions.createdAt})`.as(
+          "latest_created_at",
+        ),
       })
       .from(transactions)
       .groupBy(transactions.subscriptionId)
@@ -217,20 +244,23 @@ export const getSubscriptionsByUserId = async (
       .leftJoin(users, eq(subscriptions.userId, users.id))
       .leftJoin(
         latestTransactionSubquery,
-        eq(subscriptions.id, latestTransactionSubquery.subscriptionId)
+        eq(subscriptions.id, latestTransactionSubquery.subscriptionId),
       )
       .leftJoin(
         transactions,
         and(
-          eq(transactions.subscriptionId, latestTransactionSubquery.subscriptionId),
-          eq(transactions.createdAt, latestTransactionSubquery.latestCreatedAt)
-        )
+          eq(
+            transactions.subscriptionId,
+            latestTransactionSubquery.subscriptionId,
+          ),
+          eq(transactions.createdAt, latestTransactionSubquery.latestCreatedAt),
+        ),
       )
       .where(
         and(
           eq(subscriptions.userId, userId),
-          eq(subscriptions.status, "active")
-        )
+          eq(subscriptions.status, "active"),
+        ),
       )
       .orderBy(desc(subscriptions.createdAt));
 
@@ -246,7 +276,7 @@ export const getSubscriptionsByUserId = async (
 
 export const getActiveSubscriptionByUserId = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { userId } = req.params;
@@ -260,8 +290,8 @@ export const getActiveSubscriptionByUserId = async (
       .where(
         and(
           eq(subscriptions.userId, userId),
-          eq(subscriptions.status, "active")
-        )
+          eq(subscriptions.status, "active"),
+        ),
       )
       .orderBy(desc(subscriptions.createdAt))
       .limit(1);
@@ -286,62 +316,61 @@ export const AssignSubscription = async (req: Request, res: Response) => {
   try {
     const { userId, planId, billingCycle: requestedCycle } = req.body;
 
+    if (!userId || !planId) {
+      return res.status(400).json({
+        success: false,
+        message: "userId and planId are required",
+      });
+    }
+
+    const billingCycle = normalizeBillingCycle(requestedCycle);
+
+    if (!billingCycle) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid billing cycle. Use monthly, quarterly, or annual.",
+      });
+    }
+
     const plan = await db.query.plans.findFirst({
       where: (p: any) => eq(p.id, planId),
     });
 
     if (!plan) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Plan not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Plan not found",
+      });
     }
+
+    const startDate = new Date();
+    const endDate = addBillingPeriod(startDate, billingCycle);
 
     await db
       .update(subscriptions)
-      .set({ status: "cancelled", updatedAt: new Date() })
+      .set({
+        status: "cancelled",
+        autoRenew: false,
+        updatedAt: new Date(),
+      })
       .where(
         and(
           eq(subscriptions.userId, userId),
-          eq(subscriptions.status, "active")
-        )
+          eq(subscriptions.status, "active"),
+        ),
       );
-
-    // const billingCycle = requestedCycle === "annual" ? "annual" : "monthly";
-const rawCycle = String(requestedCycle || "").toLowerCase();
-
-const billingCycle =
-  rawCycle === "yearly" || rawCycle === "annual"
-    ? "annual"
-    : "monthly";
-
-
-    const startDate = new Date();
-    const endDate = new Date();
-    if (billingCycle === "annual") {
-      endDate.setFullYear(endDate.getFullYear() + 1);
-    } else {
-      endDate.setMonth(endDate.getMonth() + 1);
-    }
-    const autoRenew = true;
 
     const newSubscription = await db
       .insert(subscriptions)
       .values({
         userId,
         planId,
-        planData: {
-          name: plan.name,
-          description: plan.description,
-          monthlyPrice: plan.monthlyPrice,
-          annualPrice: plan.annualPrice,
-          permissions: plan.permissions,
-          features: plan.features,
-        },
+        planData: createPlanSnapshot(plan),
         status: "active",
         billingCycle,
         startDate,
         endDate,
-        autoRenew,
+        autoRenew: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -353,6 +382,8 @@ const billingCycle =
       data: newSubscription[0],
     });
   } catch (error) {
+    console.error("Error assigning subscription:", error);
+
     return res.status(500).json({
       success: false,
       message: "Error creating subscription",
@@ -363,17 +394,57 @@ const billingCycle =
 
 export const createSubscription = async (req: Request, res: Response) => {
   try {
-    const { userId, planId, billingCycle, startDate, endDate, autoRenew } =
-      req.body;
+    const {
+      userId,
+      planId,
+      billingCycle: requestedCycle,
+      startDate,
+      endDate,
+      autoRenew,
+    } = req.body;
+
+    if (!userId || !planId || !startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "userId, planId, startDate, and endDate are required",
+      });
+    }
+
+    const billingCycle = normalizeBillingCycle(requestedCycle);
+
+    if (!billingCycle) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid billing cycle. Use monthly, quarterly, or annual.",
+      });
+    }
+
+    const parsedStartDate = new Date(startDate);
+    const parsedEndDate = new Date(endDate);
+
+    if (
+      Number.isNaN(parsedStartDate.getTime()) ||
+      Number.isNaN(parsedEndDate.getTime()) ||
+      parsedEndDate <= parsedStartDate
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid subscription start or end date",
+      });
+    }
 
     await db
       .update(subscriptions)
-      .set({ status: "cancelled", updatedAt: new Date() })
+      .set({
+        status: "cancelled",
+        autoRenew: false,
+        updatedAt: new Date(),
+      })
       .where(
         and(
           eq(subscriptions.userId, userId),
-          eq(subscriptions.status, "active")
-        )
+          eq(subscriptions.status, "active"),
+        ),
       );
 
     const newSubscription = await db
@@ -383,19 +454,23 @@ export const createSubscription = async (req: Request, res: Response) => {
         planId,
         status: "active",
         billingCycle,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
         autoRenew: autoRenew ?? true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
       .returning();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Subscription created successfully",
       data: newSubscription[0],
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Error creating subscription:", error);
+
+    return res.status(500).json({
       success: false,
       message: "Error creating subscription",
       error,
@@ -458,17 +533,17 @@ export const cancelSubscription = async (req: Request, res: Response) => {
         if (sub.gatewayProvider === "stripe") {
           await cancelStripeSubscription(
             sub.gatewaySubscriptionId,
-            immediately === true
+            immediately === true,
           );
         } else if (sub.gatewayProvider === "razorpay") {
           await cancelRazorpaySubscription(
             sub.gatewaySubscriptionId,
-            immediately === true
+            immediately === true,
           );
         } else if (sub.gatewayProvider === "paypal") {
           await cancelPayPalSubscription(
             sub.gatewaySubscriptionId,
-            immediately === true
+            immediately === true,
           );
         } else if (sub.gatewayProvider === "paystack") {
           await cancelPaystackSubscription(sub.gatewaySubscriptionId);
@@ -525,7 +600,7 @@ export const cancelSubscription = async (req: Request, res: Response) => {
 
 export const changePlan = async (req: Request, res: Response) => {
   try {
-    const { userId, newPlanId, billingCycle } = req.body;
+    const { userId, newPlanId, billingCycle: requestedCycle } = req.body;
 
     if (!userId || !newPlanId) {
       return res.status(400).json({
@@ -534,7 +609,14 @@ export const changePlan = async (req: Request, res: Response) => {
       });
     }
 
-    const cycle = billingCycle === "annual" ? "annual" : "monthly";
+    const cycle = normalizeBillingCycle(requestedCycle);
+
+    if (!cycle) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid billing cycle. Use monthly, quarterly, or annual.",
+      });
+    }
 
     const activeSub = await db
       .select()
@@ -542,8 +624,8 @@ export const changePlan = async (req: Request, res: Response) => {
       .where(
         and(
           eq(subscriptions.userId, userId),
-          eq(subscriptions.status, "active")
-        )
+          eq(subscriptions.status, "active"),
+        ),
       )
       .orderBy(desc(subscriptions.createdAt))
       .limit(1);
@@ -555,73 +637,77 @@ export const changePlan = async (req: Request, res: Response) => {
       .limit(1);
 
     if (!newPlanData.length) {
-      return res
-        .status(404)
-        .json({ success: false, message: "New plan not found" });
+      return res.status(404).json({
+        success: false,
+        message: "New plan not found",
+      });
     }
-
-    const newPlan = newPlanData[0];
 
     if (activeSub.length === 0) {
       return res.status(402).json({
         success: false,
-        message: "No active subscription found. Please use the checkout to subscribe.",
+        message:
+          "No active subscription found. Please use the checkout to subscribe.",
       });
     }
 
-    if (activeSub.length > 0) {
-      // Cancel ALL existing active subscriptions for this user to ensure clean state
-      await db
-        .update(subscriptions)
-        .set({
-          status: "cancelled",
-          autoRenew: false,
-          updatedAt: new Date(),
-        })
-        .where(
-          and(
-            eq(subscriptions.userId, userId),
-            eq(subscriptions.status, "active")
-          )
+    const currentSub = activeSub[0];
+
+    // Cancel the existing gateway subscription before replacing it.
+    // The replacement subscription should ideally be initiated through
+    // the payment checkout flow rather than activated locally.
+    if (currentSub.gatewaySubscriptionId && currentSub.gatewayProvider) {
+      try {
+        if (currentSub.gatewayProvider === "stripe") {
+          await cancelStripeSubscription(
+            currentSub.gatewaySubscriptionId,
+            true,
+          );
+        } else if (currentSub.gatewayProvider === "razorpay") {
+          await cancelRazorpaySubscription(
+            currentSub.gatewaySubscriptionId,
+            true,
+          );
+        }
+      } catch (err: any) {
+        console.error(
+          "Gateway cancellation error during plan change:",
+          err.message,
         );
 
-      const currentSub = activeSub[0];
-      
-      // If it's a gateway-managed subscription, try to cancel it there too
-      if (currentSub.gatewaySubscriptionId && currentSub.gatewayProvider) {
-        try {
-          if (currentSub.gatewayProvider === "stripe") {
-            await cancelStripeSubscription(currentSub.gatewaySubscriptionId, true);
-          } else if (currentSub.gatewayProvider === "razorpay") {
-            await cancelRazorpaySubscription(currentSub.gatewaySubscriptionId, true);
-          }
-        } catch (err: any) {
-          console.error("Gateway cancellation error during plan change:", err.message);
-        }
+        return res.status(502).json({
+          success: false,
+          message:
+            "Could not cancel the existing gateway subscription. The plan was not changed.",
+        });
       }
     }
 
+    await db
+      .update(subscriptions)
+      .set({
+        status: "cancelled",
+        autoRenew: false,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(subscriptions.userId, userId),
+          eq(subscriptions.status, "active"),
+        ),
+      );
+
+    const newPlan = newPlanData[0];
+
     const startDate = new Date();
-    const endDate = new Date();
-    if (cycle === "annual") {
-      endDate.setFullYear(endDate.getFullYear() + 1);
-    } else {
-      endDate.setMonth(endDate.getMonth() + 1);
-    }
+    const endDate = addBillingPeriod(startDate, cycle);
 
     const newSubscription = await db
       .insert(subscriptions)
       .values({
         userId,
         planId: newPlanId,
-        planData: {
-          name: newPlan.name,
-          description: newPlan.description,
-          monthlyPrice: newPlan.monthlyPrice,
-          annualPrice: newPlan.annualPrice,
-          permissions: newPlan.permissions,
-          features: newPlan.features,
-        },
+        planData: createPlanSnapshot(newPlan),
         status: "active",
         billingCycle: cycle,
         startDate,
@@ -634,7 +720,10 @@ export const changePlan = async (req: Request, res: Response) => {
 
     await db
       .update(users)
-      .set({ planId: newPlanId, updatedAt: new Date() })
+      .set({
+        planId: newPlanId,
+        updatedAt: new Date(),
+      })
       .where(eq(users.id, userId));
 
     return res.status(200).json({
@@ -644,7 +733,8 @@ export const changePlan = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error("Error changing plan:", error);
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
       message: error.message || "Error changing plan",
     });
@@ -658,43 +748,66 @@ export const renewSubscription = async (req: Request, res: Response) => {
     const currentSub = await db
       .select()
       .from(subscriptions)
-      .where(eq(subscriptions.id, id));
+      .where(eq(subscriptions.id, id))
+      .limit(1);
 
     if (currentSub.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Subscription not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Subscription not found",
+      });
     }
 
     const subscription = currentSub[0];
 
-    const newStartDate = new Date();
-    const newEndDate = new Date();
+    const billingCycle = normalizeBillingCycle(subscription.billingCycle);
 
-    if (subscription.billingCycle === "annual") {
-      newEndDate.setFullYear(newEndDate.getFullYear() + 1);
-    } else {
-      newEndDate.setMonth(newEndDate.getMonth() + 1);
+    if (!billingCycle) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid billing cycle on subscription",
+      });
     }
+
+    const now = new Date();
+
+    const existingEndDate = subscription.endDate
+      ? new Date(subscription.endDate)
+      : null;
+
+    // Extend from the existing period end if it is still valid.
+    // Otherwise, begin a new period from the current date.
+    const newStartDate =
+      existingEndDate &&
+      !Number.isNaN(existingEndDate.getTime()) &&
+      existingEndDate > now
+        ? existingEndDate
+        : now;
+
+    const newEndDate = addBillingPeriod(newStartDate, billingCycle);
 
     const renewedSubscription = await db
       .update(subscriptions)
       .set({
         status: "active",
+        billingCycle,
         startDate: newStartDate,
         endDate: newEndDate,
+        autoRenew: true,
         updatedAt: new Date(),
       })
       .where(eq(subscriptions.id, id))
       .returning();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Subscription renewed successfully",
       data: renewedSubscription[0],
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Error renewing subscription:", error);
+
+    return res.status(500).json({
       success: false,
       message: "Error renewing subscription",
       error,
@@ -735,7 +848,7 @@ export const toggleAutoRenew = async (req: Request, res: Response) => {
 
 export const checkExpiredSubscriptions = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const now = new Date();
@@ -744,7 +857,7 @@ export const checkExpiredSubscriptions = async (
       .update(subscriptions)
       .set({ status: "expired", updatedAt: new Date() })
       .where(
-        and(eq(subscriptions.status, "active"), lt(subscriptions.endDate, now))
+        and(eq(subscriptions.status, "active"), lt(subscriptions.endDate, now)),
       )
       .returning();
 

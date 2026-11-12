@@ -9,6 +9,9 @@ import {
   ArrowRight,
   AlertCircle,
   Star,
+  ShieldCheck,
+  Sparkles,
+  ChevronDown,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { PaymentProvidersResponse, Plan, PlansDataTypes } from "@/types/types";
@@ -19,77 +22,23 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "@/lib/i18n";
 import { Link, useLocation } from "wouter";
 
+type BillingCycle = "monthly" | "quarterly" | "annual";
+
 const Pricing = () => {
   const { t } = useTranslation();
+
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
+  const [selectedCurrency, setSelectedCurrency] = useState("");
+
   const { toast } = useToast();
   const { user, currencySymbol, currency } = useAuth();
-
   const [, setLocation] = useLocation();
-  // Fetch payment providers
-  const { data: paymentProviders, isLoading: isLoadingProviders } =
-    useQuery<PaymentProvidersResponse>({
-      queryKey: ["/api/payment-providers"],
-      queryFn: async () => {
-        const res = await apiRequest("GET", "/api/payment-providers");
-        if (!res.ok) throw new Error("Failed to fetch payment providers");
-        const data = await res.json();
-        return data;
-      },
-      enabled: !!user?.id,
-    });
 
-  // Fetch currency map
-  const { data: currencyMapData } = useQuery<{
-    success: boolean;
-    data: {
-      currencyMap: Record<
-        string,
-        { providerKey: string; providerId: string; providerName: string }[]
-      >;
-      availableCurrencies: string[];
-    };
-  }>({
-    queryKey: ["/api/payment-providers/currency-map"],
-    queryFn: async () => {
-      const res = await apiRequest(
-        "GET",
-        "/api/payment-providers/currency-map",
-      );
-      return res.json();
-    },
-    enabled: !!user?.id,
-  });
-
-  const availableCurrencies = currencyMapData?.data?.availableCurrencies || [];
-  const [selectedCurrency, setSelectedCurrency] = useState<string>("");
-
-  // Filter currencies to only show those configured by admin, plus default/USD
-  const displayedCurrencies = availableCurrencies.filter((cur) => {
-    if (cur === "USD" || cur === currency?.toUpperCase()) return true;
-    return plans.some(
-      (p) => p.multiCurrencyPrices && p.multiCurrencyPrices[cur],
-    );
-  });
-
-  useEffect(() => {
-    if (displayedCurrencies.length > 0 && !selectedCurrency) {
-      if (displayedCurrencies.includes("USD")) {
-        setSelectedCurrency("USD");
-      } else {
-        const upper = currency?.toUpperCase() || "";
-        if (displayedCurrencies.includes(upper)) {
-          setSelectedCurrency(upper);
-        } else {
-          setSelectedCurrency(displayedCurrencies[0]);
-        }
-      }
-    }
-  }, [displayedCurrencies, currency]);
+  const isAnnual = billingCycle === "annual";
 
   const currencySymbolMap: Record<string, string> = {
     USD: "$",
@@ -107,7 +56,6 @@ const Pricing = () => {
     ZAR: "R",
   };
 
-  // Icon mapping
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Zap,
     Crown,
@@ -116,16 +64,101 @@ const Pricing = () => {
     Building,
   };
 
-  const fetchPlans = async (): Promise<void> => {
+  // --------------------------------------------------
+  // Payment providers
+  // --------------------------------------------------
+
+  const { data: paymentProviders, isLoading: isLoadingProviders } =
+    useQuery<PaymentProvidersResponse>({
+      queryKey: ["/api/payment-providers"],
+      queryFn: async () => {
+        const res = await apiRequest("GET", "/api/payment-providers");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch payment providers");
+        }
+
+        return res.json();
+      },
+      enabled: !!user?.id,
+    });
+
+  // --------------------------------------------------
+  // Currency configuration
+  // --------------------------------------------------
+
+  const { data: currencyMapData } = useQuery<{
+    success: boolean;
+    data: {
+      currencyMap: Record<
+        string,
+        {
+          providerKey: string;
+          providerId: string;
+          providerName: string;
+        }[]
+      >;
+      availableCurrencies: string[];
+    };
+  }>({
+    queryKey: ["/api/payment-providers/currency-map"],
+    queryFn: async () => {
+      const res = await apiRequest(
+        "GET",
+        "/api/payment-providers/currency-map",
+      );
+
+      return res.json();
+    },
+    enabled: !!user?.id,
+  });
+
+  const availableCurrencies = currencyMapData?.data?.availableCurrencies || [];
+
+  const displayedCurrencies = availableCurrencies.filter((cur) => {
+    if (cur === "USD" || cur === currency?.toUpperCase()) {
+      return true;
+    }
+
+    return plans.some(
+      (plan) => plan.multiCurrencyPrices && plan.multiCurrencyPrices[cur],
+    );
+  });
+
+  useEffect(() => {
+    if (displayedCurrencies.length === 0 || selectedCurrency) {
+      return;
+    }
+
+    const userCurrency = currency?.toUpperCase() || "";
+
+    if (displayedCurrencies.includes("USD")) {
+      setSelectedCurrency("USD");
+    } else if (displayedCurrencies.includes(userCurrency)) {
+      setSelectedCurrency(userCurrency);
+    } else {
+      setSelectedCurrency(displayedCurrencies[0]);
+    }
+  }, [displayedCurrencies, currency, selectedCurrency]);
+
+  // --------------------------------------------------
+  // Fetch plans
+  // --------------------------------------------------
+
+  const fetchPlans = async () => {
     try {
       setLoading(true);
+
       const response = await apiRequest("GET", "/api/admin/plans");
       const data: PlansDataTypes = await response.json();
+
       if (data.success) {
+        // Preserve backend ordering across all billing cycles.
         setPlans(data.data);
       }
     } catch (error) {
       console.error("Error fetching plans:", error);
+
       toast({
         title: "Error",
         description: "Failed to fetch plans",
@@ -140,21 +173,168 @@ const Pricing = () => {
     fetchPlans();
   }, []);
 
-  // Handle plan selection
+  // --------------------------------------------------
+  // Pricing helpers
+  // --------------------------------------------------
+
+  const getBasePrice = (plan: Plan, cycle: BillingCycle) => {
+    const priceKey =
+      cycle === "monthly"
+        ? "monthlyPrice"
+        : cycle === "quarterly"
+          ? "quarterlyPrice"
+          : "annualPrice";
+
+    return (plan as unknown as Record<string, unknown>)[priceKey];
+  };
+
+  const getCurrencyPrices = (plan: Plan) => {
+    if (!selectedCurrency) return undefined;
+
+    return (
+      plan.multiCurrencyPrices as
+        | Record<
+            string,
+            {
+              monthly?: string | number;
+              quarterly?: string | number;
+              annual?: string | number;
+            }
+          >
+        | undefined
+    )?.[selectedCurrency];
+  };
+
+  const getPlanPricing = (plan: Plan) => {
+    const currencyPrices = getCurrencyPrices(plan);
+
+    const currencySpecificPrice = currencyPrices?.[billingCycle];
+
+    const basePrice =
+      currencySpecificPrice !== undefined &&
+      currencySpecificPrice !== null &&
+      currencySpecificPrice !== ""
+        ? currencySpecificPrice
+        : getBasePrice(plan, billingCycle);
+
+    const monthlyEquivalent =
+      basePrice === undefined || basePrice === null || basePrice === ""
+        ? Number.NaN
+        : Number(basePrice);
+
+    const cycleMonths =
+      billingCycle === "quarterly" ? 3 : billingCycle === "annual" ? 12 : 1;
+
+    const totalPrice = monthlyEquivalent * cycleMonths;
+
+    const planCurrencySymbol =
+      currencySpecificPrice !== undefined &&
+      currencySpecificPrice !== null &&
+      currencySpecificPrice !== ""
+        ? currencySymbolMap[selectedCurrency] || `${selectedCurrency} `
+        : currencySymbol;
+
+    return {
+      monthlyEquivalent,
+      totalPrice,
+      planCurrencySymbol,
+    };
+  };
+
+  const formatPrice = (price: number) => {
+    return Number.isFinite(price)
+      ? price.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "—";
+  };
+
+  // --------------------------------------------------
+  // Billing cycle discount
+  // --------------------------------------------------
+  const getBillingDiscount = (cycle: "quarterly" | "annual" | "monthly") => {
+    if (cycle === "monthly" || !plans.length) return 0;
+
+    const referencePlan = plans
+      .filter((plan) => plan.name !== "Free")
+      .find((plan) => {
+        const currencyPrices = getCurrencyPrices(plan);
+
+        const monthlyPrice = Number(
+          currencyPrices?.monthly ?? getBasePrice(plan, "monthly"),
+        );
+
+        const cyclePrice = Number(
+          currencyPrices?.[cycle] ?? getBasePrice(plan, cycle),
+        );
+
+        return (
+          Number.isFinite(monthlyPrice) &&
+          Number.isFinite(cyclePrice) &&
+          monthlyPrice > 0 &&
+          cyclePrice > 0 &&
+          cyclePrice < monthlyPrice
+        );
+      });
+
+    if (!referencePlan) return 0;
+
+    const currencyPrices = getCurrencyPrices(referencePlan);
+
+    const monthlyPrice = Number(
+      currencyPrices?.monthly ?? getBasePrice(referencePlan, "monthly"),
+    );
+
+    const cyclePrice = Number(
+      currencyPrices?.[cycle] ?? getBasePrice(referencePlan, cycle),
+    );
+
+    return Math.round(((monthlyPrice - cyclePrice) / monthlyPrice) * 100);
+  };
+
+  const billingDiscount = getBillingDiscount(billingCycle);
+
+  // --------------------------------------------------
+  // Plan selection
+  // --------------------------------------------------
+
   const handleSelectPlan = (plan: Plan) => {
     if (!user) {
       setLocation("/login");
+      return;
     }
+
     setSelectedPlan(plan);
     setCheckoutOpen(true);
   };
 
+  const getBillingDescription = (pricing: {
+    totalPrice: number;
+    planCurrencySymbol: string;
+  }) => {
+    if (billingCycle === "monthly") {
+      return "Billed monthly";
+    }
+
+    if (billingCycle === "quarterly") {
+      return `Billed every 3 months`;
+    }
+
+    return `Billed annually`;
+  };
+
+  // --------------------------------------------------
+  // Plans content
+  // --------------------------------------------------
+
   const renderPlansContent = () => {
     if (loading) {
       return (
-        <div className="text-center py-20">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mb-4"></div>
-          <p className="text-gray-600 font-medium">
+        <div className="flex flex-col items-center justify-center py-28">
+          <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-gray-200 border-t-green-600" />
+
+          <p className="mt-5 text-sm font-medium text-gray-500">
             {t("Landing.pricingSec.loading")}
           </p>
         </div>
@@ -163,189 +343,229 @@ const Pricing = () => {
 
     if (plans.length === 0) {
       return (
-        <div className="text-center py-20 bg-gray-50 rounded-2xl">
-          <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
+        <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-20 text-center">
+          <AlertCircle className="mx-auto mb-4 h-10 w-10 text-gray-400" />
+
+          <h3 className="text-xl font-semibold text-gray-900">
             {t("Landing.pricingSec.noPlans.title")}
           </h3>
-          <p className="text-gray-600">
+
+          <p className="mt-2 text-sm text-gray-500">
             {t("Landing.pricingSec.noPlans.description")}
           </p>
         </div>
       );
     }
-    const sortedPlans = plans.sort((a, b) => {
-      const priceA = Number(isAnnual ? a.annualPrice : a.monthlyPrice);
-      const priceB = Number(isAnnual ? b.annualPrice : b.monthlyPrice);
-      return priceA - priceB;
-    });
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 mb-16">
-        {sortedPlans.map((plan) => {
+      <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        {plans.map((plan) => {
           const IconComponent = iconMap[plan.icon] || Zap;
+          const pricing = getPlanPricing(plan);
           const isPopular = plan.popular;
+          const isFree = pricing.monthlyEquivalent === 0;
 
           return (
             <div
               key={plan.id}
-              className={`bg-white p-8 rounded-2xl shadow-lg border-2 ${
-                isPopular ? "relative transform scale-105" : ""
-              } hover:shadow-xl transition-all flex flex-col h-full`}
-              style={{ borderColor: plan.color || "#e5e7eb" }}
+              className={`relative flex flex-col rounded-2xl bg-white transition-all duration-300 ${
+                isPopular
+                  ? "border-2 border-green-600 shadow-[0_12px_40px_rgba(22,163,74,0.10)]"
+                  : "border border-gray-200 shadow-sm hover:-translate-y-1 hover:border-gray-300 hover:shadow-xl"
+              }`}
             >
-              {/* Popular Badge */}
-              {plan.badge && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                    {plan.badge}
+              {isPopular && (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-green-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    {plan.badge || "Most Popular"}
                   </span>
                 </div>
               )}
 
-              <div className="text-center mb-8 flex-shrink-0">
-                {/* Icon */}
-                <div className="bg-gray-100 p-3 rounded-xl w-fit mx-auto mb-4">
-                  <IconComponent className="w-8 h-8 text-gray-700" />
+              <div className="flex flex-1 flex-col p-6 sm:p-7">
+                {/* Plan identity */}
+                <div className="mb-2">
+                  <div
+                    className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl"
+                    style={{
+                      backgroundColor: `${plan.color || "#16a34a"}12`,
+                    }}
+                  >
+                    <IconComponent
+                      className="h-6 w-6"
+                      style={{
+                        color: plan.color || "#16a34a",
+                      }}
+                    />
+                  </div>
+
+                  <h3 className="text-xl font-bold tracking-tight text-gray-950">
+                    {plan.name}
+                  </h3>
+
+                  <p className="mt-2 min-h-[42px] text-sm leading-6 text-gray-500">
+                    {plan.description}
+                  </p>
                 </div>
 
-                {/* Plan Name */}
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {plan.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-gray-600 text-sm mb-4 min-h-[40px]">
-                  {plan.description}
-                </p>
-
                 {/* Price */}
-                <div className="flex items-baseline justify-center mb-2">
-                  <span className="text-4xl font-bold text-gray-900">
-                    {(() => {
-                      let monthlyPrice = plan.monthlyPrice;
-                      let annualPrice = plan.annualPrice;
-                      let planCurrencySymbol = currencySymbol; // Default to brand symbol
+                <div className="mb-6 border-b border-gray-100 pb-6">
+                  <div className="flex min-h-[52px] items-baseline gap-1">
+                    <span className="text-3xl font-bold tracking-tight text-gray-950">
+                      {pricing.planCurrencySymbol}
+                      {formatPrice(pricing.monthlyEquivalent)}
+                    </span>
 
-                      if (
-                        selectedCurrency &&
-                        plan.multiCurrencyPrices &&
-                        plan.multiCurrencyPrices[selectedCurrency]
-                      ) {
-                        monthlyPrice =
-                          plan.multiCurrencyPrices[selectedCurrency].monthly;
-                        annualPrice =
-                          plan.multiCurrencyPrices[selectedCurrency].annual;
-                        planCurrencySymbol =
-                          currencySymbolMap[selectedCurrency] ||
-                          selectedCurrency + " ";
-                      }
+                    <span className="text-sm text-gray-500">
+                      /{t("Landing.pricingSec.pricing.month")}
+                    </span>
+                  </div>
 
-                      // If annual, calculate the monthly equivalent price (annual price / 12)
-                      let finalPrice = monthlyPrice;
-                      if (isAnnual) {
-                        const parsedAnnual = Number(annualPrice);
-                        if (!isNaN(parsedAnnual)) {
-                          finalPrice = (parsedAnnual / 12).toFixed(2);
-                        } else {
-                          finalPrice = annualPrice;
-                        }
-                      }
+                  <p className="mt-0 text-xs font-medium text-gray-500">
+                    {getBillingDescription(pricing)}
+                  </p>
 
-                      return (
-                        <>
-                          {planCurrencySymbol}
-                          {finalPrice}
-                        </>
-                      );
-                    })()}
-                  </span>
-                  <span className="text-gray-600 ml-2">
-                    /{t("Landing.pricingSec.pricing.month")}
-                  </span>
+                  {billingCycle !== "monthly" && (
+                    <p className="mt-1 text-xs text-gray-400">
+                      {billingCycle === "quarterly"
+                        ? "Charged once every 3 months"
+                        : "Charged once every 12 months"}
+                    </p>
+                  )}
+
+                  {billingDiscount > 0 && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-700">
+                      <Check className="h-3.5 w-3.5" />
+                      You save {billingDiscount}% on this plan
+                    </div>
+                  )}
                 </div>
 
                 {/* Permissions */}
                 {plan.permissions && (
-                  <div className="space-y-1">
-                    <div className="text-gray-600 text-sm">
-                      {t("Landing.pricingSec.pricing.upTo")}{" "}
-                      {plan.permissions.contacts}{" "}
-                      {t("Landing.pricingSec.pricing.contacts")}
+                  <div className="mb-6 space-y-3">
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                      <span className="text-gray-500">
+                        {t("Landing.pricingSec.pricing.contacts")}
+                      </span>
+
+                      <span className="font-semibold text-gray-900">
+                        {t("Landing.pricingSec.pricing.upTo")}{" "}
+                        {plan.permissions.contacts}
+                      </span>
                     </div>
-                    <div className="text-gray-600 text-sm">
-                      {plan.permissions.channel}{" "}
-                      {t("Landing.pricingSec.pricing.channels")}
+
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                      <span className="text-gray-500">
+                        {t("Landing.pricingSec.pricing.channels")}
+                      </span>
+
+                      <span className="font-semibold text-gray-900">
+                        {plan.permissions.channel}
+                      </span>
                     </div>
+
                     {plan.permissions.automation && (
-                      <div className="text-gray-600 text-sm">
-                        {plan.permissions.automation}{" "}
-                        {t("Landing.pricingSec.pricing.automation")}
+                      <div className="flex items-center justify-between gap-2 text-sm">
+                        <span className="text-gray-500">
+                          {t("Landing.pricingSec.pricing.automation")}
+                        </span>
+
+                        <span className="font-semibold text-gray-900">
+                          {plan.permissions.automation}
+                        </span>
                       </div>
                     )}
                   </div>
                 )}
+
+                {/* Features */}
+                <div className="flex-1 border-t border-gray-100 pt-6">
+                  <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    What's included
+                  </p>
+
+                  <ul className="space-y-3.5">
+                    {plan.features && plan.features.length > 0 ? (
+                      plan.features.map((feature, index) => (
+                        <li
+                          key={`${feature.name}-${index}`}
+                          className="flex items-start gap-2.5"
+                        >
+                          {feature.included ? (
+                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                          ) : (
+                            <X className="mt-0.5 h-4 w-4 shrink-0 text-gray-300" />
+                          )}
+
+                          <span
+                            className={`text-sm leading-5 ${
+                              feature.included
+                                ? "text-gray-600"
+                                : "text-gray-400"
+                            }`}
+                          >
+                            {feature.name}
+                          </span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-2.5">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                          <span className="text-sm text-gray-600">
+                            {plan.permissions?.contacts}{" "}
+                            {t("Landing.pricingSec.pricing.contacts")}
+                          </span>
+                        </li>
+
+                        <li className="flex items-start gap-2.5">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                          <span className="text-sm text-gray-600">
+                            {plan.permissions?.channel}{" "}
+                            {t("Landing.pricingSec.pricing.channels")}
+                          </span>
+                        </li>
+
+                        <li className="flex items-start gap-2.5">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                          <span className="text-sm text-gray-600">
+                            {plan.permissions?.automation}{" "}
+                            {t("Landing.pricingSec.pricing.automation")}
+                          </span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                {/* CTA */}
+                <div className="mt-8">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectPlan(plan)}
+                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 ${
+                      isPopular
+                        ? "bg-green-600 text-white shadow-sm hover:bg-green-700"
+                        : "bg-gray-900 text-white hover:bg-gray-800"
+                    }`}
+                    style={
+                      isPopular
+                        ? {
+                            backgroundColor: plan.buttonColor || "#16a34a",
+                          }
+                        : {}
+                    }
+                  >
+                    {isFree
+                      ? t("Landing.pricingSec.planCTA.freeButton")
+                      : t("Landing.pricingSec.planCTA.paidButton")}
+
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-
-              {/* Features - Grow to fill space */}
-              <ul className="space-y-4 mb-8 flex-grow">
-                {plan.features && plan.features.length > 0 ? (
-                  plan.features.map((feature, featureIndex) => (
-                    <li
-                      key={`${feature.name}-${featureIndex}`}
-                      className="flex items-start space-x-3"
-                    >
-                      {feature.included ? (
-                        <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      ) : (
-                        <X className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" />
-                      )}
-                      <span
-                        className={`text-sm ${
-                          feature.included ? "text-gray-700" : "text-gray-400"
-                        }`}
-                      >
-                        {feature.name}
-                      </span>
-                    </li>
-                  ))
-                ) : (
-                  <>
-                    <li className="flex items-start space-x-3">
-                      <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">
-                        {plan.permissions.contacts}{" "}
-                        {t("Landing.pricingSec.pricing.contacts")}
-                      </span>
-                    </li>
-                    <li className="flex items-start space-x-3">
-                      <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">
-                        {plan.permissions.channel}{" "}
-                        {t("Landing.pricingSec.pricing.channels")}
-                      </span>
-                    </li>
-                    <li className="flex items-start space-x-3">
-                      <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">
-                        {plan.permissions.automation}{" "}
-                        {t("Landing.pricingSec.pricing.automation")}
-                      </span>
-                    </li>
-                  </>
-                )}
-              </ul>
-
-              {/* CTA Button - Always at bottom */}
-              <button
-                onClick={() => handleSelectPlan(plan)}
-                className="w-full py-3 rounded-xl font-semibold transition-all transform hover:scale-105 text-white flex-shrink-0 hover:opacity-90"
-                style={{ backgroundColor: plan.buttonColor || "#10b981" }}
-              >
-                {Number.parseFloat(plan.monthlyPrice) === 0
-                  ? t("Landing.pricingSec.planCTA.freeButton")
-                  : t("Landing.pricingSec.planCTA.paidButton")}
-              </button>
             </div>
           );
         })}
@@ -353,126 +573,218 @@ const Pricing = () => {
     );
   };
 
-  // Get FAQ data from translation
+  // --------------------------------------------------
+  // FAQ
+  // --------------------------------------------------
+
   const faqData = t("Landing.pricingSec.faq.questions") as unknown as Array<{
     q: string;
     a: string;
   }>;
 
+  // --------------------------------------------------
+  // Main UI
+  // --------------------------------------------------
+
   return (
     <>
-      <section id="pricing" className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          {/* Header Section */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Crown className="w-4 h-4 mr-2" />
+      <section
+        id="pricing"
+        className="bg-white px-4 py-20 sm:px-6 lg:px-8 lg:py-28"
+      >
+        <div className="mx-auto max-w-7xl">
+          {/* Header */}
+          <div className="mx-auto mb-14 max-w-3xl text-center">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-green-100 bg-green-50 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-green-700">
+              <Crown className="h-4 w-4" />
               {t("Landing.pricingSec.introTagline")}
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+
+            <h2 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl lg:text-5xl">
               {t("Landing.pricingSec.headlinePre")}{" "}
-              <span className="block bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-green-600">
                 {t("Landing.pricingSec.headlineHighlight")}
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-500 sm:text-lg">
               {t("Landing.pricingSec.subHeadline")}
             </p>
 
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center space-x-4 mb-12 flex-wrap gap-4">
-              <span
-                className={`font-medium ${
-                  isAnnual ? "text-gray-500" : "text-gray-900"
-                }`}
-              >
-                {t("Landing.pricingSec.billingToggle.monthly")}
-              </span>
-              <button
-                onClick={() => setIsAnnual(!isAnnual)}
-                className={`relative w-14 h-7 rounded-full transition-colors ${
-                  isAnnual ? "bg-green-500" : "bg-gray-300"
-                }`}
-              >
+            {/* Billing selector and discount */}
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+              <div className="inline-flex flex-wrap items-center rounded-xl border border-gray-200 bg-gray-50 p-1">
+                {[
+                  {
+                    value: "monthly",
+                    label: t("Landing.pricingSec.billingToggle.monthly"),
+                  },
+                  {
+                    value: "quarterly",
+                    label: "Quarterly",
+                  },
+                  {
+                    value: "annual",
+                    label: t("Landing.pricingSec.billingToggle.annual"),
+                  },
+                ].map((cycle) => {
+                  const isSelected = billingCycle === cycle.value;
+
+                  return (
+                    <button
+                      key={cycle.value}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() =>
+                        setBillingCycle(cycle.value as BillingCycle)
+                      }
+                      className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                        isSelected
+                          ? "bg-white text-gray-950 shadow-sm ring-1 ring-gray-200"
+                          : "text-gray-500 hover:text-gray-900"
+                      }`}
+                    >
+                      {cycle.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Dynamic discount badge */}
+              {billingCycle !== "monthly" && billingDiscount > 0 && (
                 <div
-                  className={`absolute w-5 h-5 bg-white rounded-full top-1 transition-transform ${
-                    isAnnual ? "translate-x-7" : "translate-x-1"
-                  }`}
-                ></div>
-              </button>
-              <span
-                className={`font-medium ${
-                  isAnnual ? "text-gray-900" : "text-gray-500"
-                }`}
-              >
-                {t("Landing.pricingSec.billingToggle.annual")}
-              </span>
-              {isAnnual && (
-                <span className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-medium">
-                  {t("Landing.pricingSec.billingToggle.saveLabel")}
-                </span>
-              )}
-              {displayedCurrencies.length > 1 && (
-                <select
-                  value={selectedCurrency}
-                  onChange={(e) => setSelectedCurrency(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer"
+                  key={billingCycle}
+                  className="inline-flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-700 animate-in fade-in duration-200"
                 >
-                  {displayedCurrencies.map((cur) => (
-                    <option key={cur} value={cur}>
-                      {currencySymbolMap[cur] || ""} {cur}
-                    </option>
-                  ))}
-                </select>
+                  <Sparkles className="h-4 w-4" />
+
+                  <span>
+                    Save {billingDiscount}%
+                    <span className="ml-1 font-medium text-green-600">
+                      {billingCycle === "quarterly" ? "Quarterly" : "Annually"}
+                    </span>
+                  </span>
+                </div>
               )}
+
+              {/* Currency selector */}
+              {displayedCurrencies.length > 1 && (
+                <div className="relative">
+                  <select
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    aria-label="Select currency"
+                    className="min-w-[125px] appearance-none rounded-xl border border-gray-200 bg-white py-3 pl-4 pr-10 text-sm font-semibold text-gray-700 outline-none transition-colors hover:border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-100"
+                  >
+                    {displayedCurrencies.map((cur) => (
+                      <option key={cur} value={cur}>
+                        {currencySymbolMap[cur] || ""} {cur}
+                      </option>
+                    ))}
+                  </select>
+
+                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                </div>
+              )}
+            </div>
+
+            <p className="mt-4 text-xs text-gray-400">
+              {billingCycle === "monthly"
+                ? "Flexible monthly billing. Change your plan whenever you need."
+                : billingCycle === "quarterly"
+                  ? "Pay every 3 months and enjoy discounted pricing."
+                  : "Get the best value with our annual billing option."}
+            </p>
+          </div>
+
+          {/* Plans */}
+          {renderPlansContent()}
+
+          {/* Trust indicators */}
+          <div className="mt-14 flex flex-wrap items-center justify-center gap-x-10 gap-y-5 border-b border-gray-100 pb-14 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-green-600" />
+              Secure payments
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-green-600" />
+              Transparent pricing
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-green-600" />
+              Flexible billing
             </div>
           </div>
 
-          {/* Plans Content */}
-          {renderPlansContent()}
+          {/* FAQ */}
+          <div className="mx-auto mt-20 max-w-5xl">
+            <div className="mb-10 text-center">
+              <h3 className="text-2xl font-bold tracking-tight text-gray-950 sm:text-3xl">
+                {t("Landing.pricingSec.faq.title")}
+              </h3>
 
-          {/* FAQ Section */}
-          <div className="bg-gray-50 p-8 rounded-2xl">
-            <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-              {t("Landing.pricingSec.faq.title")}
-            </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+              <p className="mt-3 text-sm text-gray-500">
+                Find answers to common questions about our plans and billing.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               {faqData.map((faq, index) => (
                 <div
                   key={`${faq.q}-${index}`}
-                  className="bg-white p-6 rounded-xl"
+                  className="rounded-xl border border-gray-200 bg-white p-6 transition-colors hover:border-gray-300"
                 >
-                  <h4 className="font-semibold text-gray-900 mb-2">{faq.q}</h4>
-                  <p className="text-gray-600 text-sm">{faq.a}</p>
+                  <h4 className="font-semibold text-gray-900">{faq.q}</h4>
+
+                  <p className="mt-2 text-sm leading-6 text-gray-500">
+                    {faq.a}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Enterprise CTA */}
-          <div className="mt-16 bg-gradient-to-r from-gray-900 to-gray-800 p-8 rounded-2xl text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              {t("Landing.pricingSec.enterprise.title")}
-            </h3>
-            <p className="text-gray-300 mb-6">
-              {t("Landing.pricingSec.enterprise.description")}
-            </p>
-            <Link
-              href="/contact"
-              className="bg-white text-gray-900 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all flex items-center mx-auto group w-fit"
-            >
-              {t("Landing.pricingSec.enterprise.button")}
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+          {/* Enterprise */}
+          <div className="relative mt-20 overflow-hidden rounded-2xl bg-gray-950 px-6 py-14 text-center sm:px-12">
+            <div className="pointer-events-none absolute -right-20 -top-32 h-72 w-72 rounded-full bg-green-500/10 blur-3xl" />
+
+            <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
+
+            <div className="relative mx-auto max-w-2xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-300">
+                <Building className="h-3.5 w-3.5" />
+                Enterprise solutions
+              </div>
+
+              <h3 className="text-2xl font-bold text-white sm:text-3xl">
+                {t("Landing.pricingSec.enterprise.title")}
+              </h3>
+
+              <p className="mt-4 text-sm leading-7 text-gray-400 sm:text-base">
+                {t("Landing.pricingSec.enterprise.description")}
+              </p>
+
+              <Link
+                href="/contact"
+                className="group mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-gray-950 transition-all hover:bg-gray-100"
+              >
+                {t("Landing.pricingSec.enterprise.button")}
+
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Checkout Modal */}
+      {/* Checkout */}
       {selectedPlan && (
         <CheckoutModal
           plan={selectedPlan}
           isAnnual={isAnnual}
+          billingCycle={billingCycle}
           open={checkoutOpen}
           onOpenChange={setCheckoutOpen}
           userId={user?.id}

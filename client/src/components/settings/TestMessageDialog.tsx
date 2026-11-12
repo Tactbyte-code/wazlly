@@ -41,7 +41,7 @@ interface TestMessageDialogProps {
 
 export function TestMessageDialog({ open, onOpenChange, channelId }: TestMessageDialogProps) {
   const [testPhoneNumber, setTestPhoneNumber] = useState("919310797700");
-  const [testMessage, setTestMessage] = useState("Hello! This is a test message from WhatsWay.");
+  const [testMessage, setTestMessage] = useState("Hello! This is a test message from Wazlly 😃");
   const { toast } = useToast();
 
   // Test message mutation

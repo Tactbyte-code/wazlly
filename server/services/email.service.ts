@@ -19,12 +19,16 @@ import nodemailer from "nodemailer";
 import { diployLogger, HTTP_STATUS, DIPLOY_BRAND } from "@diploy/core";
 import { getSMTPConfig } from "server/controllers/smtp.controller";
 import { getFirstPanelConfig, getPanelConfigs } from "./panel.config";
-import { cacheGet, cacheInvalidate, CACHE_KEYS, CACHE_TTL } from './cache';
+import { cacheGet, cacheInvalidate, CACHE_KEYS, CACHE_TTL } from "./cache";
 import { resolvePublicOrigin } from "./public-origin";
 
 let transporter: any = null;
+let transporterConfigKey: string | null = null;
 
-async function resolveLogoUrl(smtpLogo?: string | null, panelLogo?: string | null): Promise<string | undefined> {
+async function resolveLogoUrl(
+  smtpLogo?: string | null,
+  panelLogo?: string | null,
+): Promise<string | undefined> {
   const logo = smtpLogo || panelLogo;
   if (!logo) return undefined;
   if (logo.startsWith("http://") || logo.startsWith("https://")) return logo;
@@ -35,30 +39,59 @@ async function resolveLogoUrl(smtpLogo?: string | null, panelLogo?: string | nul
 }
 
 async function getTransporter() {
-  if (transporter) return transporter;
-
   const config = await getSMTPConfig();
 
-  if (config) {
-    const port = parseInt(config.port, 10);
-    const secure = port === 465;
-
-    transporter = nodemailer.createTransport({
-      host: config.host,
-      port,
-      secure,
-      ...(!secure && (port === 587 || !!config.secure) ? { requireTLS: true } : {}),
-      auth: {
-        user: config.user,
-        pass: config.password,
-      },
-    });
-  } else {
-    console.warn("Using fallback SMTP settings (emails will not be sent)");
-    transporter = nodemailer.createTransport({
-      jsonTransport: true,
-    });
+  // Never silently use JSON transport: it does not deliver emails.
+  if (!config) {
+    throw new Error("SMTP configuration not found.");
   }
+
+  const port = Number(config.port);
+
+  if (
+    !config.host ||
+    !Number.isInteger(port) ||
+    port <= 0 ||
+    !config.user ||
+    !config.password
+  ) {
+    throw new Error("SMTP configuration is incomplete or invalid.");
+  }
+
+  const configKey = JSON.stringify({
+    host: config.host,
+    port,
+    user: config.user,
+    password: config.password,
+    secure: port === 465,
+  });
+
+  // Reuse transporter only if the SMTP configuration is unchanged.
+  if (transporter && transporterConfigKey === configKey) {
+    return transporter;
+  }
+
+  if (transporter) {
+    transporter.close();
+  }
+
+  const secure = port === 465;
+
+  transporter = nodemailer.createTransport({
+    host: config.host,
+    port,
+    secure,
+    ...(port === 587 ? { requireTLS: true } : {}),
+    auth: {
+      user: config.user,
+      pass: config.password,
+    },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
+  });
+
+  transporterConfigKey = configKey;
 
   return transporter;
 }
@@ -73,7 +106,13 @@ async function getPanelConfig() {
 }
 
 export function resetEmailCache() {
+  if (transporter) {
+    transporter.close();
+  }
+
   transporter = null;
+  transporterConfigKey = null;
+
   cacheInvalidate(CACHE_KEYS.smtpConfig()).catch(() => {});
   cacheInvalidate(CACHE_KEYS.panelConfig()).catch(() => {});
 }
@@ -82,7 +121,7 @@ function generateOTPEmailHTML(
   companyName?: string,
   logo?: string,
   otpCode?: string,
-  name?: string
+  name?: string,
 ): string {
   const displayName = companyName || "Your Company";
   const headerContent = logo
@@ -148,7 +187,7 @@ function generateOTPEmailHTML(
 function generateOTPEmailText(
   companyName: string,
   otpCode: string,
-  name?: string
+  name?: string,
 ): string {
   return `
 Hello${name ? " " + name : ""},
@@ -171,7 +210,7 @@ function generateForgotPasswordEmailHTML(
   companyName?: string,
   logo?: string,
   otpCode?: string,
-  name?: string
+  name?: string,
 ): string {
   const displayName = companyName || "Your Company";
   const headerContent = logo
@@ -235,7 +274,7 @@ function generateForgotPasswordEmailHTML(
 function generateForgotPasswordEmailText(
   companyName: string,
   otpCode: string,
-  name?: string
+  name?: string,
 ): string {
   return `
 Hello${name ? " " + name : ""},
@@ -254,40 +293,278 @@ Our Platform
   `.trim();
 }
 
-export async function sendOTPEmail(
-  email: string,
-  otpCode: string,
-  name?: string
-) {
-  const config = await getConfig();
-  const configs = await getPanelConfig();
-  const mailer = await getTransporter();
-
-  const companyName = configs?.name || "Your Company";
-  const fromName = config?.fromName || companyName;
-  const fromEmail = config?.fromEmail;
-
-  const mailOptions = {
-    from: `"${fromName}" <${fromEmail}>`,
-    to: email,
-    subject: `Your ${companyName} Verification Code`,
-    html: generateForgotPasswordEmailHTML(
-      companyName,
-      await resolveLogoUrl(config?.logo, configs?.logo),
-      otpCode,
-      name
-    ),
-    text: generateForgotPasswordEmailText(companyName, otpCode, name),
-  };
+export const sendOTPEmail = async (email, otp) => {
+  console.log("\n========== SMTP DEBUG START ==========");
 
   try {
-    const info = await mailer.sendMail(mailOptions);
-    return { success: true, messageId: info.messageId };
+    const config = await getSMTPConfig();
+
+    if (!config) {
+      throw new Error("No SMTP configuration found in database");
+    };
+
+    // STEP 2: Extract database configuration
+    const host = config.host;
+    const port = Number(config.port);
+    const user = config.user;
+    const pass = config.password;
+
+    // STEP 1: Read environment variables
+    // const host = process.env.SMTP_HOST;
+    // const port = Number(process.env.SMTP_PORT);
+    // const user = process.env.SMTP_USER;
+    // const pass = process.env.SMTP_PASS;
+
+    console.log("[SMTP 1] Reading environment variables");
+
+    console.log({
+      host,
+      port,
+      user,
+      passwordExists: Boolean(pass),
+      passwordLength: pass?.length || 0,
+      recipient: email,
+    });
+
+    if (!host || !port || !user || !pass) {
+      throw new Error("Missing SMTP environment variables");
+    }
+
+    // STEP 2: Create transporter
+    console.log("[SMTP 2] Creating Nodemailer transporter");
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: {
+        user,
+        pass,
+      },
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 20000,
+      logger: false,
+      debug: false,
+    });
+
+    console.log("[SMTP 2] Transporter created successfully");
+
+    // STEP 3: Verify SMTP connection
+    console.log("[SMTP 3] Verifying SMTP connection...");
+
+    await transporter.verify();
+
+    console.log("[SMTP 3] SMTP connection verified successfully");
+
+    // STEP 4: Prepare email
+    console.log("[SMTP 4] Preparing OTP email");
+
+    const mailOptions = {
+      from: `"Wazlly" <${user}>`,
+      to: email,
+      subject: "Your Wazlly Verification Code",
+      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Wazlly Verification</h2>
+          <p>Your verification code is:</p>
+          <h1 style="letter-spacing: 5px;">${otp}</h1>
+          <p>This OTP is valid for 10 minutes.</p>
+          <p>If you did not request this code, please ignore this email.</p>
+        </div>
+      `,
+    };
+
+    // STEP 5: Send email
+    console.log("[SMTP 5] Sending OTP email...");
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("[SMTP 5] Email sent successfully");
+
+    console.log({
+      messageId: info.messageId,
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response,
+    });
+
+    console.log("========== SMTP DEBUG SUCCESS ==========\n");
+
+    return {
+      success: true,
+      message: "OTP email sent successfully",
+      messageId: info.messageId,
+    };
   } catch (error) {
-    console.error("[Email] Failed to send OTP:", error);
-    throw new Error("Failed to send verification email");
+    console.error("\n========== SMTP DEBUG FAILED ==========");
+
+    console.error("[SMTP ERROR] Message:", error.message);
+    console.error("[SMTP ERROR] Code:", error.code);
+    console.error("[SMTP ERROR] Command:", error.command);
+    console.error("[SMTP ERROR] Response Code:", error.responseCode);
+    console.error("[SMTP ERROR] Response:", error.response);
+
+    console.error("[SMTP ERROR] Full error:", error);
+
+    console.error("========== SMTP DEBUG END ==========\n");
+
+    throw error;
   }
-}
+};
+
+// export const sendOTPEmail = async (email, otp) => {
+//   try {
+//     const config = await getSMTPConfig();
+
+//     if (!config) {
+//       throw new Error("No SMTP configuration found in database");
+//     }
+
+//     // STEP 2: Extract database configuration
+//     const host = config.host;
+//     const port = Number(config.port);
+//     const user = config.user;
+//     const pass = config.password;
+
+//     console.log("host: ", host);
+//     console.log("port: ", port);
+//     console.log("user: ", user);
+//     console.log("password: ", pass);
+
+//     if (!host || !port || !user || !pass) {
+//       throw new Error("Incomplete SMTP configuration in database");
+//     }
+
+//     // STEP 3: Create transporter
+//     const transporter = nodemailer.createTransport({
+//       host,
+//       port,
+//       secure: port === 465,
+//       auth: {
+//         user,
+//         pass,
+//       },
+//       connectionTimeout: 15000,
+//       greetingTimeout: 15000,
+//       socketTimeout: 20000,
+//     });
+
+//     // STEP 4: Verify SMTP connection
+//     await transporter.verify();
+
+//     // STEP 5: Prepare email
+//     const mailOptions = {
+//       from: `"Wazlly" <${user}>`,
+//       to: email,
+//       subject: "Your Wazlly Verification Code",
+//       text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+//       html: `
+//         <div style="font-family: Arial, sans-serif; padding: 20px;">
+//           <h2>Wazlly Verification</h2>
+//           <p>Your verification code is:</p>
+//           <h1 style="letter-spacing: 5px;">${otp}</h1>
+//           <p>This OTP is valid for 10 minutes.</p>
+//           <p>If you did not request this code, please ignore this email.</p>
+//         </div>
+//       `,
+//     };
+
+//     // STEP 6: Send email
+//     const info = await transporter.sendMail(mailOptions);
+
+//     console.log({
+//       messageId: info.messageId,
+//       accepted: info.accepted,
+//       rejected: info.rejected,
+//       response: info.response,
+//     });
+
+//     return {
+//       success: true,
+//       message: "OTP email sent successfully",
+//       messageId: info.messageId,
+//     };
+//   } catch (error) {
+//     console.error("[SMTP ERROR] Message:", error.message);
+//     console.error("[SMTP ERROR] Code:", error.code);
+//     console.error("[SMTP ERROR] Command:", error.command);
+//     console.error("[SMTP ERROR] Response Code:", error.responseCode);
+//     console.error("[SMTP ERROR] Response:", error.response);
+
+//     console.error("[SMTP ERROR] Full error:", error);
+
+//     throw error;
+//   }
+// };
+
+// export async function sendOTPEmail(
+//   email: string,
+//   otpCode: string,
+//   name?: string,
+// ) {
+//   try {
+//     console.log('function entered');
+
+//     const config = await getConfig();
+//     console.log('config: ', config);
+//     const configs = await getPanelConfig();
+//     console.log('panel config: ', configs);
+
+//     if (!config?.fromEmail) {
+//       throw new Error("SMTP sender email address is not configured.");
+//     }
+
+//     const mailer = await getTransporter();
+
+//     const companyName = configs?.name || "Your Company";
+//     const fromName = config.fromName || companyName;
+//     const fromEmail = config.fromEmail;
+
+//     const mailOptions = {
+//       from: `"${fromName}" <${fromEmail}>`,
+//       to: email,
+//       subject: `Your ${companyName} Password Reset Code`,
+//       html: generateForgotPasswordEmailHTML(
+//         companyName,
+//         await resolveLogoUrl(config.logo, configs?.logo),
+//         otpCode,
+//         name,
+//       ),
+//       text: generateForgotPasswordEmailText(companyName, otpCode, name),
+//     };
+
+//     const info = await mailer.sendMail(mailOptions);
+
+//     // Check whether the SMTP server accepted the recipient.
+//     if (
+//       !info.accepted ||
+//       info.accepted.length === 0 ||
+//       (info.rejected && info.rejected.length > 0)
+//     ) {
+//       throw new Error(`SMTP rejected recipient: ${email}`);
+//     }
+
+//     diployLogger?.info?.(
+//       `[Email] Password reset OTP accepted by SMTP for ${email}`,
+//     );
+
+//     return {
+//       success: true,
+//       messageId: info.messageId,
+//     };
+//   } catch (error: any) {
+//     console.error("[Email] Failed to send password reset OTP:", {
+//       message: error?.message,
+//       code: error?.code,
+//       response: error?.response,
+//       command: error?.command,
+//     });
+
+//     throw error;
+//   }
+// }
 
 export async function sendContactEmail(data: {
   name: string;
@@ -367,7 +644,7 @@ export async function sendContactEmail(data: {
 export async function sendOTPEmailVerify(
   email: string,
   otpCode: string,
-  name?: string
+  name?: string,
 ) {
   const config = await getConfig();
   const configs = await getPanelConfig();
@@ -381,7 +658,12 @@ export async function sendOTPEmailVerify(
     from: `"${fromName}" <${fromEmail}>`,
     to: email,
     subject: `Your ${companyName} Verification Code`,
-    html: generateOTPEmailHTML(companyName, await resolveLogoUrl(config?.logo, configs?.logo), otpCode, name),
+    html: generateOTPEmailHTML(
+      companyName,
+      await resolveLogoUrl(config?.logo, configs?.logo),
+      otpCode,
+      name,
+    ),
     text: generateOTPEmailText(companyName, otpCode, name),
   };
 

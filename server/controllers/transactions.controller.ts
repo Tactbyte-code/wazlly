@@ -722,14 +722,38 @@ export const initiatePayment = async (req: Request, res: Response) => {
     const { userId, planId, currency, paymentProviderId, billingCycle } =
       req.body;
 
-    const planData = await db.select().from(plans).where(eq(plans.id, planId));
-    if (planData.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Plan not found" });
+    // Validate billing cycle.
+    const validCycles = ["monthly", "quarterly", "annual"] as const;
+
+    if (!validCycles.includes(billingCycle)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid billing cycle. Use monthly, quarterly, or annual.",
+      });
     }
 
-    // console.log('plan data: ', planData);
+    const cycle = billingCycle as "monthly" | "quarterly" | "annual";
+
+    const billingMultiplier =
+      cycle === "monthly" ? 1 : cycle === "quarterly" ? 3 : 12;
+
+    const requestedCurrency = currency ? String(currency).toUpperCase() : null;
+
+    if (!requestedCurrency) {
+      return res.status(400).json({
+        success: false,
+        message: "currency is required",
+      });
+    }
+
+    const planData = await db.select().from(plans).where(eq(plans.id, planId));
+
+    if (planData.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Plan not found",
+      });
+    }
 
     const providerData = await db
       .select()
@@ -737,44 +761,69 @@ export const initiatePayment = async (req: Request, res: Response) => {
       .where(eq(paymentProviders.id, paymentProviderId));
 
     if (providerData.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Payment provider not found" });
-    };
+      return res.status(404).json({
+        success: false,
+        message: "Payment provider not found",
+      });
+    }
 
     const provider = providerData[0];
 
     if (!provider.isActive) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Payment provider is not active" });
-    };
-
-    const plan = planData[0];
-    const cycle = billingCycle === "annual" ? "annual" : "monthly";
-    let amount = cycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
-
-    const requestedCurrency = currency ? String(currency).toUpperCase() : null;
-
-    if (requestedCurrency && plan.multiCurrencyPrices) {
-      const multiPrices = plan.multiCurrencyPrices as Record<
-        string,
-        { monthly: string; annual: string }
-      >;
-      if (multiPrices[requestedCurrency]) {
-        amount =
-          cycle === "annual"
-            ? multiPrices[requestedCurrency].annual
-            : multiPrices[requestedCurrency].monthly;
-      }
-    };
-
-    if (!requestedCurrency) {
       return res.status(400).json({
         success: false,
-        message: "currency is required",
+        message: "Payment provider is not active",
       });
-    };
+    }
+
+    const plan = planData[0];
+
+    // These fields contain monthly-equivalent prices.
+    let monthlyEquivalentPrice =
+      cycle === "monthly"
+        ? Number(plan.monthlyPrice)
+        : cycle === "quarterly"
+          ? Number(plan.quarterlyPrice)
+          : Number(plan.annualPrice);
+
+    // Use the selected currency's monthly-equivalent price when available.
+    if (plan.multiCurrencyPrices) {
+      const multiPrices = plan.multiCurrencyPrices as Record<
+        string,
+        {
+          monthly: string;
+          quarterly: string;
+          annual: string;
+        }
+      >;
+
+      const currencyPrices = multiPrices[requestedCurrency];
+
+      if (currencyPrices) {
+        monthlyEquivalentPrice =
+          cycle === "monthly"
+            ? Number(currencyPrices.monthly)
+            : cycle === "quarterly"
+              ? Number(currencyPrices.quarterly)
+              : Number(currencyPrices.annual);
+      }
+    }
+
+    if (
+      !Number.isFinite(monthlyEquivalentPrice) ||
+      monthlyEquivalentPrice < 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid plan price for the selected billing cycle and currency",
+      });
+    }
+
+    // Calculate the actual amount charged for the entire billing period.
+    const amount = Number(
+      (monthlyEquivalentPrice * billingMultiplier).toFixed(2),
+    );
 
     assertProviderSupportsCurrency(provider, requestedCurrency);
 
@@ -784,16 +833,18 @@ export const initiatePayment = async (req: Request, res: Response) => {
         userId,
         planId,
         paymentProviderId,
-        amount,
+        amount: amount.toFixed(2),
         currency: requestedCurrency,
         billingCycle: cycle,
         status: "pending",
-        metadata: {},
+        metadata: {
+          monthlyEquivalentPrice: monthlyEquivalentPrice.toFixed(2),
+          billingMultiplier,
+        },
       })
       .returning();
 
     const transaction = newTransaction[0];
-    // console.log("new transaction: ", transaction);
 
     let paymentData: any;
 
@@ -919,7 +970,7 @@ export const initiatePayment = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Subscription payment initiated successfully",
       data: {
@@ -933,12 +984,15 @@ export const initiatePayment = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     if (error instanceof CurrencyNotSupportedError) {
-      return res.status(400).json({ success: false, message: error.message });
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
     }
 
-    console.error("Error initiating payment: ", error);
+    console.error("Error initiating payment:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message || "Error initiating payment",
     });

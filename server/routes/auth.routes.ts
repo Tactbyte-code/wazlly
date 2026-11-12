@@ -28,6 +28,7 @@ import country from "../config/country.json";
 import { sendOTPEmail } from "../services/email.service";
 import { otpVerifications } from "@shared/schema";
 import { createUser } from "../controllers/user.controller";
+import { randomInt } from "crypto";
 
 const router = Router();
 
@@ -221,29 +222,36 @@ router.get("/country-data", (req, res) => {
 });
 
 // forgot password
-
 router.post("/forgot-password", async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const email = String(req.body?.email || "")
+      .trim()
+      .toLowerCase();
 
     if (!email) {
-      return res.status(400).json({ error: "Email is required" });
+      return res.status(400).json({
+        error: "Email is required",
+      });
     }
 
-    // Check if user exists
+    // STEP 1: Check whether the user exists.
     const existingUser = await db
       .select()
       .from(users)
-      .where(eq(users.email, email));
+      .where(sql`LOWER(TRIM(${users.email})) = ${email}`)
+      .limit(1);
 
     if (!existingUser.length) {
-      return res.status(404).json({ error: "Email not registered" });
+      return res.status(404).json({
+        error: "Email not registered",
+      });
     }
 
-    const userId = existingUser[0].id;
-    const userName = existingUser[0].firstName; // Use DB value
+    const user = existingUser[0];
+    const userId = user.id;
+    const userName = user.firstName;
 
-    // Rate limiting: max 3 OTP per 5 min
+    // STEP 2: Rate limiting - maximum 3 OTPs in 5 minutes.
     const recentOTPs = await db
       .select()
       .from(otpVerifications)
@@ -260,11 +268,12 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
       });
     }
 
-    // Generate 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+    // STEP 3: Generate a cryptographically secure 6-digit OTP.
+    const otpCode = randomInt(100000, 1000000).toString();
 
-    // Store OTP in DB
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    // STEP 4: Store OTP.
     await db.insert(otpVerifications).values({
       userId,
       otpCode,
@@ -272,23 +281,43 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
       isUsed: false,
     });
 
-    // Send OTP via email
+    // STEP 5: Send email.
     try {
-      await sendOTPEmail(email, otpCode, userName);
-      console.log(`✉️ OTP sent to ${email} ${otpCode} `);
-    } catch (emailError) {
-      console.error("⚠️ Failed to send OTP email:", emailError);
-    }
+      const emailResult = await sendOTPEmail(email, otpCode, userName);
 
-    res.json({
-      success: true,
-      message: "Verification code sent to your email",
-    });
+      console.log(
+        `[Forgot Password] OTP email accepted by SMTP. User ID: ${userId}, Message ID: ${emailResult.messageId}`,
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Verification code sent to your email",
+      });
+    } catch (emailError: any) {
+      console.error("[Forgot Password] OTP delivery failed:", emailError);
+
+      await db
+        .update(otpVerifications)
+        .set({ isUsed: true })
+        .where(
+          and(
+            eq(otpVerifications.userId, userId),
+            eq(otpVerifications.otpCode, otpCode),
+          ),
+        );
+
+      return res.status(502).json({
+        success: false,
+        error: "Unable to send verification email. Please try again later.",
+      });
+    }
   } catch (error: any) {
-    console.error("Forgot password error:", error);
-    res
-      .status(500)
-      .json({ error: error.message || "Failed to process request" });
+    console.error("[Forgot Password] Controller error:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Failed to process password reset request",
+    });
   }
 });
 

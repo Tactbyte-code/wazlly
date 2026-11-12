@@ -41,6 +41,7 @@ interface CheckoutModalProps {
   paymentProviders: PaymentProvider[] | undefined;
   isLoadingProviders: boolean;
   selectedCurrency?: string;
+  billingCycle?: string;
 }
 
 interface PaymentInitiationData {
@@ -197,6 +198,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isAnnual,
   open,
   onOpenChange,
+  billingCycle,
   userId,
   paymentProviders,
   isLoadingProviders,
@@ -259,9 +261,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const IconComponent = iconMap[plan.icon] || Zap;
 
-  let price = isAnnual
-    ? parseFloat(plan.annualPrice)
-    : parseFloat(plan.monthlyPrice);
+  const billingMultiplier =
+    billingCycle === "monthly" ? 1 : billingCycle === "quarterly" ? 3 : 12;
+
+  let price =
+    billingCycle === "monthly"
+      ? parseFloat(plan.monthlyPrice)
+      : billingCycle === "quarterly"
+        ? parseFloat(plan.quarterlyPrice)
+        : parseFloat(plan.annualPrice);
 
   if (
     checkoutCurrency &&
@@ -269,12 +277,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     plan.multiCurrencyPrices[checkoutCurrency.toUpperCase()]
   ) {
     const multiPrice = plan.multiCurrencyPrices[checkoutCurrency.toUpperCase()];
-    price = isAnnual
-      ? parseFloat(multiPrice.annual)
-      : parseFloat(multiPrice.monthly);
+
+    price =
+      billingCycle === "monthly"
+        ? parseFloat(multiPrice.monthly)
+        : billingCycle === "quarterly"
+          ? parseFloat(multiPrice.quarterly)
+          : parseFloat(multiPrice.annual);
   }
 
-  const total = price;
+  const total = price * billingMultiplier;
 
   const allActiveProviders = paymentProviders?.filter((p) => p.isActive) || [];
 
@@ -411,8 +423,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       const options = {
         key: paymentData.keyId,
         subscription_id: paymentData.subscriptionId,
-        name: "WhatsApp Marketing Platform",
-        description: `${plan.name} Plan - ${isAnnual ? "Annual" : "Monthly"} Subscription`,
+        name: "Wazlly | WhatsApp Marketing and Automation Platform",
+        description: `${plan.name} Plan - ${
+          billingCycle === "monthly"
+            ? "Monthly"
+            : billingCycle === "quarterly"
+              ? "Quarterly"
+              : "Annual"
+        } Subscription`,
         handler: async function (response: any) {
           console.log("RAZORPAY RESPONSE =>", response);
           try {
@@ -502,7 +520,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         variant: "destructive",
       });
       return;
-    };
+    }
 
     setLoading(true);
 
@@ -512,7 +530,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         planId: plan.id,
         paymentProviderId: selectedProvider.id,
         currency: finalCurrency,
-        billingCycle: isAnnual ? "annual" : "monthly",
+        billingCycle,
       };
 
       const response = await apiRequest(
@@ -526,7 +544,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
       if (!data.success) {
         throw new Error(data.message || "Payment initiation failed");
-      };
+      }
 
       const provider = data.data.provider.toLowerCase();
 
@@ -702,7 +720,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="flex items-center justify-between text-xs sm:text-sm pt-2 sm:pt-3 border-t border-blue-200">
               <span className="text-gray-600">Billing Period:</span>
               <span className="font-semibold text-gray-900">
-                {isAnnual ? "Annual" : "Monthly"}
+                {billingCycle}
               </span>
             </div>
           </div>
@@ -752,7 +770,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {activeCurrencySymbol}
                 {total.toFixed(2)}
                 <span className="text-sm font-normal text-gray-500">
-                  /{isAnnual ? "year" : "month"}
+                  /
+                  {billingCycle === "monthly"
+                    ? "month"
+                    : billingCycle === "quarterly"
+                      ? "3 months"
+                      : "year"}
                 </span>
               </span>
             </div>
@@ -858,7 +881,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <>
                 <Lock className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                 Subscribe - {activeCurrencySymbol}
-                {total.toFixed(2)}/{isAnnual ? "year" : "month"}
+                {total.toFixed(2)}/
+                {billingCycle === "monthly"
+                  ? "month"
+                  : billingCycle === "quarterly"
+                    ? "3 months"
+                    : "year"}
               </>
             )}
           </Button>

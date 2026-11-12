@@ -1,0 +1,1 @@
+ALTER TABLE "plans" ADD COLUMN "razorpay_plan_ids" jsonb;

@@ -42,7 +42,13 @@ import {
   CAMPAIGN_STATUS_VALUES,
   MESSAGE_STATUS_VALUES,
 } from "./roles";
-export { Role, ROLE_VALUES, UserStatus, CampaignStatus, MessageStatus } from "./roles";
+export {
+  Role,
+  ROLE_VALUES,
+  UserStatus,
+  CampaignStatus,
+  MessageStatus,
+} from "./roles";
 
 export const users = pgTable(
   "users",
@@ -79,7 +85,7 @@ export const users = pgTable(
   (table) => ({
     usersCreatedByIdx: index("users_created_by_idx").on(table.createdBy),
     usersRoleIdx: index("users_role_idx").on(table.role),
-  })
+  }),
 );
 
 // Conversation assignments to users
@@ -153,9 +159,9 @@ export const contacts = pgTable(
     contactTenantIdx: index("contacts_tenant_idx").on(table.tenantId),
     contactChannelPhoneUnique: unique("contacts_channel_phone_unique").on(
       table.channelId,
-      table.phone
+      table.phone,
     ),
-  })
+  }),
 );
 
 export const campaigns = pgTable(
@@ -194,7 +200,9 @@ export const campaigns = pgTable(
     repliedCount: integer("replied_count").default(0),
     failedCount: integer("failed_count").default(0),
     completedAt: timestamp("completed_at", { withTimezone: true }),
-    populationStartedAt: timestamp("population_started_at", { withTimezone: true }),
+    populationStartedAt: timestamp("population_started_at", {
+      withTimezone: true,
+    }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
@@ -202,7 +210,7 @@ export const campaigns = pgTable(
     campaignChannelIdx: index("campaigns_channel_idx").on(table.channelId),
     campaignStatusIdx: index("campaigns_status_idx").on(table.status),
     campaignCreatedIdx: index("campaigns_created_idx").on(table.createdAt),
-  })
+  }),
 );
 
 // Campaign Recipients table for tracking individual recipient status
@@ -238,9 +246,9 @@ export const campaignRecipients = pgTable(
     recipientPhoneIdx: index("recipients_phone_idx").on(table.phone),
     campaignPhoneUnique: unique("campaign_phone_unique").on(
       table.campaignId,
-      table.phone
+      table.phone,
     ),
-  })
+  }),
 );
 
 // WhatsApp Business Channels for multi-account support
@@ -260,49 +268,59 @@ export const channels = pgTable("channels", {
   healthStatus: text("health_status").default("unknown"), // healthy, warning, error, unknown
   lastHealthCheck: timestamp("last_health_check", { withTimezone: true }),
   healthDetails: jsonb("health_details").default({}), // Detailed health information
-  connectionMethod: varchar("connection_method", { length: 20 }).default("embedded"),
+  connectionMethod: varchar("connection_method", { length: 20 }).default(
+    "embedded",
+  ),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   createdBy: varchar("created_by").default(""),
 });
 
-export const templates = pgTable("templates", {
-  id: varchar("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  channelId: varchar("channel_id")
-    .notNull()
-    .references(() => channels.id, { onDelete: "cascade" }),
-  createdBy: varchar("created_by").references((): any => users.id, {
-    onDelete: "set null",
+export const templates = pgTable(
+  "templates",
+  {
+    id: varchar("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    channelId: varchar("channel_id")
+      .notNull()
+      .references(() => channels.id, { onDelete: "cascade" }),
+    createdBy: varchar("created_by").references((): any => users.id, {
+      onDelete: "set null",
+    }),
+    name: text("name").notNull(),
+    category: text("category").notNull(), // marketing, transactional, authentication, utility
+    language: text("language").default("en_US"),
+    header: text("header"),
+    body: text("body").notNull(),
+    footer: text("footer"),
+    buttons: jsonb("buttons").default([]),
+    variables: jsonb("variables").default([]),
+    status: text("status").default("draft"), // draft, pending, approved, rejected
+    rejectionReason: text("rejection_reason"), // Reason for template rejection from WhatsApp
+    mediaType: text("media_type").default("text"), // text, image, video, document, carousel
+    mediaUrl: text("media_url"), // URL of uploaded media
+    mediaHandle: text("media_handle"), // WhatsApp media handle after upload
+    carouselCards: jsonb("carousel_cards").default([]), // For carousel templates
+    whatsappTemplateId: text("whatsapp_template_id"), // ID from WhatsApp after creation
+    usage_count: integer("usage_count").default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    headerType: text("header_type"),
+    bodyVariables: integer("body_variables"),
+  },
+  (table) => ({
+    templateChannelWaIdUnique: unique("template_channel_wa_id_unique").on(
+      table.whatsappTemplateId,
+      table.channelId,
+    ),
+    templateChannelIdx: index("templates_channel_idx").on(table.channelId),
   }),
-  name: text("name").notNull(),
-  category: text("category").notNull(), // marketing, transactional, authentication, utility
-  language: text("language").default("en_US"),
-  header: text("header"),
-  body: text("body").notNull(),
-  footer: text("footer"),
-  buttons: jsonb("buttons").default([]),
-  variables: jsonb("variables").default([]),
-  status: text("status").default("draft"), // draft, pending, approved, rejected
-  rejectionReason: text("rejection_reason"), // Reason for template rejection from WhatsApp
-  mediaType: text("media_type").default("text"), // text, image, video, document, carousel
-  mediaUrl: text("media_url"), // URL of uploaded media
-  mediaHandle: text("media_handle"), // WhatsApp media handle after upload
-  carouselCards: jsonb("carousel_cards").default([]), // For carousel templates
-  whatsappTemplateId: text("whatsapp_template_id"), // ID from WhatsApp after creation
-  usage_count: integer("usage_count").default(0),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-  headerType: text("header_type"),
-  bodyVariables: integer("body_variables"),
-}, (table) => ({
-  templateChannelWaIdUnique: unique("template_channel_wa_id_unique").on(table.whatsappTemplateId, table.channelId),
-  templateChannelIdx: index("templates_channel_idx").on(table.channelId),
-}));
+);
 
-export const whatsappBusinessAccountsConfig =
-  pgTable("whatsapp_business_accounts_config", {
+export const whatsappBusinessAccountsConfig = pgTable(
+  "whatsapp_business_accounts_config",
+  {
     id: varchar("id")
       .primaryKey()
       .default(sql`gen_random_uuid()`),
@@ -313,22 +331,17 @@ export const whatsappBusinessAccountsConfig =
     configId: text("config_id").notNull(),
 
     // Ownership
-    createdBy: varchar("created_by")
-      .default(""),
+    createdBy: varchar("created_by").default(""),
 
     // Status
-    isActive: boolean("is_active")
-      .default(true),
+    isActive: boolean("is_active").default(true),
 
     // Timestamps
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .defaultNow(),
-  });
-
-
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+);
 
 export const session = pgTable("session", {
   sid: varchar("sid").notNull().primaryKey(),
@@ -361,26 +374,35 @@ export const conversations = pgTable(
     tags: jsonb("tags").default([]),
     unreadCount: integer("unread_count").default(0), // Track unread messages
     lastMessageAt: timestamp("last_message_at", { withTimezone: true }),
-    lastIncomingMessageAt: timestamp("last_incoming_message_at", { withTimezone: true }),
+    lastIncomingMessageAt: timestamp("last_incoming_message_at", {
+      withTimezone: true,
+    }),
     lastMessageText: text("last_message_text"), // Cache last message for display
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     conversationChannelIdx: index("conversations_channel_idx").on(
-      table.channelId
+      table.channelId,
     ),
     conversationContactIdx: index("conversations_contact_idx").on(
-      table.contactId
+      table.contactId,
     ),
     conversationPhoneIdx: index("conversations_phone_idx").on(
-      table.contactPhone
+      table.contactPhone,
     ),
     conversationStatusIdx: index("conversations_status_idx").on(table.status),
-    conversationLastMsgIdx: index("conversations_last_msg_idx").on(table.channelId, table.lastMessageAt),
-    conversationAssignedIdx: index("conversations_assigned_idx").on(table.assignedTo),
-    conversationLastMsgAtIdx: index("conversations_last_msg_at_idx").on(table.lastMessageAt),
-  })
+    conversationLastMsgIdx: index("conversations_last_msg_idx").on(
+      table.channelId,
+      table.lastMessageAt,
+    ),
+    conversationAssignedIdx: index("conversations_assigned_idx").on(
+      table.assignedTo,
+    ),
+    conversationLastMsgAtIdx: index("conversations_last_msg_at_idx").on(
+      table.lastMessageAt,
+    ),
+  }),
 );
 
 export const messages = pgTable(
@@ -393,7 +415,7 @@ export const messages = pgTable(
       () => conversations.id,
       {
         onDelete: "cascade",
-      }
+      },
     ),
     whatsappMessageId: varchar("whatsapp_message_id"), // Store WhatsApp message ID
     fromUser: boolean("from_user").default(false),
@@ -422,22 +444,25 @@ export const messages = pgTable(
   },
   (table) => ({
     messageConversationIdx: index("messages_conversation_idx").on(
-      table.conversationId
+      table.conversationId,
     ),
     messageWhatsappIdx: index("messages_whatsapp_idx").on(
-      table.whatsappMessageId
+      table.whatsappMessageId,
     ),
     messageDirectionIdx: index("messages_direction_idx").on(table.direction),
     messageStatusIdx: index("messages_status_idx").on(table.status),
     messageTimestampIdx: index("messages_timestamp_idx").on(table.timestamp),
     messageCreatedIdx: index("messages_created_idx").on(table.createdAt),
-    messageConvCreatedIdx: index("messages_conv_created_idx").on(table.conversationId, table.createdAt),
+    messageConvCreatedIdx: index("messages_conv_created_idx").on(
+      table.conversationId,
+      table.createdAt,
+    ),
     messageConvStatusCreatedIdx: index("messages_conv_status_created_idx").on(
       table.conversationId,
       table.status,
-      table.createdAt
+      table.createdAt,
     ),
-  })
+  }),
 );
 
 export const notifications = pgTable(
@@ -465,11 +490,15 @@ export const notifications = pgTable(
     status: varchar("status").notNull().default("draft"),
     sentAt: timestamp("sent_at", { withTimezone: true }),
 
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (table) => ({
-    notificationsChannelIdx: index("notifications_channel_idx").on(table.channelId),
-  })
+    notificationsChannelIdx: index("notifications_channel_idx").on(
+      table.channelId,
+    ),
+  }),
 );
 
 export const sentNotifications = pgTable("sent_notifications", {
@@ -496,18 +525,23 @@ export const notificationTemplates = pgTable("notification_templates", {
   htmlBody: text("html_body").notNull(),
   isEmailEnabled: boolean("is_email_enabled").default(true),
   isInAppEnabled: boolean("is_in_app_enabled").default(true),
-  variables: text("variables").array().default(sql`ARRAY[]::text[]`),
+  variables: text("variables")
+    .array()
+    .default(sql`ARRAY[]::text[]`),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
-export const userNotificationPreferences = pgTable("user_notification_preferences", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull(),
-  eventType: varchar("event_type").notNull(),
-  inAppEnabled: boolean("in_app_enabled").default(true),
-  emailEnabled: boolean("email_enabled").default(true),
-  soundEnabled: boolean("sound_enabled").default(true),
-});
+export const userNotificationPreferences = pgTable(
+  "user_notification_preferences",
+  {
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id").notNull(),
+    eventType: varchar("event_type").notNull(),
+    inAppEnabled: boolean("in_app_enabled").default(true),
+    emailEnabled: boolean("email_enabled").default(true),
+    soundEnabled: boolean("sound_enabled").default(true),
+  },
+);
 
 export const chatbots = pgTable("chatbots", {
   id: varchar("id")
@@ -549,8 +583,10 @@ export const trainingData = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
-    trainingDataChatbotIdx: index("training_data_chatbot_idx").on(table.chatbotId),
-  })
+    trainingDataChatbotIdx: index("training_data_chatbot_idx").on(
+      table.chatbotId,
+    ),
+  }),
 );
 
 // Knowledge Base Categories
@@ -574,7 +610,7 @@ export const knowledgeCategories = pgTable(
   (table) => ({
     categorySiteIdx: index("categories_site_idx").on(table.siteId),
     categoryParentIdx: index("categories_parent_idx").on(table.parentId),
-  })
+  }),
 );
 
 // Knowledge Base Articles
@@ -598,7 +634,7 @@ export const knowledgeArticles = pgTable(
   (table) => ({
     articleCategoryIdx: index("articles_category_idx").on(table.categoryId),
     articlePublishedIdx: index("articles_published_idx").on(table.published),
-  })
+  }),
 );
 
 //plans
@@ -608,7 +644,7 @@ export const plans = pgTable("plans", {
     .default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   description: text("description"),
-  icon: varchar("icon"), // optional: store icon name like 'Zap', 'Crown'
+  icon: varchar("icon"),
   popular: boolean("popular").default(false),
   badge: varchar("badge"),
   color: varchar("color"),
@@ -616,14 +652,27 @@ export const plans = pgTable("plans", {
 
   // Pricing
   monthlyPrice: numeric("monthly_price", { precision: 10, scale: 2 }).default(
-    "0"
+    "0",
   ),
+  quarterlyPrice: numeric("quarterly_price", {
+    precision: 10,
+    scale: 2,
+  }).default("0"),
   annualPrice: numeric("annual_price", { precision: 10, scale: 2 }).default(
-    "0"
+    "0",
   ),
-  multiCurrencyPrices: jsonb("multi_currency_prices").$type<Record<string, { monthly: string; annual: string }>>(),
+  multiCurrencyPrices: jsonb("multi_currency_prices").$type<
+    Record<
+      string,
+      {
+        monthly: string;
+        quarterly: string;
+        annual: string;
+      }
+    >
+  >(),
 
-  // Permissions (JSON for flexibility)
+  // Permissions
   permissions: jsonb("permissions").$type<{
     channel: string;
     contacts: string;
@@ -633,20 +682,44 @@ export const plans = pgTable("plans", {
     apiRateLimitPerMinute?: string;
   }>(),
 
-  // Features (Array of objects)
+  // Features
   features: jsonb("features").$type<{ name: string; included: boolean }[]>(),
 
+  // Stripe
   stripeProductId: varchar("stripe_product_id"),
   stripePriceIdMonthly: varchar("stripe_price_id_monthly"),
+  stripePriceIdQuarterly: varchar("stripe_price_id_quarterly"),
   stripePriceIdAnnual: varchar("stripe_price_id_annual"),
+
+  // Razorpay
   razorpayPlanIdMonthly: varchar("razorpay_plan_id_monthly"),
+  razorpayPlanIdQuarterly: varchar("razorpay_plan_id_quarterly"),
   razorpayPlanIdAnnual: varchar("razorpay_plan_id_annual"),
+  razorpayPlanIds: jsonb("razorpay_plan_ids").$type<
+    Record<
+      string,
+      {
+        monthly?: string;
+        quarterly?: string;
+        annual?: string;
+      }
+    >
+  >(),
+
+  // PayPal
   paypalProductId: varchar("paypal_product_id"),
   paypalPlanIdMonthly: varchar("paypal_plan_id_monthly"),
+  paypalPlanIdQuarterly: varchar("paypal_plan_id_quarterly"),
   paypalPlanIdAnnual: varchar("paypal_plan_id_annual"),
+
+  // Paystack
   paystackPlanCodeMonthly: varchar("paystack_plan_code_monthly"),
+  paystackPlanCodeQuarterly: varchar("paystack_plan_code_quarterly"),
   paystackPlanCodeAnnual: varchar("paystack_plan_code_annual"),
+
+  // Mercado Pago
   mercadopagoPlanIdMonthly: varchar("mercadopago_plan_id_monthly"),
+  mercadopagoPlanIdQuarterly: varchar("mercadopago_plan_id_quarterly"),
   mercadopagoPlanIdAnnual: varchar("mercadopago_plan_id_annual"),
 
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
@@ -696,7 +769,7 @@ export const subscriptions = pgTable("subscriptions", {
   planId: varchar("plan_id")
     .notNull()
     .references(() => plans.id),
-    planData: jsonb("plan_data").notNull(), 
+  planData: jsonb("plan_data").notNull(),
   status: varchar("status").notNull(), // "active", "expired", "cancelled", "pending"
   billingCycle: varchar("billing_cycle").notNull(), // "monthly" or "annual"
   startDate: timestamp("start_date", { withTimezone: true }).notNull(),
@@ -728,7 +801,7 @@ export const transactions = pgTable("transactions", {
   // Transaction details
   amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency").default("USD"),
-  billingCycle: varchar("billing_cycle").notNull(), // "monthly" or "annual"
+  billingCycle: varchar("billing_cycle").notNull(), // "monthly", "quarterly", or "annual"
 
   // Payment provider details
   providerTransactionId: varchar("provider_transaction_id"), // Transaction ID from payment provider
@@ -800,8 +873,12 @@ export const supportTickets = pgTable("support_tickets", {
   assignedToId: varchar("assigned_to_id"), // ID from admin_users table
   assignedToName: text("assigned_to_name"), // Cached for display
 
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
   resolvedAt: timestamp("resolved_at", { withTimezone: true }),
   closedAt: timestamp("closed_at", { withTimezone: true }),
 });
@@ -823,7 +900,9 @@ export const ticketMessages = pgTable("ticket_messages", {
   message: text("message").notNull(),
   isInternal: boolean("is_internal").notNull().default(false), // Admin notes only
 
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 // Relations
@@ -831,7 +910,7 @@ export const supportTicketsRelations = relations(
   supportTickets,
   ({ many }) => ({
     messages: many(ticketMessages),
-  })
+  }),
 );
 
 export const ticketMessagesRelations = relations(ticketMessages, ({ one }) => ({
@@ -865,7 +944,7 @@ export const automations = pgTable(
   (table) => ({
     automationChannelIdx: index("automations_channel_idx").on(table.channelId),
     automationStatusIdx: index("automations_status_idx").on(table.status),
-  })
+  }),
 );
 
 // ─── Automation Nodes ─────────────────────────
@@ -890,13 +969,13 @@ export const automationNodes = pgTable(
   },
   (table) => ({
     nodeAutomationIdx: index("automation_nodes_automation_idx").on(
-      table.automationId
+      table.automationId,
     ),
     nodeUniqueIdx: unique("automation_nodes_unique_idx").on(
       table.automationId,
-      table.nodeId
+      table.nodeId,
     ),
-  })
+  }),
 );
 
 // ─── Automation Edges ─────────────────────────
@@ -922,15 +1001,15 @@ export const automationEdges = pgTable(
   },
   (table) => ({
     automationEdgeIdx: index("automation_edges_automation_idx").on(
-      table.automationId
+      table.automationId,
     ),
     edgeUniqueIdx: unique("automation_edges_unique_handle_idx").on(
       table.automationId,
       table.sourceNodeId,
       table.targetNodeId,
-      table.sourceHandle
+      table.sourceHandle,
     ),
-  })
+  }),
 );
 
 // ─── Automation Executions ────────────────────
@@ -945,7 +1024,7 @@ export const automationExecutions = pgTable(
       .references(() => automations.id, { onDelete: "cascade" }),
     contactId: varchar("contact_id").references(() => contacts.id),
     conversationId: varchar("conversation_id").references(
-      () => conversations.id
+      () => conversations.id,
     ),
     triggerData: jsonb("trigger_data").default({}),
     triggerMessageId: varchar("trigger_message_id", { length: 200 }),
@@ -960,17 +1039,15 @@ export const automationExecutions = pgTable(
   },
   (table) => ({
     executionAutomationIdx: index("automation_executions_automation_idx").on(
-      table.automationId
+      table.automationId,
     ),
     executionStatusIdx: index("automation_executions_status_idx").on(
-      table.status
+      table.status,
     ),
-    executionMessageUniqueIdx: uniqueIndex("automation_executions_message_unique_idx").on(
-      table.automationId,
-      table.conversationId,
-      table.triggerMessageId
-    ),
-  })
+    executionMessageUniqueIdx: uniqueIndex(
+      "automation_executions_message_unique_idx",
+    ).on(table.automationId, table.conversationId, table.triggerMessageId),
+  }),
 );
 
 // ─── Automation Execution Logs ────────────────
@@ -993,9 +1070,9 @@ export const automationExecutionLogs = pgTable(
   },
   (table) => ({
     logExecutionIdx: index("automation_execution_logs_execution_idx").on(
-      table.executionId
+      table.executionId,
     ),
-  })
+  }),
 );
 
 export const analytics = pgTable("analytics", {
@@ -1073,7 +1150,9 @@ export const messageQueue = pgTable("message_queue", {
   channelId: varchar("channel_id").references(() => channels.id),
   recipientPhone: varchar("recipient_phone", { length: 20 }).notNull(),
   templateName: varchar("template_name", { length: 100 }),
-  templateLanguage: varchar("template_language", { length: 20 }).default("en_US"),
+  templateLanguage: varchar("template_language", { length: 20 }).default(
+    "en_US",
+  ),
   templateParams: jsonb("template_params").default([]),
   messageType: varchar("message_type", { length: 20 }).notNull(), // marketing, utility, authentication
   status: varchar("status", { length: 20 }).default("queued"), // queued, processing, sent, delivered, failed
@@ -1128,13 +1207,15 @@ export const panelConfig = pgTable("panel_config", {
   country: varchar("country", { length: 2 }).default("IN"),
   embeddedSignupEnabled: boolean("embedded_signup_enabled").default(true),
   publicOrigin: text("public_origin"),
-  appearanceConfig: jsonb("appearance_config").$type<{
-    primaryColor?: string;
-    backgroundColor?: string;
-    fontFamily?: string;
-    buttonColor?: string;
-    lightModeColor?: string;
-  }>().default({}),
+  appearanceConfig: jsonb("appearance_config")
+    .$type<{
+      primaryColor?: string;
+      backgroundColor?: string;
+      fontFamily?: string;
+      buttonColor?: string;
+      lightModeColor?: string;
+    }>()
+    .default({}),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
@@ -1143,12 +1224,13 @@ export const groups = pgTable("groups", {
   id: varchar("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  channelId: uuid("channelId"), 
+  channelId: uuid("channelId"),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  createdBy: varchar("created_by").references(() => users.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
+  createdBy: varchar("created_by").references(() => users.id, {
+    onDelete: "cascade",
+  }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
 export const firebaseConfig = pgTable("firebase_config", {
@@ -1233,7 +1315,9 @@ export const sites = pgTable("sites", {
   autoAssignmentConfig: jsonb("auto_assignment_config")
     .notNull()
     .default(sql`'{"enabled": false, "strategy": "round_robin"}'::jsonb`), // Auto-assignment settings
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 // SMTP Configuration table
@@ -1249,23 +1333,21 @@ export const smtpConfig = pgTable("smtp_config", {
   password: text("password"),
   fromName: text("from_name").notNull(),
   fromEmail: text("from_email").notNull(),
-  logo: text("logo").default("null"), 
+  logo: text("logo").default("null"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
-
 
 export const otpVerifications = pgTable("otp_verifications", {
   id: varchar("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`), // UUID primary key
 
-  userId: varchar("user_id")
-    .notNull(), 
+  userId: varchar("user_id").notNull(),
 
   otpCode: varchar("otp_code", { length: 6 }).notNull(), // 6-digit OTP
-  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(), 
-  isUsed: boolean("is_used").default(false), 
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  isUsed: boolean("is_used").default(false),
 
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
@@ -1424,23 +1506,23 @@ export const insertAutomationSchema = createInsertSchema(automations).omit({
   updatedAt: true,
 });
 export const insertAutomationNodeSchema = createInsertSchema(
-  automationNodes
+  automationNodes,
 ).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertAutomationExecutionSchema = createInsertSchema(
-  automationExecutions
+  automationExecutions,
 ).omit({ id: true, startedAt: true });
 export const insertAutomationExecutionLogSchema = createInsertSchema(
-  automationExecutionLogs
+  automationExecutionLogs,
 ).omit({ id: true, executedAt: true });
 export const insertAnalyticsSchema = createInsertSchema(analytics).omit({
   id: true,
   createdAt: true,
 });
 export const insertWhatsappChannelSchema = createInsertSchema(
-  whatsappChannels
+  whatsappChannels,
 ).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertWebhookConfigSchema = createInsertSchema(
-  webhookConfigs
+  webhookConfigs,
 ).omit({ id: true, createdAt: true });
 export const insertMessageQueueSchema = createInsertSchema(messageQueue).omit({
   id: true,
@@ -1451,13 +1533,13 @@ export const insertApiLogSchema = createInsertSchema(apiLogs).omit({
   createdAt: true,
 });
 export const insertCampaignRecipientSchema = createInsertSchema(
-  campaignRecipients
+  campaignRecipients,
 ).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertConversationAssignmentSchema = createInsertSchema(
-  conversationAssignments
+  conversationAssignments,
 ).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertUserActivityLogSchema = createInsertSchema(
-  userActivityLogs
+  userActivityLogs,
 ).omit({ id: true, createdAt: true });
 
 export const insertSiteSchema = createInsertSchema(sites).omit({
@@ -1569,7 +1651,7 @@ export const campaignRecipientsRelations = relations(
       fields: [campaignRecipients.contactId],
       references: [contacts.id],
     }),
-  })
+  }),
 );
 
 export const templatesRelations = relations(templates, ({ one, many }) => ({
@@ -1593,7 +1675,7 @@ export const conversationsRelations = relations(
     }),
 
     messages: many(messages),
-  })
+  }),
 );
 
 export const messagesRelations = relations(messages, ({ one }) => ({
@@ -1630,7 +1712,7 @@ export const conversationAssignmentsRelations = relations(
       references: [users.id],
       relationName: "conversation_assigned_by_user",
     }),
-  })
+  }),
 );
 
 export const userActivityLogsRelations = relations(
@@ -1640,7 +1722,7 @@ export const userActivityLogsRelations = relations(
       fields: [userActivityLogs.userId],
       references: [users.id],
     }),
-  })
+  }),
 );
 
 export const automationsRelations = relations(automations, ({ one, many }) => ({
@@ -1711,7 +1793,7 @@ export const automationNodesRelations = relations(
       fields: [automationNodes.automationId],
       references: [automations.id],
     }),
-  })
+  }),
 );
 
 export const automationEdgesRelations = relations(
@@ -1721,7 +1803,7 @@ export const automationEdgesRelations = relations(
       fields: [automationEdges.automationId],
       references: [automations.id],
     }),
-  })
+  }),
 );
 
 export const automationExecutionsRelations = relations(
@@ -1740,7 +1822,7 @@ export const automationExecutionsRelations = relations(
       references: [conversations.id],
     }),
     logs: many(automationExecutionLogs),
-  })
+  }),
 );
 
 export const automationExecutionLogsRelations = relations(
@@ -1750,17 +1832,23 @@ export const automationExecutionLogsRelations = relations(
       fields: [automationExecutionLogs.executionId],
       references: [automationExecutions.id],
     }),
-  })
+  }),
 );
 
 export const clientApiKeys = pgTable("client_api_keys", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id),
   channelId: varchar("channel_id").references(() => channels.id),
   name: varchar("name", { length: 100 }).notNull(),
   apiKey: varchar("api_key", { length: 64 }).notNull().unique(),
   secretHash: varchar("secret_hash", { length: 256 }).notNull(),
-  permissions: jsonb("permissions").$type<string[]>().default(sql`'[]'`),
+  permissions: jsonb("permissions")
+    .$type<string[]>()
+    .default(sql`'[]'`),
   isActive: boolean("is_active").default(true),
   lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
   requestCount: integer("request_count").default(0),
@@ -1771,9 +1859,15 @@ export const clientApiKeys = pgTable("client_api_keys", {
 });
 
 export const clientApiUsageLogs = pgTable("client_api_usage_logs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  apiKeyId: varchar("api_key_id").notNull().references(() => clientApiKeys.id),
-  userId: varchar("user_id").notNull().references(() => users.id),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  apiKeyId: varchar("api_key_id")
+    .notNull()
+    .references(() => clientApiKeys.id),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id),
   channelId: varchar("channel_id").references(() => channels.id),
   endpoint: varchar("endpoint", { length: 255 }).notNull(),
   method: varchar("method", { length: 10 }).notNull(),
@@ -1784,12 +1878,18 @@ export const clientApiUsageLogs = pgTable("client_api_usage_logs", {
 });
 
 export const clientWebhooks = pgTable("client_webhooks", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id),
   channelId: varchar("channel_id").references(() => channels.id),
   url: text("url").notNull(),
   secret: varchar("secret", { length: 256 }),
-  events: jsonb("events").$type<string[]>().default(sql`'[]'`),
+  events: jsonb("events")
+    .$type<string[]>()
+    .default(sql`'[]'`),
   isActive: boolean("is_active").default(true),
   lastTriggeredAt: timestamp("last_triggered_at", { withTimezone: true }),
   failureCount: integer("failure_count").default(0),
@@ -1800,7 +1900,9 @@ export const clientWebhooks = pgTable("client_webhooks", {
 export const updateRuns = pgTable(
   "update_runs",
   {
-    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    id: varchar("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
     triggeredBy: varchar("triggered_by").references(() => users.id, {
       onDelete: "set null",
     }),
@@ -1809,14 +1911,16 @@ export const updateRuns = pgTable(
     toVersion: text("to_version"),
     status: varchar("status", { length: 20 }).notNull().default("running"),
     finalMessage: text("final_message"),
-    startedAt: timestamp("started_at", { withTimezone: true }).defaultNow().notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     finishedAt: timestamp("finished_at", { withTimezone: true }),
   },
   (table) => ({
     updateRunsStartedAtIdx: index("update_runs_started_at_idx").on(
-      table.startedAt
+      table.startedAt,
     ),
-  })
+  }),
 );
 
 export const updateRunEvents = pgTable(
@@ -1830,14 +1934,16 @@ export const updateRunEvents = pgTable(
     status: varchar("status", { length: 20 }).notNull(),
     message: text("message").notNull(),
     progress: integer("progress"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     updateRunEventsRunIdIdx: index("update_run_events_run_id_idx").on(
       table.runId,
-      table.id
+      table.id,
     ),
-  })
+  }),
 );
 
 export const insertUpdateRunSchema = createInsertSchema(updateRuns).omit({
@@ -1848,7 +1954,7 @@ export const insertUpdateRunSchema = createInsertSchema(updateRuns).omit({
 export type UpdateRun = typeof updateRuns.$inferSelect;
 export type InsertUpdateRun = z.infer<typeof insertUpdateRunSchema>;
 export const insertUpdateRunEventSchema = createInsertSchema(
-  updateRunEvents
+  updateRunEvents,
 ).omit({ id: true, createdAt: true });
 export type UpdateRunEvent = typeof updateRunEvents.$inferSelect;
 export type InsertUpdateRunEvent = z.infer<typeof insertUpdateRunEventSchema>;
@@ -1856,7 +1962,9 @@ export type InsertUpdateRunEvent = z.infer<typeof insertUpdateRunEventSchema>;
 export const conversationPins = pgTable(
   "conversation_pins",
   {
-    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    id: varchar("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
     userId: varchar("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -1870,22 +1978,24 @@ export const conversationPins = pgTable(
   },
   (table) => ({
     conversationPinsUserIdx: index("conversation_pins_user_idx").on(
-      table.userId
+      table.userId,
     ),
     conversationPinsUserChannelIdx: index(
-      "conversation_pins_user_channel_idx"
+      "conversation_pins_user_channel_idx",
     ).on(table.userId, table.channelId),
     conversationPinsUniq: uniqueIndex("conversation_pins_user_conv_uniq").on(
       table.userId,
-      table.conversationId
+      table.conversationId,
     ),
-  })
+  }),
 );
 export type ConversationPin = typeof conversationPins.$inferSelect;
 export type InsertConversationPin = typeof conversationPins.$inferInsert;
 
 export const platformLanguages = pgTable("platform_languages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   code: varchar("code", { length: 10 }).notNull().unique(),
   name: varchar("name", { length: 100 }).notNull(),
   nativeName: varchar("native_name", { length: 100 }).notNull(),

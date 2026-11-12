@@ -22,6 +22,20 @@
       "when": 1779872725796,
       "tag": "0002_nasty_the_enforcers",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794384075881,
+      "tag": "0003_round_ken_ellis",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794466623532,
+      "tag": "0004_great_iron_patriot",
+      "breakpoints": true
     }
   ]
 }

@@ -1,20 +1,3 @@
-/**
- * ============================================================
- * © 2025 Diploy — a brand of Bisht Technologies Private Limited
- * Original Author: BTPL Engineering Team
- * Website: https://diploy.in
- * Contact: cs@diploy.in
- *
- * Distributed under the Envato / CodeCanyon License Agreement.
- * Licensed to the purchaser for use as defined by the
- * Envato Market (CodeCanyon) Regular or Extended License.
- *
- * You are NOT permitted to redistribute, resell, sublicense,
- * or share this source code, in whole or in part.
- * Respect the author's rights and Envato licensing terms.
- * ============================================================
- */
-
 import { useState, useEffect } from "react";
 import {
   Check,
@@ -63,8 +46,12 @@ interface FormData {
   color: string;
   buttonColor: string;
   monthlyPrice: string;
+  quarterlyPrice: string;
   annualPrice: string;
-  multiCurrencyPrices: Record<string, { monthly: string; annual: string }>;
+  multiCurrencyPrices: Record<
+    string,
+    { monthly: string; quarterly: string; annual: string }
+  >;
   permissions: PlanPermissions;
   features: Feature[];
 }
@@ -72,7 +59,10 @@ interface FormData {
 export default function Plans() {
   const { t } = useTranslation();
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [isAnnual, setIsAnnual] = useState<boolean>(false);
+  const [billingCycle, setBillingCycle] = useState<
+    "monthly" | "quarterly" | "annual"
+  >("monthly");
+  const isAnnual = billingCycle === "annual";
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -193,6 +183,7 @@ export default function Plans() {
     color: "border-gray-200",
     buttonColor: "bg-blue-500 hover:bg-blue-600",
     monthlyPrice: "0",
+    quarterlyPrice: "0",
     annualPrice: "0",
     multiCurrencyPrices: {},
     permissions: {
@@ -248,10 +239,45 @@ export default function Plans() {
       return;
     }
 
-    const currentMonthlyPrice = Number(activeSub.planData?.monthlyPrice || 0);
-    const newMonthlyPrice = Number(plan.monthlyPrice || 0);
-    const isDowngrade = newMonthlyPrice < currentMonthlyPrice;
+    const activeBillingCycle = activeSub.billingCycle || "monthly";
 
+    const currentPlanData = activeSub.planData;
+
+    const currentMonthlyPrice = Number(currentPlanData?.monthlyPrice || 0);
+
+    const currentQuarterlyPrice = Number(
+      (currentPlanData as Record<string, unknown>)?.quarterlyPrice || 0,
+    );
+
+    const currentAnnualPrice = Number(
+      (currentPlanData as Record<string, unknown>)?.annualPrice || 0,
+    );
+
+    const newMonthlyPrice = Number(plan.monthlyPrice || 0);
+
+    const newQuarterlyPrice = Number(
+      (plan as unknown as Record<string, unknown>).quarterlyPrice || 0,
+    );
+
+    const newAnnualPrice = Number(
+      (plan as unknown as Record<string, unknown>).annualPrice || 0,
+    );
+
+    const currentPlanPrice =
+      activeBillingCycle === "quarterly"
+        ? currentQuarterlyPrice
+        : activeBillingCycle === "annual"
+          ? currentAnnualPrice
+          : currentMonthlyPrice;
+
+    const newPlanPrice =
+      activeBillingCycle === "quarterly"
+        ? newQuarterlyPrice
+        : activeBillingCycle === "annual"
+          ? newAnnualPrice
+          : newMonthlyPrice;
+
+    const isDowngrade = newPlanPrice < currentPlanPrice;
     if (!isDowngrade) {
       setSelectedPlan(plan);
       setCheckoutOpen(true);
@@ -326,11 +352,28 @@ export default function Plans() {
 
       const method = editingPlan ? "PUT" : "POST";
 
-      const response = await apiRequest(
-        method as "POST" | "PUT",
-        url,
-        formData,
+      const multiCurrencyPrices = Object.fromEntries(
+        Object.entries(formData.multiCurrencyPrices).map(
+          ([currencyCode, prices]) => [
+            currencyCode,
+            {
+              monthly: Number(prices.monthly || 0).toFixed(2),
+              quarterly: Number(prices.quarterly || 0).toFixed(2),
+              annual: Number(prices.annual || 0).toFixed(2),
+            },
+          ],
+        ),
       );
+
+      const payload = {
+        ...formData,
+        monthlyPrice: Number(formData.monthlyPrice || 0).toFixed(2),
+        quarterlyPrice: Number(formData.quarterlyPrice || 0).toFixed(2),
+        annualPrice: Number(formData.annualPrice || 0).toFixed(2),
+        multiCurrencyPrices,
+      };
+
+      const response = await apiRequest(method as "POST" | "PUT", url, payload);
 
       const data = await response.json();
 
@@ -423,7 +466,7 @@ export default function Plans() {
       );
       const data = await response.json();
       console.log("sync plans response: ", data);
-      
+
       if (data.success) {
         toast({
           title: "All Plans Synced",
@@ -457,8 +500,26 @@ export default function Plans() {
       color: plan.color || "border-gray-200",
       buttonColor: plan.buttonColor || "bg-blue-500 hover:bg-blue-600",
       monthlyPrice: plan.monthlyPrice || "0",
-      annualPrice: plan.annualPrice || "0",
-      multiCurrencyPrices: plan.multiCurrencyPrices || {},
+      quarterlyPrice: String(
+        (plan as unknown as Record<string, unknown>).quarterlyPrice ?? "0",
+      ),
+      annualPrice: String(
+        (plan as unknown as Record<string, unknown>).annualPrice ?? "0",
+      ),
+      multiCurrencyPrices: Object.fromEntries(
+        Object.entries(plan.multiCurrencyPrices || {}).map(
+          ([currencyCode, prices]) => [
+            currencyCode,
+            {
+              monthly: String(prices.monthly ?? "0"),
+              quarterly: String(
+                (prices as Record<string, unknown>).quarterly ?? "0",
+              ),
+              annual: String((prices as Record<string, unknown>).annual ?? "0"),
+            },
+          ],
+        ),
+      ),
       permissions: {
         channel: "",
         contacts: "",
@@ -495,6 +556,7 @@ export default function Plans() {
       color: "border-gray-200",
       buttonColor: "bg-blue-500 hover:bg-blue-600",
       monthlyPrice: "0",
+      quarterlyPrice: "0",
       annualPrice: "0",
       multiCurrencyPrices: {},
       permissions: {
@@ -612,9 +674,11 @@ export default function Plans() {
                       {t("plans.stats.billing")}
                     </p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {isAnnual
+                      {billingCycle === "annual"
                         ? t("plans.stats.annual")
-                        : t("plans.stats.monthly")}
+                        : billingCycle === "quarterly"
+                          ? "Quarterly"
+                          : t("plans.stats.monthly")}
                     </p>
                   </div>
                   <div className="p-3 bg-orange-100 rounded-lg">
@@ -637,39 +701,29 @@ export default function Plans() {
               <div className="w-full">
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <div className="inline-flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                      <button
-                        onClick={() => setIsAnnual(false)}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto text-center ${
-                          !isAnnual
-                            ? "bg-white text-gray-900 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                        }`}
-                        aria-pressed={!isAnnual}
-                      >
-                        <span className="truncate">
-                          {t("plans.billingToggle.monthly")}
-                        </span>
-                      </button>
-
-                      <button
-                        onClick={() => setIsAnnual(true)}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto text-center ${
-                          isAnnual
-                            ? "bg-white text-gray-900 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                        }`}
-                        aria-pressed={isAnnual}
-                      >
-                        <span className="truncate inline-flex items-center">
-                          {t("plans.billingToggle.annual")}
-                          {isAnnual && (
-                            <span className="ml-1 text-xs text-green-600 font-bold">
-                              {t("plans.billingToggle.discount")}
+                    <div className="inline-flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                      {(["monthly", "quarterly", "annual"] as const).map(
+                        (cycle) => (
+                          <button
+                            key={cycle}
+                            onClick={() => setBillingCycle(cycle)}
+                            className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all text-center ${
+                              billingCycle === cycle
+                                ? "bg-white text-gray-900 shadow-sm"
+                                : "text-gray-600 hover:text-gray-900"
+                            }`}
+                            aria-pressed={billingCycle === cycle}
+                          >
+                            <span className="truncate">
+                              {cycle === "monthly"
+                                ? t("plans.billingToggle.monthly")
+                                : cycle === "quarterly"
+                                  ? "Quarterly"
+                                  : t("plans.billingToggle.annual")}
                             </span>
-                          )}
-                        </span>
-                      </button>
+                          </button>
+                        ),
+                      )}
                     </div>
 
                     {displayedCurrencies.length > 1 && (
@@ -797,44 +851,132 @@ export default function Plans() {
                     </div>
                   </div>
 
-                  {/* Pricing */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Pricing: monthly-equivalent price for each billing cycle */}
+                  <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("plans.form.monthlyPrice")} ({currencySymbol})
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.monthlyPrice}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            monthlyPrice: e.target.value,
-                          })
-                        }
-                        placeholder={t("plans.form.monthlyPricePlaceholder")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                      />
+                      <h4 className="text-sm font-semibold text-gray-900">
+                        Billing Cycle Prices
+                      </h4>
+                      <p className="mt-1 text-xs text-gray-500">
+                        Enter the monthly-equivalent price for each billing
+                        cycle. The actual charge is calculated during checkout.
+                      </p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("plans.form.annualPrice")} ({currencySymbol})
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.annualPrice}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            annualPrice: e.target.value,
-                          })
-                        }
-                        placeholder={t("plans.form.annualPricePlaceholder")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {(
+                        [
+                          {
+                            key: "monthlyPrice",
+                            label: "Monthly billing",
+                            description: "Charged every month",
+                          },
+                          {
+                            key: "quarterlyPrice",
+                            label: "Quarterly billing",
+                            description:
+                              "Monthly equivalent, charged every 3 months",
+                          },
+                          {
+                            key: "annualPrice",
+                            label: "Annual billing",
+                            description:
+                              "Monthly equivalent, charged every 12 months",
+                          },
+                        ] as const
+                      ).map((priceField) => (
+                        <div key={priceField.key}>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {priceField.label} ({currencySymbol}/month)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={formData[priceField.key]}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                [priceField.key]: e.target.value,
+                              })
+                            }
+                            placeholder="0.00"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                          />
+                          <p className="mt-1 text-xs text-gray-500">
+                            {priceField.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="rounded-md border border-gray-200 bg-white p-3">
+                      <p className="text-xs font-medium text-gray-500 mb-2">
+                        Estimated amount charged per billing cycle
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <p className="text-xs text-gray-500">Monthly</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {currencySymbol}
+                            {Number(formData.monthlyPrice || 0).toFixed(2)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Quarterly</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {currencySymbol}
+                            {(Number(formData.quarterlyPrice || 0) * 3).toFixed(
+                              2,
+                            )}
+                          </p>
+                          {Number(formData.monthlyPrice) > 0 &&
+                            Number(formData.quarterlyPrice) > 0 && (
+                              <p className="mt-1 text-xs font-semibold text-green-700">
+                                {(() => {
+                                  const discount = Math.round(
+                                    ((Number(formData.monthlyPrice) -
+                                      Number(formData.quarterlyPrice)) /
+                                      Number(formData.monthlyPrice)) *
+                                      100,
+                                  );
+                                  return discount > 0
+                                    ? `${discount}% discount vs monthly`
+                                    : discount < 0
+                                      ? `${Math.abs(discount)}% higher than monthly`
+                                      : "0% discount vs monthly";
+                                })()}
+                              </p>
+                            )}
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Annual</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {currencySymbol}
+                            {(Number(formData.annualPrice || 0) * 12).toFixed(
+                              2,
+                            )}
+                          </p>
+                          {Number(formData.monthlyPrice) > 0 &&
+                            Number(formData.annualPrice) > 0 && (
+                              <p className="mt-1 text-xs font-semibold text-green-700">
+                                {(() => {
+                                  const discount = Math.round(
+                                    ((Number(formData.monthlyPrice) -
+                                      Number(formData.annualPrice)) /
+                                      Number(formData.monthlyPrice)) *
+                                      100,
+                                  );
+                                  return discount > 0
+                                    ? `${discount}% discount vs monthly`
+                                    : discount < 0
+                                      ? `${Math.abs(discount)}% higher than monthly`
+                                      : "0% discount vs monthly";
+                                })()}
+                              </p>
+                            )}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -878,6 +1020,7 @@ export default function Plans() {
                                   ...formData.multiCurrencyPrices,
                                   [newCurrencyToAdd]: {
                                     monthly: "0",
+                                    quarterly: "0",
                                     annual: "0",
                                   },
                                 },
@@ -901,53 +1044,35 @@ export default function Plans() {
                             <span className="font-bold text-gray-700 min-w-[50px]">
                               {cur}
                             </span>
-                            <div className="flex-1 grid grid-cols-2 gap-2">
-                              <div>
-                                <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">
-                                  Monthly
-                                </label>
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  value={prices.monthly}
-                                  onChange={(e) =>
-                                    setFormData({
-                                      ...formData,
-                                      multiCurrencyPrices: {
-                                        ...formData.multiCurrencyPrices,
-                                        [cur]: {
-                                          ...prices,
-                                          monthly: e.target.value,
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                              {(
+                                ["monthly", "quarterly", "annual"] as const
+                              ).map((cycle) => (
+                                <div key={cycle}>
+                                  <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">
+                                    {cycle} ({cur}/month)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={prices[cycle]}
+                                    onChange={(e) =>
+                                      setFormData({
+                                        ...formData,
+                                        multiCurrencyPrices: {
+                                          ...formData.multiCurrencyPrices,
+                                          [cur]: {
+                                            ...prices,
+                                            [cycle]: e.target.value,
+                                          },
                                         },
-                                      },
-                                    })
-                                  }
-                                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">
-                                  Annual
-                                </label>
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  value={prices.annual}
-                                  onChange={(e) =>
-                                    setFormData({
-                                      ...formData,
-                                      multiCurrencyPrices: {
-                                        ...formData.multiCurrencyPrices,
-                                        [cur]: {
-                                          ...prices,
-                                          annual: e.target.value,
-                                        },
-                                      },
-                                    })
-                                  }
-                                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
-                                />
-                              </div>
+                                      })
+                                    }
+                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                  />
+                                </div>
+                              ))}
                             </div>
                             <button
                               type="button"
@@ -1312,31 +1437,53 @@ export default function Plans() {
 
                     // console.log("Active Plan@@@@@@@@@@@@@:", activePlan);
 
-                    const currentPlanPrice = Number(
-                      activePlan?.planData?.monthlyPrice || 0,
+                    const cyclePriceField = {
+                      monthly: "monthlyPrice",
+                      quarterly: "quarterlyPrice",
+                      annual: "annualPrice",
+                    } as const;
+
+                    const planPriceData = plan as unknown as Record<string, unknown>;
+                    let monthlyBasePrice = Number(plan.monthlyPrice || 0);
+                    let monthlyEquivalentPrice = Number(
+                      planPriceData[cyclePriceField[billingCycle]] || 0,
                     );
-                    const thisPlanPrice = Number(plan.monthlyPrice);
+                    let planCurrencySymbol = currencySymbol;
 
-                    // console.log("Current Plan Price:", currentPlanPrice);
-                    // console.log("This Plan Price:", thisPlanPrice);
+                    const selectedPlanCurrencyPrices = selectedCurrency
+                      ? plan.multiCurrencyPrices?.[selectedCurrency]
+                      : undefined;
 
-                    let monthlyPrice = plan.monthlyPrice;
-                    let annualPrice = plan.annualPrice;
-                    let planCurrencySymbol = currencySymbol; // Default to brand symbol
-
-                    if (
-                      selectedCurrency &&
-                      plan.multiCurrencyPrices &&
-                      plan.multiCurrencyPrices[selectedCurrency]
-                    ) {
-                      monthlyPrice =
-                        plan.multiCurrencyPrices[selectedCurrency].monthly;
-                      annualPrice =
-                        plan.multiCurrencyPrices[selectedCurrency].annual;
+                    // Only use the selected currency when this plan has prices configured for it.
+                    if (selectedPlanCurrencyPrices) {
+                      const currencyPrices = selectedPlanCurrencyPrices as Record<string, string>;
+                      monthlyBasePrice = Number(currencyPrices.monthly || 0);
+                      monthlyEquivalentPrice = Number(currencyPrices[billingCycle] || 0);
                       planCurrencySymbol =
-                        currencySymbolMap[selectedCurrency] ||
-                        selectedCurrency + " ";
+                        currencySymbolMap[selectedCurrency] || selectedCurrency + " ";
                     }
+
+                    const activeBillingCycle =
+                      activePlan?.billingCycle === "quarterly" ||
+                      activePlan?.billingCycle === "annual"
+                        ? activePlan.billingCycle
+                        : "monthly";
+                    const activePlanPriceData = activePlan?.planData as
+                      | (Record<string, unknown> & { monthlyPrice?: string | number })
+                      | undefined;
+                    const activePlanPrice = Number(
+                      activePlanPriceData?.[cyclePriceField[activeBillingCycle]] || 0,
+                    );
+                    const thisPlanPrice = monthlyEquivalentPrice;
+
+                    const displayedPrice = monthlyEquivalentPrice.toFixed(2);
+
+                    const billingPeriodLabel =
+                      billingCycle === "quarterly"
+                        ? "per month, billed quarterly"
+                        : billingCycle === "annual"
+                          ? "per month, billed annually"
+                          : t("plans.card.perMonth");
 
                     return (
                       <div
@@ -1367,13 +1514,10 @@ export default function Plans() {
                             <div className="flex items-baseline gap-1">
                               <span className="text-3xl font-black text-gray-900">
                                 {planCurrencySymbol}
-                                {isAnnual ? annualPrice : monthlyPrice}
+                                {displayedPrice}
                               </span>
                               <span className="text-sm text-gray-600 font-medium">
-                                /
-                                {isAnnual
-                                  ? t("plans.card.perYear")
-                                  : t("plans.card.perMonth")}
+                                /{billingPeriodLabel}
                               </span>
                             </div>
                             {plan.permissions && (
@@ -1475,7 +1619,7 @@ export default function Plans() {
                                   >
                                     Current Plan
                                   </Button>
-                                ) : thisPlanPrice > currentPlanPrice ? (
+                                ) : thisPlanPrice > activePlanPrice ? (
                                   <Button
                                     className="w-full bg-blue-600 text-white"
                                     onClick={() => handleChangePlan(plan)}
@@ -1552,6 +1696,7 @@ export default function Plans() {
         <CheckoutModal
           plan={selectedPlan}
           isAnnual={isAnnual}
+          billingCycle={billingCycle}
           open={checkoutOpen}
           onOpenChange={(open) => {
             setCheckoutOpen(open);

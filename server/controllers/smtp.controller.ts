@@ -118,7 +118,6 @@ export const getSMTPConfigHandler = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getSMTPConfig = async () => {
   return cacheGet(CACHE_KEYS.smtpConfig(), CACHE_TTL.smtpConfig, async () => {
     const configs = await db.select().from(smtpConfig).limit(1);
@@ -126,11 +125,10 @@ export const getSMTPConfig = async () => {
       console.warn('⚠️ No SMTP configuration found');
       return null;
     }
+    console.log('configs: ', configs);
     return configs[0];
   });
 };
-
-
 
 export const sendMailRoute = async (req: Request, res: Response) => {
   try {

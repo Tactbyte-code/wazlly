@@ -38,8 +38,9 @@ export interface Plan {
   color: string;
   buttonColor: string;
   monthlyPrice: string;
+  quarterlyPrice: string;
   annualPrice: string;
-  multiCurrencyPrices?: Record<string, { monthly: string; annual: string }>;
+  multiCurrencyPrices?: Record<string, { monthly: string; quarterly: string; annual: string }>;
   permissions: PlanPermissions;
   features: Feature[];
   createdAt: string;
@@ -146,7 +147,7 @@ export interface PlanData {
   description: string;
   permissions: PlanPermissions;
   monthlyPrice: string;
-  multiCurrencyPrices?: Record<string, { monthly: string; annual: string }>;
+  multiCurrencyPrices?: Record<string, { monthly: string; quarterly: string; annual: string }>;
 }
 
 export interface PlanFeature {

@@ -628,68 +628,121 @@ export async function createStripeSubscription(
 export async function createRazorpaySubscription(
   userId: string,
   planId: string,
-  billingCycle: "monthly" | "annual",
+  billingCycle: "monthly" | "quarterly" | "annual",
   currency: string,
 ) {
   const razorpay = await getRazorpay();
-  // console.log("razorpay key_id in use:", (razorpay as any)?.key_id);
 
-  if (!razorpay) throw new Error("Razorpay is not configured");
+  if (!razorpay) {
+    throw new Error("Razorpay is not configured");
+  }
 
   const razorpayProvider = await getProviderConfig("razorpay");
-  // console.log("raz provider config: ", razorpayProvider);
-  if (!razorpayProvider) throw new Error("Razorpay is not configured");
+
+  if (!razorpayProvider) {
+    throw new Error("Razorpay is not configured");
+  }
 
   assertProviderSupportsCurrency(razorpayProvider, currency);
+
+  const requestedCurrency = currency.toUpperCase();
 
   const planData = await db
     .select()
     .from(plans)
     .where(eq(plans.id, planId))
     .limit(1);
-  if (!planData.length) throw new Error("Plan not found");
+
+  if (!planData.length) {
+    throw new Error("Plan not found");
+  }
+
   const plan = planData[0];
 
-  // console.log("plan selected 1: ", plan);
+  let monthlyEquivalentPrice =
+    billingCycle === "monthly"
+      ? Number(plan.monthlyPrice)
+      : billingCycle === "quarterly"
+        ? Number(plan.quarterlyPrice)
+        : Number(plan.annualPrice);
 
-  let rzpPlanId =
-    billingCycle === "annual"
-      ? plan.razorpayPlanIdAnnual
-      : plan.razorpayPlanIdMonthly;
+  if (plan.multiCurrencyPrices) {
+    const multiPrices = plan.multiCurrencyPrices as Record<
+      string,
+      {
+        monthly: string;
+        quarterly: string;
+        annual: string;
+      }
+    >;
 
-  // console.log("raz plan id: ", rzpPlanId);
+    const currencyPrices = multiPrices[requestedCurrency];
 
-  if (!rzpPlanId) {
-    const price =
-      billingCycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
-    const amountInSubunits = Math.round(Number(price) * 100); // Razorpay expects smallest currency unit
+    if (currencyPrices) {
+      monthlyEquivalentPrice =
+        billingCycle === "monthly"
+          ? Number(currencyPrices.monthly)
+          : billingCycle === "quarterly"
+            ? Number(currencyPrices.quarterly)
+            : Number(currencyPrices.annual);
+    }
+  }
 
+  if (!Number.isFinite(monthlyEquivalentPrice) || monthlyEquivalentPrice < 0) {
+    throw new Error("Invalid plan price for the selected currency");
+  }
+
+  const billingMultiplier =
+    billingCycle === "monthly" ? 1 : billingCycle === "quarterly" ? 3 : 12;
+
+  const actualBillingAmount = Number(
+    (monthlyEquivalentPrice * billingMultiplier).toFixed(2),
+  );
+
+  // Razorpay expects the amount in the smallest currency unit.
+  const amountInSubunits = Math.round(actualBillingAmount * 100);
+
+  // Reuse only a plan ID belonging to this exact currency and billing cycle.
+  const existingCurrencyPlans = plan.razorpayPlanIds || {};
+  const existingPlanId =
+    existingCurrencyPlans[requestedCurrency]?.[billingCycle];
+
+  let razorpayPlanId = existingPlanId;
+
+  if (!razorpayPlanId) {
     const createdPlan = await razorpay.plans.create({
       period: billingCycle === "annual" ? "yearly" : "monthly",
-      interval: 1,
+      interval: billingCycle === "quarterly" ? 3 : 1,
       item: {
         name: `${plan.name} (${billingCycle})`,
         amount: amountInSubunits,
-        currency,
+        currency: requestedCurrency,
       },
-      notes: { platformPlanId: planId },
+      notes: {
+        platformPlanId: planId,
+        billingCycle,
+        currency: requestedCurrency,
+      },
     });
 
-    rzpPlanId = createdPlan.id;
+    razorpayPlanId = createdPlan.id;
+
+    const updatedCurrencyPlans = {
+      ...existingCurrencyPlans,
+      [requestedCurrency]: {
+        ...existingCurrencyPlans[requestedCurrency],
+        [billingCycle]: razorpayPlanId,
+      },
+    };
 
     await db
       .update(plans)
-      .set(
-        billingCycle === "annual"
-          ? { razorpayPlanIdAnnual: rzpPlanId, updatedAt: new Date() }
-          : { razorpayPlanIdMonthly: rzpPlanId, updatedAt: new Date() },
-      )
+      .set({
+        razorpayPlanIds: updatedCurrencyPlans,
+        updatedAt: new Date(),
+      })
       .where(eq(plans.id, planId));
-
-    // console.log(`created & saved razorpay plan (${billingCycle}): `, rzpPlanId);
   }
-
-  // console.log("plan selected 2: ", plan);
 
   const existingSubs = await db
     .select()
@@ -706,8 +759,14 @@ export async function createRazorpaySubscription(
     if (sub.gatewaySubscriptionId) {
       try {
         await razorpay.subscriptions.cancel(sub.gatewaySubscriptionId);
-      } catch {}
+      } catch (error) {
+        console.error(
+          "Failed to cancel existing Razorpay subscription:",
+          error,
+        );
+      }
     }
+
     await db
       .update(subscriptions)
       .set({
@@ -719,10 +778,17 @@ export async function createRazorpaySubscription(
   }
 
   const subscription = await razorpay.subscriptions.create({
-    plan_id: rzpPlanId,
-    total_count: billingCycle === "annual" ? 10 : 120,
+    plan_id: razorpayPlanId,
+    total_count:
+      billingCycle === "annual" ? 10 : billingCycle === "quarterly" ? 40 : 120,
     customer_notify: 1,
-    notes: { platformUserId: userId, platformPlanId: planId },
+    notes: {
+      platformUserId: userId,
+      platformPlanId: planId,
+      billingCycle,
+      currency: requestedCurrency,
+      amount: actualBillingAmount.toFixed(2),
+    },
   });
 
   return {
@@ -730,7 +796,7 @@ export async function createRazorpaySubscription(
     shortUrl: (subscription as any).short_url || null,
     status: subscription.status,
   };
-}
+};
 
 export async function upgradeOrDowngradeStripe(
   subscriptionGatewayId: string,
