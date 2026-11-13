@@ -1,9 +1,14 @@
-(function() {
+(function () {
+  // Prevent the chat launcher from initializing inside an iframe.
+  if (window.self !== window.top) {
+    return;
+  }
+  
   // Get configuration from window.aiChatConfig
   const config = window.aiChatConfig || {};
   const siteId = config.siteId;
   const channelId = config.channelId || "";
-  
+
   // Auto-detect base URL from script source
   const scriptTag = document.currentScript;
   let detectedBaseUrl = "https://whatsway.diploy.in";
@@ -11,7 +16,7 @@
     try {
       const url = new URL(scriptTag.src);
       detectedBaseUrl = `${url.protocol}//${url.host}`;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   const baseUrl = config.url || detectedBaseUrl;
@@ -108,10 +113,10 @@
       const widgetConfig = data.config || {};
       const primaryColor = widgetConfig.accentColor || '#3b82f6';
       const position = widgetConfig.position || 'bottom-right';
-      
+
       // Update Button Color
       button.style.backgroundColor = primaryColor;
-      
+
       // Update Position
       if (position === 'bottom-left') {
         container.style.right = 'auto';
@@ -124,17 +129,17 @@
         iframeContainer.style.left = 'auto';
         iframeContainer.style.right = '0';
       }
-      
+
       container.style.visibility = 'visible';
     })
     .catch(err => {
       console.error("WhatsWay Widget: Failed to load config", err);
-      container.style.visibility = 'visible'; // Show anyway with defaults
+      container.style.visibility = 'visible';
     });
 
   // Toggle Logic
   let isOpen = false;
-  button.onclick = function() {
+  button.onclick = function () {
     isOpen = !isOpen;
     if (isOpen) {
       iframeContainer.style.display = 'block';
