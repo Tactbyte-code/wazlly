@@ -95,6 +95,7 @@ const Signup: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -111,28 +112,37 @@ const Signup: React.FC = () => {
       });
 
       const data = await res.json();
-      console.log("User created from sign up: ", data);
 
-      if (data.success) {
+      console.log("Signup response status:", res.status);
+      console.log("Signup response data:", data);
+
+      // Check HTTP response and backend response
+      if (res.ok && data.success !== false) {
+        console.log("Signup successful. Redirecting to email verification.");
+
         setLocation(
           `/verify-email?email=${encodeURIComponent(formData.email)}`,
         );
+
         return;
       }
 
-      setErrors({ general: data.message });
+      setErrors({
+        general:
+          data.message || data.detail || "Signup failed. Please try again.",
+      });
     } catch (error: any) {
       console.error("Signup error:", error);
 
-      let message = "";
+      let message = "Something went wrong. Please try again.";
 
       if (error?.message) {
         try {
           const jsonPart = error.message.replace(/^\d+:\s*/, "");
           const parsed = JSON.parse(jsonPart);
-          message = parsed.message || "";
+          message = parsed.message || parsed.detail || error.message;
         } catch {
-          message = error.message || "";
+          message = error.message;
         }
       }
 

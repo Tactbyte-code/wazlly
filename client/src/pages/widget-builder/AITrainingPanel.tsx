@@ -1,20 +1,3 @@
-/**
- * ============================================================
- * © 2025 Diploy — a brand of Bisht Technologies Private Limited
- * Original Author: BTPL Engineering Team
- * Website: https://diploy.in
- * Contact: cs@diploy.in
- *
- * Distributed under the Envato / CodeCanyon License Agreement.
- * Licensed to the purchaser for use as defined by the
- * Envato Market (CodeCanyon) Regular or Extended License.
- *
- * You are NOT permitted to redistribute, resell, sublicense,
- * or share this source code, in whole or in part.
- * Respect the author's rights and Envato licensing terms.
- * ============================================================
- */
-
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, apiRequestFormData, queryClient } from "@/lib/queryClient";
@@ -130,15 +113,16 @@ export default function AITrainingPanel({
   const [newTriggerWord, setNewTriggerWord] = useState("");
 
   const [aiConfigForm, setAiConfigForm] = useState({
-    provider: "openai",
+    provider: "sarvam",
     apiKey: "",
-    model: "gpt-4o-mini",
-    endpoint: "https://api.openai.com/v1",
+    model: "sarvam-105b",
+    endpoint: "https://api.sarvam.ai/v2",
     temperature: 0.7,
     maxTokens: 2048,
     words: [] as string[],
     isActive: false,
   });
+
   const [aiConfigId, setAiConfigId] = useState<string | null>(null);
   const [isSavingAiConfig, setIsSavingAiConfig] = useState(false);
 
@@ -146,7 +130,10 @@ export default function AITrainingPanel({
     queryKey: ["/api/ai-settings/channel", channelId],
     queryFn: async () => {
       if (!channelId) return null;
-      const res = await apiRequest("GET", `/api/ai-settings/channel/${channelId}`);
+      const res = await apiRequest(
+        "GET",
+        `/api/ai-settings/channel/${channelId}`,
+      );
       if (!res.ok) return null;
       return await res.json();
     },
@@ -156,17 +143,32 @@ export default function AITrainingPanel({
   useEffect(() => {
     if (aiConfigData) {
       setAiConfigId(aiConfigData.id || null);
+
       let parsedWords: string[] = [];
+
       if (Array.isArray(aiConfigData.words)) {
         parsedWords = aiConfigData.words;
       } else if (typeof aiConfigData.words === "string") {
-        try { parsedWords = JSON.parse(aiConfigData.words); } catch { parsedWords = []; }
+        try {
+          parsedWords = JSON.parse(aiConfigData.words);
+        } catch {
+          parsedWords = [];
+        }
       }
+
+      const provider = aiConfigData.provider || "sarvam";
+
       setAiConfigForm({
-        provider: aiConfigData.provider || "openai",
+        provider,
         apiKey: aiConfigData.apiKey || "",
-        model: aiConfigData.model || "gpt-4o-mini",
-        endpoint: aiConfigData.endpoint || "https://api.openai.com/v1",
+        model:
+          aiConfigData.model ||
+          (provider === "sarvam" ? "sarvam-105b" : "gpt-4o-mini"),
+        endpoint:
+          aiConfigData.endpoint ||
+          (provider === "sarvam"
+            ? "https://api.sarvam.ai/v2"
+            : "https://api.openai.com/v1"),
         temperature: parseFloat(aiConfigData.temperature) || 0.7,
         maxTokens: parseInt(aiConfigData.maxTokens) || 2048,
         words: parsedWords,
@@ -174,11 +176,12 @@ export default function AITrainingPanel({
       });
     } else if (aiConfigData === null) {
       setAiConfigId(null);
+
       setAiConfigForm({
-        provider: "openai",
+        provider: "sarvam",
         apiKey: "",
-        model: "gpt-4o-mini",
-        endpoint: "https://api.openai.com/v1",
+        model: "sarvam-105b",
+        endpoint: "https://api.sarvam.ai/v2",
         temperature: 0.7,
         maxTokens: 2048,
         words: [],
@@ -189,18 +192,34 @@ export default function AITrainingPanel({
 
   const handleActiveToggle = async (newValue: boolean) => {
     if (!aiConfigId) {
-      toast({ title: "Save configuration first", description: "Please save your AI provider configuration before enabling.", variant: "destructive" });
+      toast({
+        title: "Save configuration first",
+        description:
+          "Please save your AI provider configuration before enabling.",
+        variant: "destructive",
+      });
       return;
     }
-    setAiConfigForm(prev => ({ ...prev, isActive: newValue }));
+    setAiConfigForm((prev) => ({ ...prev, isActive: newValue }));
     try {
-      const res = await apiRequest("PUT", `/api/ai-settings/${aiConfigId}`, { isActive: newValue });
+      const res = await apiRequest("PUT", `/api/ai-settings/${aiConfigId}`, {
+        isActive: newValue,
+      });
       if (!res.ok) throw new Error("Failed to update");
-      queryClient.invalidateQueries({ queryKey: ["/api/ai-settings/channel", channelId] });
-      toast({ title: "Updated", description: `AI ${newValue ? "enabled" : "disabled"} successfully.` });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/ai-settings/channel", channelId],
+      });
+      toast({
+        title: "Updated",
+        description: `AI ${newValue ? "enabled" : "disabled"} successfully.`,
+      });
     } catch {
-      setAiConfigForm(prev => ({ ...prev, isActive: !newValue }));
-      toast({ title: "Error", description: "Failed to update AI status.", variant: "destructive" });
+      setAiConfigForm((prev) => ({ ...prev, isActive: !newValue }));
+      toast({
+        title: "Error",
+        description: "Failed to update AI status.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -208,15 +227,26 @@ export default function AITrainingPanel({
     try {
       setIsSavingAiConfig(true);
       const method = aiConfigId ? "PUT" : "POST";
-      const url = aiConfigId ? `/api/ai-settings/${aiConfigId}` : "/api/ai-settings";
+      const url = aiConfigId
+        ? `/api/ai-settings/${aiConfigId}`
+        : "/api/ai-settings";
       const res = await apiRequest(method, url, { ...aiConfigForm, channelId });
       if (!res.ok) throw new Error("Failed to save");
       const saved = await res.json();
       if (saved?.id) setAiConfigId(saved.id);
-      queryClient.invalidateQueries({ queryKey: ["/api/ai-settings/channel", channelId] });
-      toast({ title: "Saved", description: "AI configuration saved successfully." });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/ai-settings/channel", channelId],
+      });
+      toast({
+        title: "Saved",
+        description: "AI configuration saved successfully.",
+      });
     } catch {
-      toast({ title: "Error", description: "Failed to save AI configuration.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to save AI configuration.",
+        variant: "destructive",
+      });
     } finally {
       setIsSavingAiConfig(false);
     }
@@ -228,7 +258,10 @@ export default function AITrainingPanel({
     if (!siteId) return;
     try {
       setIsSavingBehavior(true);
-      const siteRes = await apiRequest("GET", `/api/active-site?channelId=${channelId}`);
+      const siteRes = await apiRequest(
+        "GET",
+        `/api/active-site?channelId=${channelId}`,
+      );
       const currentSite = siteRes.ok ? await siteRes.json() : null;
       const existingWidgetConfig = currentSite?.widgetConfig || {};
 
@@ -246,13 +279,19 @@ export default function AITrainingPanel({
       if (!res.ok) throw new Error("Failed to save");
       toast({ title: "Saved", description: "Settings saved successfully." });
     } catch {
-      toast({ title: "Error", description: "Failed to save settings.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to save settings.",
+        variant: "destructive",
+      });
     } finally {
       setIsSavingBehavior(false);
     }
   };
 
-  const { data: sources = [], refetch: refetchSources } = useQuery<TrainingSource[]>({
+  const { data: sources = [], refetch: refetchSources } = useQuery<
+    TrainingSource[]
+  >({
     queryKey: ["/api/training", siteId, "sources"],
     queryFn: async () => {
       if (!siteId) return [];
@@ -308,10 +347,17 @@ export default function AITrainingPanel({
       setUrlInput("");
       setUrlName("");
       refetchSources();
-      toast({ title: "URL added", description: "Website content is being processed..." });
+      toast({
+        title: "URL added",
+        description: "Website content is being processed...",
+      });
     },
     onError: (err: any) => {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -320,16 +366,27 @@ export default function AITrainingPanel({
       const formData = new FormData();
       formData.append("file", file);
       formData.append("channelId", channelId || "");
-      const res = await apiRequestFormData("POST", `/api/training/${siteId}/document`, formData);
+      const res = await apiRequestFormData(
+        "POST",
+        `/api/training/${siteId}/document`,
+        formData,
+      );
       if (!res.ok) throw new Error((await res.json()).error || "Upload failed");
       return res.json();
     },
     onSuccess: () => {
       refetchSources();
-      toast({ title: "Document uploaded", description: "Content is being processed..." });
+      toast({
+        title: "Document uploaded",
+        description: "Content is being processed...",
+      });
     },
     onError: (err: any) => {
-      toast({ title: "Upload error", description: err.message, variant: "destructive" });
+      toast({
+        title: "Upload error",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -371,7 +428,11 @@ export default function AITrainingPanel({
       toast({ title: "Q&A pair added" });
     },
     onError: (err: any) => {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -386,8 +447,17 @@ export default function AITrainingPanel({
   });
 
   const toggleQaMutation = useMutation({
-    mutationFn: async ({ qaId, isActive }: { qaId: string; isActive: boolean }) => {
-      await apiRequest("PUT", `/api/training/qa/${qaId}`, { isActive, channelId });
+    mutationFn: async ({
+      qaId,
+      isActive,
+    }: {
+      qaId: string;
+      isActive: boolean;
+    }) => {
+      await apiRequest("PUT", `/api/training/qa/${qaId}`, {
+        isActive,
+        channelId,
+      });
     },
     onSuccess: () => refetchQa(),
   });
@@ -396,9 +466,10 @@ export default function AITrainingPanel({
     mutationFn: async () => {
       const kbRes = await apiRequest("GET", `/api/widget/kb/${siteId}`);
       const kbData = await kbRes.json();
-      const articles = kbData?.categories?.flatMap((cat: any) =>
-        (cat.articles || []).map((a: any) => ({ ...a, category: cat.name }))
-      ) || [];
+      const articles =
+        kbData?.categories?.flatMap((cat: any) =>
+          (cat.articles || []).map((a: any) => ({ ...a, category: cat.name })),
+        ) || [];
       const res = await apiRequest("POST", `/api/training/${siteId}/kb-sync`, {
         channelId,
         articles,
@@ -413,7 +484,11 @@ export default function AITrainingPanel({
       });
     },
     onError: (err: any) => {
-      toast({ title: "KB sync error", description: err.message, variant: "destructive" });
+      toast({
+        title: "KB sync error",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -426,11 +501,15 @@ export default function AITrainingPanel({
     setIsTesting(true);
 
     try {
-      const res = await apiRequest("POST", `/api/training/${siteId}/test-chat`, {
-        message: userMsg,
-        channelId,
-        widgetConfig: config,
-      });
+      const res = await apiRequest(
+        "POST",
+        `/api/training/${siteId}/test-chat`,
+        {
+          message: userMsg,
+          channelId,
+          widgetConfig: config,
+        },
+      );
       const data = await res.json();
 
       if (!res.ok) {
@@ -498,7 +577,9 @@ export default function AITrainingPanel({
         <CardContent className="py-8 text-center text-muted-foreground">
           <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p className="font-medium">Save your widget configuration first</p>
-          <p className="text-sm mt-1">AI training requires a saved site configuration to work.</p>
+          <p className="text-sm mt-1">
+            AI training requires a saved site configuration to work.
+          </p>
         </CardContent>
       </Card>
     );
@@ -530,15 +611,21 @@ export default function AITrainingPanel({
       {stats && (
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-3 text-center">
-            <p className="text-2xl font-bold text-blue-600">{stats.sources?.length || 0}</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {stats.sources?.length || 0}
+            </p>
             <p className="text-xs text-muted-foreground">Sources</p>
           </div>
           <div className="bg-purple-50 dark:bg-purple-950 rounded-lg p-3 text-center">
-            <p className="text-2xl font-bold text-purple-600">{stats.totalChunks || 0}</p>
+            <p className="text-2xl font-bold text-purple-600">
+              {stats.totalChunks || 0}
+            </p>
             <p className="text-xs text-muted-foreground">Chunks</p>
           </div>
           <div className="bg-green-50 dark:bg-green-950 rounded-lg p-3 text-center">
-            <p className="text-2xl font-bold text-green-600">{stats.totalQaPairs || 0}</p>
+            <p className="text-2xl font-bold text-green-600">
+              {stats.totalQaPairs || 0}
+            </p>
             <p className="text-xs text-muted-foreground">Q&A Pairs</p>
           </div>
         </div>
@@ -566,7 +653,9 @@ export default function AITrainingPanel({
                 </div>
                 <Switch
                   checked={config.trainFromKB}
-                  onCheckedChange={(checked) => updateConfig("trainFromKB", checked)}
+                  onCheckedChange={(checked) =>
+                    updateConfig("trainFromKB", checked)
+                  }
                 />
               </div>
               {config.trainFromKB && (
@@ -681,7 +770,9 @@ export default function AITrainingPanel({
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         {getStatusIcon(source.status)}
                         <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">{source.name}</p>
+                          <p className="text-sm font-medium truncate">
+                            {source.name}
+                          </p>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline" className="text-xs">
                               {source.type}
@@ -774,7 +865,11 @@ export default function AITrainingPanel({
               </div>
               <Button
                 onClick={() => addQaMutation.mutate()}
-                disabled={!newQuestion.trim() || !newAnswer.trim() || addQaMutation.isPending}
+                disabled={
+                  !newQuestion.trim() ||
+                  !newAnswer.trim() ||
+                  addQaMutation.isPending
+                }
                 className="w-full"
               >
                 {addQaMutation.isPending ? (
@@ -816,7 +911,9 @@ export default function AITrainingPanel({
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm font-medium">Q: {qa.question}</p>
+                            <p className="text-sm font-medium">
+                              Q: {qa.question}
+                            </p>
                             <p className="text-sm text-muted-foreground mt-1">
                               A: {qa.answer}
                             </p>
@@ -825,7 +922,10 @@ export default function AITrainingPanel({
                             <Switch
                               checked={qa.isActive}
                               onCheckedChange={(checked) =>
-                                toggleQaMutation.mutate({ qaId: qa.id, isActive: checked })
+                                toggleQaMutation.mutate({
+                                  qaId: qa.id,
+                                  isActive: checked,
+                                })
                               }
                             />
                             <Button
@@ -872,69 +972,145 @@ export default function AITrainingPanel({
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Settings className="h-3.5 w-3.5" /> Provider</Label>
+                  <Label className="flex items-center gap-1.5">
+                    <Settings className="h-3.5 w-3.5" /> Provider
+                  </Label>
+
                   <Select
                     value={aiConfigForm.provider}
-                    onValueChange={(v) => setAiConfigForm(prev => ({ ...prev, provider: v }))}
+                    onValueChange={(provider) =>
+                      setAiConfigForm((prev) => ({
+                        ...prev,
+                        provider,
+                        apiKey: "",
+                        model:
+                          provider === "sarvam" ? "sarvam-105b" : "gpt-4o-mini",
+                        endpoint:
+                          provider === "sarvam"
+                            ? "https://api.sarvam.ai/v2"
+                            : "https://api.openai.com/v1",
+                      }))
+                    }
                   >
-                    <SelectTrigger><SelectValue placeholder="Select provider" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select provider" />
+                    </SelectTrigger>
+
                     <SelectContent>
+                      <SelectItem value="sarvam">Sarvam AI</SelectItem>
                       <SelectItem value="openai">OpenAI</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Key className="h-3.5 w-3.5" /> API Key</Label>
+                  <Label className="flex items-center gap-1.5">
+                    <Key className="h-3.5 w-3.5" /> API Key
+                  </Label>
+
                   <Input
                     type="password"
                     value={aiConfigForm.apiKey}
-                    onChange={(e) => setAiConfigForm(prev => ({ ...prev, apiKey: e.target.value }))}
-                    placeholder="sk-..."
+                    onChange={(e) =>
+                      setAiConfigForm((prev) => ({
+                        ...prev,
+                        apiKey: e.target.value,
+                      }))
+                    }
+                    placeholder={
+                      aiConfigForm.provider === "sarvam"
+                        ? "Enter your Sarvam API key"
+                        : "sk-..."
+                    }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Cpu className="h-3.5 w-3.5" /> Model</Label>
+                  <Label className="flex items-center gap-1.5">
+                    <Cpu className="h-3.5 w-3.5" /> Model
+                  </Label>
+
                   <Select
                     value={aiConfigForm.model}
-                    onValueChange={(v) => setAiConfigForm(prev => ({ ...prev, model: v }))}
+                    onValueChange={(model) =>
+                      setAiConfigForm((prev) => ({ ...prev, model }))
+                    }
                   >
-                    <SelectTrigger><SelectValue placeholder="Select model" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select model" />
+                    </SelectTrigger>
+
                     <SelectContent>
-                      <SelectItem value="gpt-4.1">GPT-4.1</SelectItem>
-                      <SelectItem value="gpt-4.1-mini">GPT-4.1 Mini</SelectItem>
-                      <SelectItem value="gpt-4.1-nano">GPT-4.1 Nano</SelectItem>
-                      <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                      <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
-                      <SelectItem value="o3-mini">o3-mini</SelectItem>
-                      <SelectItem value="o1">o1</SelectItem>
-                      <SelectItem value="o1-mini">o1-mini</SelectItem>
-                      <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                      <SelectItem value="gpt-4">GPT-4</SelectItem>
-                      <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                      {aiConfigForm.provider === "sarvam" ? (
+                        <>
+                          <SelectItem value="sarvam-105b">
+                            Sarvam 105B
+                          </SelectItem>
+                          <SelectItem value="sarvam-105b-conversations">
+                            Sarvam 105B Conversations
+                          </SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="gpt-4.1">GPT-4.1</SelectItem>
+                          <SelectItem value="gpt-4.1-mini">
+                            GPT-4.1 Mini
+                          </SelectItem>
+                          <SelectItem value="gpt-4.1-nano">
+                            GPT-4.1 Nano
+                          </SelectItem>
+                          <SelectItem value="gpt-4o">GPT-4o</SelectItem>
+                          <SelectItem value="gpt-4o-mini">
+                            GPT-4o Mini
+                          </SelectItem>
+                          <SelectItem value="o3-mini">o3-mini</SelectItem>
+                          <SelectItem value="o1">o1</SelectItem>
+                          <SelectItem value="o1-mini">o1-mini</SelectItem>
+                          <SelectItem value="gpt-4-turbo">
+                            GPT-4 Turbo
+                          </SelectItem>
+                          <SelectItem value="gpt-4">GPT-4</SelectItem>
+                          <SelectItem value="gpt-3.5-turbo">
+                            GPT-3.5 Turbo
+                          </SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Brain className="h-3.5 w-3.5" /> Temperature</Label>
+                  <Label className="flex items-center gap-1.5">
+                    <Brain className="h-3.5 w-3.5" /> Temperature
+                  </Label>
                   <Input
                     type="number"
                     step="0.1"
                     min="0"
                     max="2"
                     value={aiConfigForm.temperature}
-                    onChange={(e) => setAiConfigForm(prev => ({ ...prev, temperature: parseFloat(e.target.value) || 0.7 }))}
+                    onChange={(e) =>
+                      setAiConfigForm((prev) => ({
+                        ...prev,
+                        temperature: parseFloat(e.target.value) || 0.7,
+                      }))
+                    }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Max Tokens</Label>
+                  <Label className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" /> Max Tokens
+                  </Label>
                   <Input
                     type="number"
                     value={aiConfigForm.maxTokens}
-                    onChange={(e) => setAiConfigForm(prev => ({ ...prev, maxTokens: parseInt(e.target.value) || 2048 }))}
+                    onChange={(e) =>
+                      setAiConfigForm((prev) => ({
+                        ...prev,
+                        maxTokens: parseInt(e.target.value) || 2048,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -946,7 +1122,8 @@ export default function AITrainingPanel({
                   <MessageSquare className="h-3.5 w-3.5" /> Trigger Words
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  AI will only respond when a message contains one of these words (applies to both widget chat and team inbox)
+                  AI will only respond when a message contains one of these
+                  words (applies to both widget chat and team inbox)
                 </p>
                 <div className="flex gap-2">
                   <Input
@@ -956,7 +1133,7 @@ export default function AITrainingPanel({
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && newTriggerWord.trim()) {
                         e.preventDefault();
-                        setAiConfigForm(prev => ({
+                        setAiConfigForm((prev) => ({
                           ...prev,
                           words: [...prev.words, newTriggerWord.trim()],
                         }));
@@ -970,7 +1147,7 @@ export default function AITrainingPanel({
                     type="button"
                     onClick={() => {
                       if (newTriggerWord.trim()) {
-                        setAiConfigForm(prev => ({
+                        setAiConfigForm((prev) => ({
                           ...prev,
                           words: [...prev.words, newTriggerWord.trim()],
                         }));
@@ -988,7 +1165,7 @@ export default function AITrainingPanel({
                       <button
                         className="ml-1"
                         onClick={() =>
-                          setAiConfigForm(prev => ({
+                          setAiConfigForm((prev) => ({
                             ...prev,
                             words: prev.words.filter((_, idx) => idx !== i),
                           }))
@@ -999,7 +1176,9 @@ export default function AITrainingPanel({
                     </Badge>
                   ))}
                   {aiConfigForm.words.length === 0 && (
-                    <p className="text-xs text-muted-foreground italic">No trigger words defined — AI will respond to all messages</p>
+                    <p className="text-xs text-muted-foreground italic">
+                      No trigger words defined — AI will respond to all messages
+                    </p>
                   )}
                 </div>
               </div>
@@ -1073,7 +1252,9 @@ export default function AITrainingPanel({
                 <Label>Fallback Message</Label>
                 <Textarea
                   value={config.aiFallbackMessage}
-                  onChange={(e) => updateConfig("aiFallbackMessage", e.target.value)}
+                  onChange={(e) =>
+                    updateConfig("aiFallbackMessage", e.target.value)
+                  }
                   rows={2}
                   placeholder="I'm sorry, I don't have the information you're looking for."
                 />
@@ -1091,12 +1272,14 @@ export default function AITrainingPanel({
               }}
               disabled={isSavingAiConfig || isSavingBehavior}
             >
-              {(isSavingAiConfig || isSavingBehavior) ? (
+              {isSavingAiConfig || isSavingBehavior ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <Save className="h-4 w-4 mr-2" />
               )}
-              {(isSavingAiConfig || isSavingBehavior) ? "Saving..." : "Save AI Settings"}
+              {isSavingAiConfig || isSavingBehavior
+                ? "Saving..."
+                : "Save AI Settings"}
             </Button>
           </div>
         </div>
@@ -1104,144 +1287,155 @@ export default function AITrainingPanel({
 
       {activeSection === "escalation" && (
         <div className="space-y-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4" />
-              Escalation Rules
-            </CardTitle>
-            <CardDescription>
-              Configure when the AI should transfer conversations to human agents
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Enable Auto-Escalation</Label>
-                <p className="text-xs text-muted-foreground">
-                  Automatically transfer to an agent when AI can't help
-                </p>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                Escalation Rules
+              </CardTitle>
+              <CardDescription>
+                Configure when the AI should transfer conversations to human
+                agents
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Enable Auto-Escalation</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Automatically transfer to an agent when AI can't help
+                  </p>
+                </div>
+                <Switch
+                  checked={escalation.enabled}
+                  onCheckedChange={(checked) =>
+                    updateEscalation("enabled", checked)
+                  }
+                />
               </div>
-              <Switch
-                checked={escalation.enabled}
-                onCheckedChange={(checked) => updateEscalation("enabled", checked)}
-              />
-            </div>
 
-            {escalation.enabled && (
-              <>
-                <Separator />
+              {escalation.enabled && (
+                <>
+                  <Separator />
 
-                <div className="space-y-2">
-                  <Label>Max Unanswered Attempts</Label>
-                  <Select
-                    value={escalation.maxAttempts?.toString() || "3"}
-                    onValueChange={(value) =>
-                      updateEscalation("maxAttempts", parseInt(value))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">After 1 failed attempt</SelectItem>
-                      <SelectItem value="2">After 2 failed attempts</SelectItem>
-                      <SelectItem value="3">After 3 failed attempts</SelectItem>
-                      <SelectItem value="5">After 5 failed attempts</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Transfer to agent after this many questions the AI couldn't answer
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Trigger Phrases</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Immediately escalate when user mentions these phrases
-                  </p>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="e.g., speak to manager"
-                      value={newTriggerPhrase}
-                      onChange={(e) => setNewTriggerPhrase(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && newTriggerPhrase.trim()) {
-                          updateEscalation("triggerPhrases", [
-                            ...(escalation.triggerPhrases || []),
-                            newTriggerPhrase.trim(),
-                          ]);
-                          setNewTriggerPhrase("");
-                        }
-                      }}
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        if (newTriggerPhrase.trim()) {
-                          updateEscalation("triggerPhrases", [
-                            ...(escalation.triggerPhrases || []),
-                            newTriggerPhrase.trim(),
-                          ]);
-                          setNewTriggerPhrase("");
-                        }
-                      }}
+                  <div className="space-y-2">
+                    <Label>Max Unanswered Attempts</Label>
+                    <Select
+                      value={escalation.maxAttempts?.toString() || "3"}
+                      onValueChange={(value) =>
+                        updateEscalation("maxAttempts", parseInt(value))
+                      }
                     >
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">
+                          After 1 failed attempt
+                        </SelectItem>
+                        <SelectItem value="2">
+                          After 2 failed attempts
+                        </SelectItem>
+                        <SelectItem value="3">
+                          After 3 failed attempts
+                        </SelectItem>
+                        <SelectItem value="5">
+                          After 5 failed attempts
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Transfer to agent after this many questions the AI
+                      couldn't answer
+                    </p>
                   </div>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {(escalation.triggerPhrases || []).map((phrase, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
-                        {phrase}
-                        <button
-                          className="ml-1"
-                          onClick={() =>
-                            updateEscalation(
-                              "triggerPhrases",
-                              escalation.triggerPhrases.filter((_, idx) => idx !== i)
-                            )
-                          }
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label>Escalation Message</Label>
-                  <Textarea
-                    value={escalation.escalationMessage || ""}
-                    onChange={(e) =>
-                      updateEscalation("escalationMessage", e.target.value)
-                    }
-                    rows={2}
-                    placeholder="Let me connect you with a team member who can help you better."
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Message shown to user when transferring to an agent
-                  </p>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-        <div className="flex justify-end mt-4">
-          <Button
-            onClick={saveBehaviorConfig}
-            disabled={isSavingBehavior}
-          >
-            {isSavingBehavior ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            {isSavingBehavior ? "Saving..." : "Save Escalation Rules"}
-          </Button>
-        </div>
+                  <div className="space-y-2">
+                    <Label>Trigger Phrases</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Immediately escalate when user mentions these phrases
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="e.g., speak to manager"
+                        value={newTriggerPhrase}
+                        onChange={(e) => setNewTriggerPhrase(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && newTriggerPhrase.trim()) {
+                            updateEscalation("triggerPhrases", [
+                              ...(escalation.triggerPhrases || []),
+                              newTriggerPhrase.trim(),
+                            ]);
+                            setNewTriggerPhrase("");
+                          }
+                        }}
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          if (newTriggerPhrase.trim()) {
+                            updateEscalation("triggerPhrases", [
+                              ...(escalation.triggerPhrases || []),
+                              newTriggerPhrase.trim(),
+                            ]);
+                            setNewTriggerPhrase("");
+                          }
+                        }}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {(escalation.triggerPhrases || []).map((phrase, i) => (
+                        <Badge key={i} variant="secondary" className="text-xs">
+                          {phrase}
+                          <button
+                            className="ml-1"
+                            onClick={() =>
+                              updateEscalation(
+                                "triggerPhrases",
+                                escalation.triggerPhrases.filter(
+                                  (_, idx) => idx !== i,
+                                ),
+                              )
+                            }
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Escalation Message</Label>
+                    <Textarea
+                      value={escalation.escalationMessage || ""}
+                      onChange={(e) =>
+                        updateEscalation("escalationMessage", e.target.value)
+                      }
+                      rows={2}
+                      placeholder="Let me connect you with a team member who can help you better."
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Message shown to user when transferring to an agent
+                    </p>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+          <div className="flex justify-end mt-4">
+            <Button onClick={saveBehaviorConfig} disabled={isSavingBehavior}>
+              {isSavingBehavior ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              {isSavingBehavior ? "Saving..." : "Save Escalation Rules"}
+            </Button>
+          </div>
         </div>
       )}
 
@@ -1283,14 +1477,17 @@ export default function AITrainingPanel({
                           msg.role === "user"
                             ? "bg-primary text-primary-foreground"
                             : msg.role === "error"
-                            ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                            : "bg-muted"
+                              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                              : "bg-muted"
                         }`}
                       >
-                        <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                        <p className="text-sm whitespace-pre-wrap">
+                          {msg.text}
+                        </p>
                         {msg.context && (
                           <div className="mt-2 pt-2 border-t border-white/20 text-xs opacity-70">
-                            Context: {msg.context.chunksFound} chunks, {msg.context.qaPairsFound} Q&A pairs used
+                            Context: {msg.context.chunksFound} chunks,{" "}
+                            {msg.context.qaPairsFound} Q&A pairs used
                           </div>
                         )}
                       </div>
@@ -1349,7 +1546,8 @@ export default function AITrainingPanel({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {!preview || (preview.sources.length === 0 && preview.qaPairs.length === 0) ? (
+              {!preview ||
+              (preview.sources.length === 0 && preview.qaPairs.length === 0) ? (
                 <div className="text-center py-6 text-muted-foreground">
                   <Database className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">No training data yet</p>
@@ -1372,7 +1570,10 @@ export default function AITrainingPanel({
                           >
                             {getStatusIcon(source.status)}
                             <span className="font-medium">{source.name}</span>
-                            <Badge variant="outline" className="text-xs ml-auto">
+                            <Badge
+                              variant="outline"
+                              className="text-xs ml-auto"
+                            >
                               {source.type}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
@@ -1402,7 +1603,10 @@ export default function AITrainingPanel({
                                     Embedded
                                   </Badge>
                                 ) : (
-                                  <Badge variant="outline" className="text-[10px]">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-[10px]"
+                                  >
                                     Text Only
                                   </Badge>
                                 )}
@@ -1429,7 +1633,10 @@ export default function AITrainingPanel({
                       </h4>
                       <div className="space-y-2">
                         {preview.qaPairs.map((qa: any) => (
-                          <div key={qa.id} className="p-2 border rounded text-sm">
+                          <div
+                            key={qa.id}
+                            className="p-2 border rounded text-sm"
+                          >
                             <p className="font-medium">Q: {qa.question}</p>
                             <p className="text-muted-foreground text-xs mt-1">
                               A: {qa.answer}

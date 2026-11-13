@@ -456,7 +456,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               onOpenChange(false);
 
               setTimeout(() => {
-                window.location.reload();
+                setLocation("/dashboard");
               }, 100);
             } else {
               throw new Error(
@@ -548,33 +548,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
       const provider = data.data.provider.toLowerCase();
 
-      if (provider === "stripe") {
-        if (data.data.checkoutUrl) {
-          window.location.href = data.data.checkoutUrl;
-          return;
-        }
-
-        if (data.data.requiresPayment === false) {
-          handleStripeSuccess();
-          setLoading(false);
-          return;
-        }
-        console.log("STRIPE DATA =>", data.data);
-
-        if (!data.data.clientSecret || !data.data.publishableKey) {
-          throw new Error(
-            "Missing Stripe payment details. Please ensure the Stripe gateway is configured correctly.",
-          );
-        }
-        const stripe = await loadStripe(data.data.publishableKey);
-        setStripePromise(Promise.resolve(stripe));
-        setClientSecret(data.data.clientSecret);
-        setTransactionId(data.data.transactionId);
-        setGatewaySubscriptionId(data.data.subscriptionId || "");
-        setPaymentStep("pay");
-        onOpenChange(true);
-        setLoading(false);
-      } else if (provider === "razorpay") {
+      if (provider === "razorpay") {
         onOpenChange(false);
         await initiateRazorpayPayment(data.data);
         setLoading(false);

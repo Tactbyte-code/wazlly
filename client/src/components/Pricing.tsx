@@ -327,7 +327,6 @@ const Pricing = () => {
   // --------------------------------------------------
   // Plans content
   // --------------------------------------------------
-
   const renderPlansContent = () => {
     if (loading) {
       return (
