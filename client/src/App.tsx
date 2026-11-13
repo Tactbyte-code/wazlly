@@ -104,6 +104,7 @@ import WidgetChat from "./pages/WidgetChat";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import { DeleteAccount } from "./pages/DeleteAccount";
 import Pricing from "@/components/Pricing";
+import ConditionalSignupPopup from "./components/ConditionalSignupPopup";
 
 // Route permissions map. Every authenticated route must have an entry here.
 // Missing routes are treated as DENY (redirect to /dashboard). Empty string
@@ -589,7 +590,7 @@ function Router() {
   return (
     <>
       <ScrollToTop />
-      <SignupPopupHandler />
+
       <Switch>
         <Route path="/widget-chat" component={WidgetChat} />
         <Route path="/demo">
@@ -724,6 +725,7 @@ function App() {
               <ChannelProvider>
                 <TooltipProvider>
                   <Toaster />
+                  <ConditionalSignupPopup />
                   <Router />
                 </TooltipProvider>
               </ChannelProvider>
