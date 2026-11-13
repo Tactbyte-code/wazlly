@@ -61,16 +61,14 @@ export default function Inbox() {
   const activeChannelRef = useRef<any>(null);
   const templateRefetchTimersRef = useRef<NodeJS.Timeout[]>([]);
 
-
   // new functionality added for image upload
 
-const [selectedMediaFile, setSelectedMediaFile] = useState<File | null>(null);
-const [mediaPreviewUrl, setMediaPreviewUrl] = useState("");
-const [showMediaPreview, setShowMediaPreview] = useState(false);
+  const [selectedMediaFile, setSelectedMediaFile] = useState<File | null>(null);
+  const [mediaPreviewUrl, setMediaPreviewUrl] = useState("");
+  const [showMediaPreview, setShowMediaPreview] = useState(false);
 
-const [sendingMedia, setSendingMedia] = useState(false);
-const [mediaCaption, setMediaCaption] = useState("");
-
+  const [sendingMedia, setSendingMedia] = useState(false);
+  const [mediaCaption, setMediaCaption] = useState("");
 
   const { data: activeChannel } = useQuery({
     queryKey: queryKeys.channels.active(),
@@ -110,7 +108,7 @@ const [mediaCaption, setMediaCaption] = useState("");
         "GET",
         `/api/conversations/pins${
           activeChannel?.id ? `?channelId=${activeChannel.id}` : ""
-        }`
+        }`,
       );
       if (!response.ok) return { pins: [] };
       return await response.json();
@@ -119,7 +117,7 @@ const [mediaCaption, setMediaCaption] = useState("");
     staleTime: 30 * 1000,
   });
   const pinnedIds = new Set<string>(
-    (pinsResponse?.pins || []).map((p: any) => p.conversationId as string)
+    (pinsResponse?.pins || []).map((p: any) => p.conversationId as string),
   );
   // Order pinned conversations by pin createdAt (newest pin first), so the
   // pinned section is stable regardless of message activity.
@@ -129,11 +127,14 @@ const [mediaCaption, setMediaCaption] = useState("");
   });
 
   const togglePinMutation = useMutation({
-    mutationFn: async (vars: { conversationId: string; currentlyPinned: boolean }) => {
+    mutationFn: async (vars: {
+      conversationId: string;
+      currentlyPinned: boolean;
+    }) => {
       const method = vars.currentlyPinned ? "DELETE" : "POST";
       const response = await apiRequest(
         method,
-        `/api/conversations/${vars.conversationId}/pin`
+        `/api/conversations/${vars.conversationId}/pin`,
       );
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -153,7 +154,9 @@ const [mediaCaption, setMediaCaption] = useState("");
         if (vars.currentlyPinned) {
           return {
             ...(old || {}),
-            pins: list.filter((p: any) => p.conversationId !== vars.conversationId),
+            pins: list.filter(
+              (p: any) => p.conversationId !== vars.conversationId,
+            ),
           };
         }
         return {
@@ -198,14 +201,18 @@ const [mediaCaption, setMediaCaption] = useState("");
     },
   });
 
-  const handleTogglePin = (conversationId: string, currentlyPinned: boolean) => {
+  const handleTogglePin = (
+    conversationId: string,
+    currentlyPinned: boolean,
+  ) => {
     togglePinMutation.mutate({ conversationId, currentlyPinned });
   };
 
   const { data: messagesPage, isLoading: messagesLoading } = useQuery({
     queryKey: queryKeys.conversations.messages(selectedConversation?.id),
     queryFn: async () => {
-      if (!selectedConversation?.id) return { messages: [] as Message[], hasMore: false };
+      if (!selectedConversation?.id)
+        return { messages: [] as Message[], hasMore: false };
       const response = await api.getMessages(selectedConversation.id);
       if (!response.ok) {
         throw new Error(`Failed to load messages: ${response.status}`);
@@ -234,24 +241,20 @@ const [mediaCaption, setMediaCaption] = useState("");
     return merged;
   })();
 
-
-
   function normalizeTimeLocal(value: any): number {
-  if (!value) return 0;
+    if (!value) return 0;
 
-  if (value instanceof Date) {
-    return value.getTime();
+    if (value instanceof Date) {
+      return value.getTime();
+    }
+
+    if (typeof value === "number") {
+      return value < 1e12 ? value * 1000 : value;
+    }
+
+    const parsed = Date.parse(value);
+    return isNaN(parsed) ? 0 : parsed;
   }
-
-  if (typeof value === "number") {
-    return value < 1e12 ? value * 1000 : value;
-  }
-
-  const parsed = Date.parse(value);
-  return isNaN(parsed) ? 0 : parsed;
-}
-
-  
 
   useEffect(() => {
     selectedConversationRef.current = selectedConversation;
@@ -282,16 +285,20 @@ const [mediaCaption, setMediaCaption] = useState("");
     if (!oldestMessage?.createdAt) return;
     setLoadingOlderMessages(true);
     try {
-      const beforeTs = typeof oldestMessage.createdAt === "string"
-        ? oldestMessage.createdAt
-        : (oldestMessage.createdAt as Date).toISOString();
-      const response = await api.getMessages(selectedConversation.id, `${beforeTs}__${oldestMessage.id}`);
+      const beforeTs =
+        typeof oldestMessage.createdAt === "string"
+          ? oldestMessage.createdAt
+          : (oldestMessage.createdAt as Date).toISOString();
+      const response = await api.getMessages(
+        selectedConversation.id,
+        `${beforeTs}__${oldestMessage.id}`,
+      );
       if (response.ok) {
         const olderData: Message[] = await response.json();
         const moreAvailable = response.headers.get("x-has-more") === "true";
-        setOlderMessages(prev => {
-          const seenIds = new Set(prev.map(m => m.id));
-          const fresh = olderData.filter(m => !seenIds.has(m.id));
+        setOlderMessages((prev) => {
+          const seenIds = new Set(prev.map((m) => m.id));
+          const fresh = olderData.filter((m) => !seenIds.has(m.id));
           return [...fresh, ...prev];
         });
         setHasMoreMessages(moreAvailable);
@@ -313,124 +320,122 @@ const [mediaCaption, setMediaCaption] = useState("");
       socketInstance.emit("join-room", { room: channelRoom });
     }
 
-    
-
-
-socketInstance.on("conversation_created", (data: any) => {
-  console.log("🔥 conversation_created event received", data);
-  const channelId = activeChannelRef.current?.id;
-  if (data?.conversation && channelId) {
-    queryClient.setQueryData(
-      queryKeys.conversations.list(channelId),
-      (old: any[]) => {
-        const list = Array.isArray(old) ? old : [];
-        const exists = list.some((c) => c.id === data.conversation.id);
-        if (exists) return list;
-        return [data.conversation, ...list];
+    socketInstance.on("conversation_created", (data: any) => {
+      console.log("🔥 conversation_created event received", data);
+      const channelId = activeChannelRef.current?.id;
+      if (data?.conversation && channelId) {
+        queryClient.setQueryData(
+          queryKeys.conversations.list(channelId),
+          (old: any[]) => {
+            const list = Array.isArray(old) ? old : [];
+            const exists = list.some((c) => c.id === data.conversation.id);
+            if (exists) return list;
+            return [data.conversation, ...list];
+          },
+        );
       }
-    );
-  }
-  queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
-});
-
-
-socketInstance.on("message_sent", (data) => {
-  console.log("📩 message_sent event received:", data);
-
-  queryClient.invalidateQueries({
-    queryKey: queryKeys.conversations.all()
-  });
-
-  
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.conversations.messages(data.conversationId)
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
     });
-  
-});
 
+    socketInstance.on("message_sent", (data) => {
+      console.log("📩 message_sent event received:", data);
 
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
 
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.messages(data.conversationId),
+      });
+    });
 
-socketInstance.on("new-message", (data) => {
-  console.log("🔥 Incoming message (raw):", data);
+    socketInstance.on("new-message", (data) => {
+      console.log("🔥 Incoming message (raw):", data);
 
-  const conversationId = data.conversationId;
-  const channelId = activeChannelRef.current?.id;
+      const conversationId = data.conversationId;
+      const channelId = activeChannelRef.current?.id;
 
-  const lastMessageText =
-    typeof data?.message?.content === "string"
-      ? data.message.content
-      : typeof data?.content === "string"
-      ? data.content
-      : "[Media]";
+      const lastMessageText =
+        typeof data?.message?.content === "string"
+          ? data.message.content
+          : typeof data?.content === "string"
+            ? data.content
+            : "[Media]";
 
-  const lastMessageAt =
-    typeof data?.createdAt === "number"
-      ? data.createdAt
-      : typeof data?.createdAt === "string"
-      ? Date.parse(data.createdAt)
-      : Date.now();
+      const lastMessageAt =
+        typeof data?.createdAt === "number"
+          ? data.createdAt
+          : typeof data?.createdAt === "string"
+            ? Date.parse(data.createdAt)
+            : Date.now();
 
-  if (channelId) {
-    queryClient.setQueryData(
-      queryKeys.conversations.list(channelId),
-      (old: any[]) => {
-        if (!Array.isArray(old)) return [];
+      if (channelId) {
+        queryClient.setQueryData(
+          queryKeys.conversations.list(channelId),
+          (old: any[]) => {
+            if (!Array.isArray(old)) return [];
 
-        return old
-          .map((conv) =>
-            conv.id === conversationId
-              ? {
-                  ...conv,
-                  lastMessageText,
-                  lastMessageAt,
-                  // Keep lastIncomingMessageAt in sync so the section
-                  // grouping (Awaiting Reply vs Unread) updates instantly.
-                  lastIncomingMessageAt: lastMessageAt,
-                  unreadCount:
-                    selectedConversationRef.current?.id === conversationId
-                      ? 0
-                      : (conv.unreadCount || 0) + 1,
-                }
-              : conv
-          )
-          .sort(
-            (a, b) =>
-              normalizeTime(b.lastMessageAt) -
-              normalizeTime(a.lastMessageAt)
-          );
+            return old
+              .map((conv) =>
+                conv.id === conversationId
+                  ? {
+                      ...conv,
+                      lastMessageText,
+                      lastMessageAt,
+                      // Keep lastIncomingMessageAt in sync so the section
+                      // grouping (Awaiting Reply vs Unread) updates instantly.
+                      lastIncomingMessageAt: lastMessageAt,
+                      unreadCount:
+                        selectedConversationRef.current?.id === conversationId
+                          ? 0
+                          : (conv.unreadCount || 0) + 1,
+                    }
+                  : conv,
+              )
+              .sort(
+                (a, b) =>
+                  normalizeTime(b.lastMessageAt) -
+                  normalizeTime(a.lastMessageAt),
+              );
+          },
+        );
       }
-    );
-  }
 
-  queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
 
-  if (selectedConversationRef.current?.id === conversationId) {
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.conversations.messages(conversationId),
+      if (selectedConversationRef.current?.id === conversationId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.conversations.messages(conversationId),
+        });
+      }
     });
-  }
-});
 
-socketInstance.on("conversation_updated", (data) => {
-  console.log("🔔 Conversation updated:", data.conversationId);
-  queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
-});
-
-
-
+    socketInstance.on("conversation_updated", (data) => {
+      console.log("🔔 Conversation updated:", data.conversationId);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
+    });
 
     socketInstance.on("new_message", (data) => {
       console.log("New message received:", data);
 
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
 
       if (
         selectedConversationRef.current &&
         data.conversationId === selectedConversationRef.current.id
       ) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.conversations.messages(selectedConversationRef.current.id),
+          queryKey: queryKeys.conversations.messages(
+            selectedConversationRef.current.id,
+          ),
         });
       }
     });
@@ -451,7 +456,9 @@ socketInstance.on("conversation_updated", (data) => {
 
     socketInstance.on("new_conversation_assigned", (data) => {
       if (data.agentId === user?.id) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.conversations.all(),
+        });
         toast({
           title: t("inbox.toasts.newAssigned"),
           description: t("inbox.toasts.newAssignedDesc"),
@@ -460,7 +467,9 @@ socketInstance.on("conversation_updated", (data) => {
     });
 
     socketInstance.on("conversation_transferred", (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
       if (selectedConversationRef.current?.id === data.conversationId) {
         toast({
           title: t("inbox.toasts.transferred"),
@@ -474,7 +483,9 @@ socketInstance.on("conversation_updated", (data) => {
     socketInstance.on("messages_read", (data) => {
       if (selectedConversationRef.current?.id === data.conversationId) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.conversations.messages(selectedConversationRef.current?.id),
+          queryKey: queryKeys.conversations.messages(
+            selectedConversationRef.current?.id,
+          ),
         });
       }
     });
@@ -500,58 +511,65 @@ socketInstance.on("conversation_updated", (data) => {
     });
 
     socketInstance.on("message_status_update", (data) => {
-  const {
-    conversationId,
-    whatsappMessageId,
-    status,
-    errorDetails,
-  } = data;
+      const { conversationId, whatsappMessageId, status, errorDetails } = data;
 
-  console.log("📬 message_status_update received:", { conversationId, whatsappMessageId, status, hasError: !!errorDetails });
+      console.log("📬 message_status_update received:", {
+        conversationId,
+        whatsappMessageId,
+        status,
+        hasError: !!errorDetails,
+      });
 
-  const currentConv = selectedConversationRef.current;
+      const currentConv = selectedConversationRef.current;
 
-  if (currentConv?.id === conversationId) {
-    queryClient.setQueryData(
-      queryKeys.conversations.messages(conversationId),
-      (old: any[]) => {
-        if (!Array.isArray(old)) return old;
+      if (currentConv?.id === conversationId) {
+        queryClient.setQueryData(
+          queryKeys.conversations.messages(conversationId),
+          (old: any[]) => {
+            if (!Array.isArray(old)) return old;
 
-        return old.map((msg) =>
-          msg.whatsappMessageId === whatsappMessageId
-            ? {
-                ...msg,
-                status,
-                errorDetails: errorDetails || msg.errorDetails,
-              }
-            : msg
+            return old.map((msg) =>
+              msg.whatsappMessageId === whatsappMessageId
+                ? {
+                    ...msg,
+                    status,
+                    errorDetails: errorDetails || msg.errorDetails,
+                  }
+                : msg,
+            );
+          },
         );
+
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.conversations.messages(conversationId),
+        });
       }
-    );
 
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.conversations.messages(conversationId),
+      if (status === "failed" && errorDetails) {
+        const errorMsg =
+          errorDetails.title ||
+          errorDetails.message ||
+          "Message delivery failed";
+        const isBilling =
+          errorMsg.toLowerCase().includes("payment") ||
+          errorMsg.toLowerCase().includes("billing") ||
+          errorMsg.toLowerCase().includes("eligibility");
+
+        toast({
+          title: isBilling ? "Meta Billing Issue" : "Message Failed",
+          description: isBilling
+            ? "Message failed due to a payment issue. Please check your payment method in Meta Business Manager (business.facebook.com) → Billing & Payments."
+            : errorMsg,
+          variant: "destructive",
+          duration: 10000,
+        });
+      }
     });
-  }
-
-  if (status === "failed" && errorDetails) {
-    const errorMsg = errorDetails.title || errorDetails.message || "Message delivery failed";
-    const isBilling = errorMsg.toLowerCase().includes("payment") || errorMsg.toLowerCase().includes("billing") || errorMsg.toLowerCase().includes("eligibility");
-
-    toast({
-      title: isBilling ? "Meta Billing Issue" : "Message Failed",
-      description: isBilling
-        ? "Message failed due to a payment issue. Please check your payment method in Meta Business Manager (business.facebook.com) → Billing & Payments."
-        : errorMsg,
-      variant: "destructive",
-      duration: 10000,
-    });
-  }
-});
-
 
     socketInstance.on("conversation_status_changed", (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
       if (selectedConversationRef.current?.id === data.conversationId) {
         toast({
           title: t("inbox.toasts.statusChanged"),
@@ -561,9 +579,6 @@ socketInstance.on("conversation_updated", (data) => {
         });
       }
     });
-
-
-    
 
     return () => {
       // Detach our listeners but keep the shared socket connected for other
@@ -603,22 +618,19 @@ socketInstance.on("conversation_updated", (data) => {
     };
   }, []);
 
-
-
   useEffect(() => {
-  if (!selectedConversation || !socket) return;
+    if (!selectedConversation || !socket) return;
 
-  const room = `conversation:${selectedConversation.id}`;
-  console.log("🔗 Joining conversation room:", room);
+    const room = `conversation:${selectedConversation.id}`;
+    console.log("🔗 Joining conversation room:", room);
 
-  socket.emit("join-room", { room });
+    socket.emit("join-room", { room });
 
-  return () => {
-    console.log("🚪 Leaving conversation room:", room);
-    socket.emit("leave-room", { room });
-  };
-}, [selectedConversation?.id, socket]);
-
+    return () => {
+      console.log("🚪 Leaving conversation room:", room);
+      socket.emit("leave-room", { room });
+    };
+  }, [selectedConversation?.id, socket]);
 
   const sendMessageMutation = useMutation({
     mutationFn: async (data: { conversationId: string; content: string }) => {
@@ -633,7 +645,7 @@ socketInstance.on("conversation_updated", (data) => {
           agentName:
             `${user?.firstName || ""} ${user?.lastName || ""}`.trim() ||
             user?.username,
-        }
+        },
       );
       return response.json();
     },
@@ -652,7 +664,9 @@ socketInstance.on("conversation_updated", (data) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.conversations.messages(selectedConversation?.id),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
 
       setMessageText("");
 
@@ -663,8 +677,14 @@ socketInstance.on("conversation_updated", (data) => {
       }
 
       if (data?.status === "failed" || data?.success === false) {
-        const errorMsg = data?.errorDetails?.message || data?.error || "Message delivery failed";
-        const isBilling = errorMsg.toLowerCase().includes("payment") || errorMsg.toLowerCase().includes("billing") || errorMsg.toLowerCase().includes("eligibility");
+        const errorMsg =
+          data?.errorDetails?.message ||
+          data?.error ||
+          "Message delivery failed";
+        const isBilling =
+          errorMsg.toLowerCase().includes("payment") ||
+          errorMsg.toLowerCase().includes("billing") ||
+          errorMsg.toLowerCase().includes("eligibility");
 
         toast({
           title: isBilling
@@ -685,7 +705,9 @@ socketInstance.on("conversation_updated", (data) => {
     },
   });
 
-  const handleTyping = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleTyping = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setMessageText(e.target.value);
 
     if (!socket || !selectedConversation) return;
@@ -713,7 +735,7 @@ socketInstance.on("conversation_updated", (data) => {
       const response = await apiRequest(
         "PATCH",
         `/api/conversations/${data.conversationId}/status`,
-        { status: data.status }
+        { status: data.status },
       );
       return response.json();
     },
@@ -725,7 +747,9 @@ socketInstance.on("conversation_updated", (data) => {
         });
       }
 
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
       toast({
         title: t("common.success"),
         description: t("inbox.toasts.statusUpdated"),
@@ -741,44 +765,113 @@ socketInstance.on("conversation_updated", (data) => {
   });
 
   const sendTemplateMutation = useMutation({
-  mutationFn: async (data: {
-    conversationId: string;
-    templateName: string;
-    phoneNumber: string;
-    parameters?: { type?: string; value?: string }[];
-    mediaId?: string;
-    headerType?: string | null;
-    buttonParameters?: string[];
-    expirationTimeMs?: number;
-    carouselCardMediaIds?: Record<number, string>;
-  }) => {
-    const response = await apiRequest("POST", "/api/messages/send", {
-      to: data.phoneNumber,
-      templateName: data.templateName,
-      channelId: selectedConversation?.channelId,
-      headerType: data.headerType
-        ? data.headerType.toUpperCase()
-        : undefined,
-      parameters: data.parameters || [],
-      mediaId: data.mediaId,
-      buttonParameters: data.buttonParameters,
-      expirationTimeMs: data.expirationTimeMs,
-      ...(data.carouselCardMediaIds
-        ? { carouselCardMediaIds: data.carouselCardMediaIds }
-        : {}),
-    });
-    return response.json();
-  },
-  onSuccess: (data: any) => {
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.conversations.messages(selectedConversation?.id),
-    });
+    mutationFn: async (data: {
+      conversationId: string;
+      templateName: string;
+      phoneNumber: string;
+      parameters?: { type?: string; value?: string }[];
+      mediaId?: string;
+      headerType?: string | null;
+      buttonParameters?: string[];
+      expirationTimeMs?: number;
+      carouselCardMediaIds?: Record<number, string>;
+    }) => {
+      const response = await apiRequest("POST", "/api/messages/send", {
+        to: data.phoneNumber,
+        templateName: data.templateName,
+        channelId: selectedConversation?.channelId,
+        headerType: data.headerType ? data.headerType.toUpperCase() : undefined,
+        parameters: data.parameters || [],
+        mediaId: data.mediaId,
+        buttonParameters: data.buttonParameters,
+        expirationTimeMs: data.expirationTimeMs,
+        ...(data.carouselCardMediaIds
+          ? { carouselCardMediaIds: data.carouselCardMediaIds }
+          : {}),
+      });
+      return response.json();
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.messages(selectedConversation?.id),
+      });
 
-    if (data?.success === false || data?.message?.status === "failed") {
-      const msg = data?.error || data?.message?.errorDetails?.message || "Template delivery failed";
-      const isBilling = msg.toLowerCase().includes("payment") || msg.toLowerCase().includes("billing") || msg.toLowerCase().includes("eligibility");
-      const isRateLimit = msg.toLowerCase().includes("rate") || msg.toLowerCase().includes("throttl");
-      const isNotRegistered = msg.toLowerCase().includes("not registered") || msg.toLowerCase().includes("not a valid whatsapp");
+      if (data?.success === false || data?.message?.status === "failed") {
+        const msg =
+          data?.error ||
+          data?.message?.errorDetails?.message ||
+          "Template delivery failed";
+        const isBilling =
+          msg.toLowerCase().includes("payment") ||
+          msg.toLowerCase().includes("billing") ||
+          msg.toLowerCase().includes("eligibility");
+        const isRateLimit =
+          msg.toLowerCase().includes("rate") ||
+          msg.toLowerCase().includes("throttl");
+        const isNotRegistered =
+          msg.toLowerCase().includes("not registered") ||
+          msg.toLowerCase().includes("not a valid whatsapp");
+
+        let title = t("inbox.toasts.templateSendFailed");
+        let description = msg;
+
+        if (isBilling) {
+          title = t("inbox.toasts.metaBillingIssue");
+          description = t("inbox.toasts.metaBillingLongDesc");
+        } else if (isRateLimit) {
+          title = t("inbox.toasts.rateLimitReached");
+          description = t("inbox.toasts.rateLimitDesc");
+        } else if (isNotRegistered) {
+          title = t("inbox.toasts.invalidRecipient");
+          description = t("inbox.toasts.invalidRecipientDesc");
+        }
+
+        toast({
+          title,
+          description,
+          variant: "destructive",
+          duration: 10000,
+        });
+      } else {
+        toast({
+          title: t("inbox.toasts.templateSubmitted"),
+          description: t("inbox.toasts.templateSubmittedDesc"),
+        });
+
+        const convId = selectedConversation?.id;
+        templateRefetchTimersRef.current.forEach((t) => clearTimeout(t));
+        templateRefetchTimersRef.current = [];
+
+        const t1 = setTimeout(() => {
+          console.log(
+            "⏰ Delayed refetch: checking for message status updates",
+          );
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.conversations.messages(convId),
+          });
+        }, 10000);
+
+        const t2 = setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.conversations.messages(convId),
+          });
+        }, 20000);
+
+        templateRefetchTimersRef.current = [t1, t2];
+      }
+    },
+    onError: (error: Error) => {
+      const msg = error.message || "Failed to send template";
+      const isBilling =
+        msg.toLowerCase().includes("payment") ||
+        msg.toLowerCase().includes("billing") ||
+        msg.toLowerCase().includes("eligibility");
+      const isRateLimit =
+        msg.toLowerCase().includes("rate") ||
+        msg.toLowerCase().includes("throttl");
+      const isNotRegistered =
+        msg.toLowerCase().includes("not registered") ||
+        msg.toLowerCase().includes("not a valid whatsapp");
 
       let title = t("inbox.toasts.templateSendFailed");
       let description = msg;
@@ -800,61 +893,8 @@ socketInstance.on("conversation_updated", (data) => {
         variant: "destructive",
         duration: 10000,
       });
-    } else {
-      toast({
-        title: t("inbox.toasts.templateSubmitted"),
-        description: t("inbox.toasts.templateSubmittedDesc"),
-      });
-
-      const convId = selectedConversation?.id;
-      templateRefetchTimersRef.current.forEach(t => clearTimeout(t));
-      templateRefetchTimersRef.current = [];
-
-      const t1 = setTimeout(() => {
-        console.log("⏰ Delayed refetch: checking for message status updates");
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.conversations.messages(convId),
-        });
-      }, 10000);
-
-      const t2 = setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.conversations.messages(convId),
-        });
-      }, 20000);
-
-      templateRefetchTimersRef.current = [t1, t2];
-    }
-  },
-  onError: (error: Error) => {
-    const msg = error.message || "Failed to send template";
-    const isBilling = msg.toLowerCase().includes("payment") || msg.toLowerCase().includes("billing") || msg.toLowerCase().includes("eligibility");
-    const isRateLimit = msg.toLowerCase().includes("rate") || msg.toLowerCase().includes("throttl");
-    const isNotRegistered = msg.toLowerCase().includes("not registered") || msg.toLowerCase().includes("not a valid whatsapp");
-
-    let title = t("inbox.toasts.templateSendFailed");
-    let description = msg;
-
-    if (isBilling) {
-      title = t("inbox.toasts.metaBillingIssue");
-      description = t("inbox.toasts.metaBillingLongDesc");
-    } else if (isRateLimit) {
-      title = t("inbox.toasts.rateLimitReached");
-      description = t("inbox.toasts.rateLimitDesc");
-    } else if (isNotRegistered) {
-      title = t("inbox.toasts.invalidRecipient");
-      description = t("inbox.toasts.invalidRecipientDesc");
-    }
-
-    toast({
-      title,
-      description,
-      variant: "destructive",
-      duration: 10000,
-    });
-  },
-});
-
+    },
+  });
 
   const handleSendMessage = () => {
     if (!messageText.trim() || !selectedConversation) return;
@@ -865,26 +905,31 @@ socketInstance.on("conversation_updated", (data) => {
     });
   };
 
+  const handleSelectTemplate = (
+    template: any,
+    variables: { type?: string; value?: string }[],
+    mediaId?: string,
+    headerType?: string | null,
+    buttonParameters?: string[],
+    expirationTimeMs?: number,
+    carouselCardMediaIds?: Record<number, string>,
+  ) => {
+    if (!selectedConversation) return;
 
-
-  const handleSelectTemplate = (template: any, variables: { type?: string; value?: string }[], mediaId?: string, headerType?: string | null, buttonParameters?: string[], expirationTimeMs?: number, carouselCardMediaIds?: Record<number, string>) => {
-  if (!selectedConversation) return;
-
-  sendTemplateMutation.mutate({
-    conversationId: selectedConversation.id,
-    templateName: template.name,
-    phoneNumber: selectedConversation.contactPhone || "",
-    parameters: variables,
-    mediaId: mediaId,
-    headerType: headerType as any,
-    buttonParameters,
-    expirationTimeMs,
-    ...(carouselCardMediaIds && Object.keys(carouselCardMediaIds).length > 0
-      ? { carouselCardMediaIds }
-      : {}),
-  });
-};
-
+    sendTemplateMutation.mutate({
+      conversationId: selectedConversation.id,
+      templateName: template.name,
+      phoneNumber: selectedConversation.contactPhone || "",
+      parameters: variables,
+      mediaId: mediaId,
+      headerType: headerType as any,
+      buttonParameters,
+      expirationTimeMs,
+      ...(carouselCardMediaIds && Object.keys(carouselCardMediaIds).length > 0
+        ? { carouselCardMediaIds }
+        : {}),
+    });
+  };
 
   const handleFileAttachment = () => {
     fileInputRef.current?.click();
@@ -929,73 +974,64 @@ socketInstance.on("conversation_updated", (data) => {
   //   event.target.value = "";
   // };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
 
-  const handleFileChange = (
-  event: React.ChangeEvent<HTMLInputElement>
-) => {
-  const file = event.target.files?.[0];
+    if (!file) return;
 
-  if (!file) return;
+    setSelectedMediaFile(file);
+    setMediaPreviewUrl(URL.createObjectURL(file));
+    setShowMediaPreview(true);
 
-  setSelectedMediaFile(file);
-  setMediaPreviewUrl(URL.createObjectURL(file));
-  setShowMediaPreview(true);
+    event.target.value = "";
+  };
 
-  event.target.value = "";
-};
+  const handleSendMediaMessage = async () => {
+    if (!selectedMediaFile || !selectedConversation) return;
+    setSendingMedia(true);
+    const formData = new FormData();
 
+    formData.append("media", selectedMediaFile);
+    formData.append("fromUser", "true");
+    formData.append("conversationId", selectedConversation.id);
+    formData.append("caption", mediaCaption || "");
 
-const handleSendMediaMessage = async () => {
-  if (!selectedMediaFile || !selectedConversation) return;
-  setSendingMedia(true);
-  const formData = new FormData();
+    try {
+      await apiRequestFormData(
+        "POST",
+        `/api/conversations/${selectedConversation.id}/messages`,
+        formData,
+      );
 
-  formData.append("media", selectedMediaFile);
-  formData.append("fromUser", "true");
-  formData.append("conversationId", selectedConversation.id);
-  formData.append("caption", mediaCaption || "");
+      toast({
+        title: t("common.success"),
+        description: t("inbox.toasts.mediaSent"),
+      });
 
-  try {
-    await apiRequestFormData(
-      "POST",
-      `/api/conversations/${selectedConversation.id}/messages`,
-      formData
-    );
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.messages(selectedConversation.id),
+      });
 
-    toast({
-      title: t("common.success"),
-      description: t("inbox.toasts.mediaSent"),
-    });
-
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.conversations.messages(
-        selectedConversation.id
-      ),
-    });
-
-    setMediaCaption("");
-    setSelectedMediaFile(null);
-    setMediaPreviewUrl("");
-    setShowMediaPreview(false);
-  } catch (error: any) {
-    toast({
-      title: t("common.error"),
-      description: error.message,
-      variant: "destructive",
-    });
-  }
-};
-
-
-
-useEffect(() => {
-  return () => {
-    if (mediaPreviewUrl) {
-      URL.revokeObjectURL(mediaPreviewUrl);
+      setMediaCaption("");
+      setSelectedMediaFile(null);
+      setMediaPreviewUrl("");
+      setShowMediaPreview(false);
+    } catch (error: any) {
+      toast({
+        title: t("common.error"),
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
-}, [mediaPreviewUrl]);
 
+  useEffect(() => {
+    return () => {
+      if (mediaPreviewUrl) {
+        URL.revokeObjectURL(mediaPreviewUrl);
+      }
+    };
+  }, [mediaPreviewUrl]);
 
   const updateConversationStatus = (status: string) => {
     if (!selectedConversation) return;
@@ -1020,7 +1056,7 @@ useEffect(() => {
       await apiRequest(
         "PATCH",
         `/api/conversations/${selectedConversation.id}`,
-        { status: "archived" }
+        { status: "archived" },
       );
 
       toast({
@@ -1028,7 +1064,9 @@ useEffect(() => {
         description: t("inbox.toasts.chatArchivedDesc"),
       });
 
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
       setSelectedConversation(null);
     } catch (error) {
       toast({
@@ -1046,7 +1084,7 @@ useEffect(() => {
       await apiRequest(
         "PATCH",
         `/api/contacts/${selectedConversation.contactId}`,
-        { status: "blocked" }
+        { status: "blocked" },
       );
 
       toast({
@@ -1054,7 +1092,9 @@ useEffect(() => {
         description: t("inbox.toasts.contactBlockedDesc"),
       });
 
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
     } catch (error) {
       toast({
         title: t("common.error"),
@@ -1067,15 +1107,13 @@ useEffect(() => {
   const handleDeleteChat = async () => {
     if (!selectedConversation) return;
 
-    const confirmed = window.confirm(
-      t("inbox.toasts.deleteConfirm")
-    );
+    const confirmed = window.confirm(t("inbox.toasts.deleteConfirm"));
     if (!confirmed) return;
 
     try {
       await apiRequest(
         "DELETE",
-        `/api/conversations/${selectedConversation.id}`
+        `/api/conversations/${selectedConversation.id}`,
       );
 
       toast({
@@ -1083,7 +1121,9 @@ useEffect(() => {
         description: t("inbox.toasts.chatDeletedDesc"),
       });
 
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
       setSelectedConversation(null);
     } catch (error) {
       toast({
@@ -1099,12 +1139,14 @@ useEffect(() => {
       const response = await apiRequest(
         "PUT",
         `/api/conversations/${data.id}`,
-        data.updates
+        data.updates,
       );
       return response.json();
     },
     onSuccess: (updatedConversation) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.all(),
+      });
       setSelectedConversation(updatedConversation);
       toast({
         title: t("common.success"),
@@ -1122,7 +1164,7 @@ useEffect(() => {
 
   const handleAssignConversation = (
     assignedTo: string,
-    assignedToName: string
+    assignedToName: string,
   ) => {
     if (!selectedConversation) return;
 
@@ -1177,26 +1219,31 @@ useEffect(() => {
   });
 
   function normalizeTimeFormat(value: any): number {
-  if (!value) return 0;
+    if (!value) return 0;
 
-  if (value instanceof Date) return value.getTime();
+    if (value instanceof Date) return value.getTime();
 
-  if (typeof value === "number") {
-    return value < 1e12 ? value * 1000 : value;
+    if (typeof value === "number") {
+      return value < 1e12 ? value * 1000 : value;
+    }
+
+    const parsed = Date.parse(value);
+    return isNaN(parsed) ? 0 : parsed;
   }
 
-  const parsed = Date.parse(value);
-  return isNaN(parsed) ? 0 : parsed;
-}
-
   const is24HourWindowExpired =
-  selectedConversation?.type === "whatsapp" &&
-  normalizeTime((selectedConversation as any)?.lastIncomingMessageAt || selectedConversation?.lastMessageAt) > 0
-    ? Date.now() -
-        normalizeTime((selectedConversation as any)?.lastIncomingMessageAt || selectedConversation?.lastMessageAt) >
-      24 * 60 * 60 * 1000
-    : false;
-
+    selectedConversation?.type === "whatsapp" &&
+    normalizeTime(
+      (selectedConversation as any)?.lastIncomingMessageAt ||
+        selectedConversation?.lastMessageAt,
+    ) > 0
+      ? Date.now() -
+          normalizeTime(
+            (selectedConversation as any)?.lastIncomingMessageAt ||
+              selectedConversation?.lastMessageAt,
+          ) >
+        24 * 60 * 60 * 1000
+      : false;
 
   if (!activeChannel) {
     return (
@@ -1215,9 +1262,7 @@ useEffect(() => {
 
   return (
     <div className="h-screen flex flex-col">
-     <Header
-  title={t("inbox.title")}
-/>
+      <Header title={t("inbox.title")} />
 
       <div className="flex-1 flex bg-gray-50 overflow-hidden">
         <ConversationList
@@ -1282,31 +1327,28 @@ useEffect(() => {
         )}
       </div>
 
-
       {showMediaPreview && (
-  <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
-    <div className="bg-white rounded-xl p-4 w-[500px] max-w-[95vw]">
-      
-      <img
-        src={mediaPreviewUrl}
-        alt="preview"
-        className="w-full h-[350px] object-contain rounded-xl bg-gray-100"
-      />
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+          <div className="bg-white rounded-xl p-4 w-[500px] max-w-[95vw]">
+            <img
+              src={mediaPreviewUrl}
+              alt="preview"
+              className="w-full h-[350px] object-contain rounded-xl bg-gray-100"
+            />
 
-      {/* <textarea
+            {/* <textarea
         value={messageText}
         onChange={(e) => setMessageText(e.target.value)}
         placeholder="Add a caption..."
         className="w-full border rounded-lg p-3 mt-4"
       /> */}
 
-
-      <textarea
-  value={mediaCaption}
-  onChange={(e) => setMediaCaption(e.target.value)}
-  placeholder="Add a caption..."
-  rows={3}
-  className="
+            <textarea
+              value={mediaCaption}
+              onChange={(e) => setMediaCaption(e.target.value)}
+              placeholder="Add a caption..."
+              rows={3}
+              className="
     w-full
     border
     border-gray-300
@@ -1318,24 +1360,24 @@ useEffect(() => {
     focus:ring-2
     focus:ring-green-500
   "
-/>
+            />
 
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          onClick={() => {
-            setShowMediaPreview(false);
-            setSelectedMediaFile(null);
-            setMediaPreviewUrl("");
-          }}
-          className="px-4 py-2 border rounded-lg"
-        >
-          Cancel
-        </button>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => {
+                  setShowMediaPreview(false);
+                  setSelectedMediaFile(null);
+                  setMediaPreviewUrl("");
+                }}
+                className="px-4 py-2 border rounded-lg"
+              >
+                Cancel
+              </button>
 
-       <button
-  onClick={handleSendMediaMessage}
-  disabled={sendingMedia}
-  className="
+              <button
+                onClick={handleSendMediaMessage}
+                disabled={sendingMedia}
+                className="
     px-5
     py-2
     bg-green-600
@@ -1344,16 +1386,13 @@ useEffect(() => {
     rounded-xl
     disabled:opacity-50
   "
->
-  {sendingMedia ? "Sending..." : "Send"}
-</button>
-      </div>
+              >
+                {sendingMedia ? "Sending..." : "Send"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-    </div>
-
-
-
   );
 }
