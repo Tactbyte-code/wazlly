@@ -3,6 +3,7 @@ node_modules/
 dist/
 build/
 dist-release/
+package-lock.json
 
 # environment / secrets
 .env
