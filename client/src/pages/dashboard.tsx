@@ -77,11 +77,6 @@ export default function Dashboard() {
     },
   });
 
-
-
-
-  // console.log("activity logs response ", activityLogs);
-
   const [timeRange, setTimeRange] = useState<number>(30);
 
   // Fetch campaign analytics

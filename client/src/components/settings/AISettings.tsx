@@ -33,14 +33,16 @@ import { useChannelContext } from "@/contexts/channel-context";
 const defaultConfig = {
   aiTone: "professional",
   aiMaxResponseLength: 500,
-  aiFallbackMessage: "I'm sorry, I couldn't find an answer to your question. Let me connect you with a team member who can help.",
+  aiFallbackMessage:
+    "I'm sorry, I couldn't find an answer to your question. Let me connect you with a team member who can help.",
   systemPrompt: "",
   trainFromKB: false,
   escalationRules: {
     enabled: false,
     maxAttempts: 3,
     triggerPhrases: [] as string[],
-    escalationMessage: "Let me connect you with a human agent who can better assist you.",
+    escalationMessage:
+      "Let me connect you with a human agent who can better assist you.",
   },
 };
 
@@ -51,7 +53,10 @@ export default function AISettings(): JSX.Element {
   const { data: activeSite, isLoading: isLoadingSite } = useQuery({
     queryKey: ["/api/active-site", channelId],
     queryFn: async () => {
-      const res = await apiRequest("GET", `/api/active-site?channelId=${channelId}`);
+      const res = await apiRequest(
+        "GET",
+        `/api/active-site?channelId=${channelId}`,
+      );
       if (!res.ok) return null;
       return res.json();
     },
@@ -62,11 +67,14 @@ export default function AISettings(): JSX.Element {
 
   useEffect(() => {
     if (activeSite) {
-      const stored = activeSite.widgetConfig || activeSite.aiTrainingConfig || {};
+      const stored =
+        activeSite.widgetConfig || activeSite.aiTrainingConfig || {};
       setTrainingConfig({
         aiTone: stored.aiTone || defaultConfig.aiTone,
-        aiMaxResponseLength: stored.aiMaxResponseLength || defaultConfig.aiMaxResponseLength,
-        aiFallbackMessage: stored.aiFallbackMessage || defaultConfig.aiFallbackMessage,
+        aiMaxResponseLength:
+          stored.aiMaxResponseLength || defaultConfig.aiMaxResponseLength,
+        aiFallbackMessage:
+          stored.aiFallbackMessage || defaultConfig.aiFallbackMessage,
         systemPrompt: stored.systemPrompt || defaultConfig.systemPrompt,
         trainFromKB: stored.trainFromKB ?? defaultConfig.trainFromKB,
         escalationRules: {
@@ -78,10 +86,11 @@ export default function AISettings(): JSX.Element {
   }, [activeSite]);
 
   const handleTrainingConfigUpdate = (key: string, value: any) => {
-    setTrainingConfig(prev => ({ ...prev, [key]: value }));
+    setTrainingConfig((prev) => ({ ...prev, [key]: value }));
   };
 
   if (!channelId || isLoadingSite) {
+    // if (isLoadingSite) {
     return (
       <Card>
         <CardContent className="p-6 flex flex-col items-center">
@@ -101,7 +110,9 @@ export default function AISettings(): JSX.Element {
             AI Training & Knowledge Base
           </CardTitle>
           <CardDescription>
-            Train your AI assistant with custom data, Q&A pairs, and configure behavior. This training data is shared across the chat widget and team inbox.
+            Train your AI assistant with custom data, Q&A pairs, and configure
+            behavior. This training data is shared across the chat widget and
+            team inbox.
           </CardDescription>
         </CardHeader>
         <CardContent>

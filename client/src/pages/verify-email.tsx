@@ -18,9 +18,12 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/auth-context";
 
 const VerifyEmail = () => {
   const [location, setLocation] = useLocation();
+
+  const { refreshAuth } = useAuth();
 
   const searchParams = new URLSearchParams(window.location.search);
   const email = searchParams.get("email") || "";
@@ -32,7 +35,7 @@ const VerifyEmail = () => {
 
   const handleOtpChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const value = e.target.value.replace(/\D/, "");
     const newOtp = [...otp];
@@ -71,7 +74,17 @@ const VerifyEmail = () => {
       }
 
       setSuccess("Email verified successfully!");
-      setTimeout(() => setLocation("/dashboard"), 1500);
+
+      const authenticatedUser = await refreshAuth();
+
+      if (!authenticatedUser) {
+        setError(
+          "Email verified, but your session could not be established. Please log in.",
+        );
+        return;
+      }
+
+      setLocation("/dashboard");
     } catch (err) {
       setError("Verification failed, try again.");
     } finally {
