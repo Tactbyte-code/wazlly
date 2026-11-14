@@ -145,9 +145,7 @@ export default function WidgetChat() {
     },
 
     onMutate: async (text: string) => {
-      if (!conversationId) return;
-
-      const queryKey = getMessagesQueryKey(conversationId);
+      const queryKey = getMessagesQueryKey(conversationId || "");
 
       await queryClient.cancelQueries({
         queryKey,
@@ -175,7 +173,7 @@ export default function WidgetChat() {
         previousMessages,
       };
     },
-
+    
     onError: (_error, _text, context) => {
       setIsBotTyping(false);
 
