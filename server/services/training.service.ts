@@ -365,10 +365,7 @@ export async function generateQaEmbedding(
   }
 
   try {
-    const embedding = await generateEmbedding(
-      qa.question,
-      "document",
-    );
+    const embedding = await generateEmbedding(qa.question, "document");
 
     await db
       .update(trainingQaPairs)
@@ -398,45 +395,9 @@ export async function searchTrainingData(
   query: string,
   topK: number = 5,
 ): Promise<{
-  matchedQa: {
-    question: string;
-    answer: string;
-    score: number;
-  } | null;
   chunks: string[];
   qaPairs: Array<{ question: string; answer: string }>;
 }> {
-  // 1. Fetch active Q&A pairs for this site.
-  const allQa = await db
-    .select()
-    .from(trainingQaPairs)
-    .where(
-      and(
-        eq(trainingQaPairs.siteId, siteId),
-        eq(trainingQaPairs.isActive, true),
-      ),
-    );
-
-  // 2. Check for an exact question match first.
-  const normalizedQuery = normalizeQuestion(query);
-
-  const exactMatch = allQa.find(
-    (qa) => normalizeQuestion(qa.question) === normalizedQuery,
-  );
-
-  if (exactMatch) {
-    return {
-      matchedQa: {
-        question: exactMatch.question,
-        answer: exactMatch.answer,
-        score: 1,
-      },
-      chunks: [],
-      qaPairs: [],
-    };
-  }
-
-  // 3. Generate Gemini embedding for semantic matching.
   let queryEmbedding: number[] | null = null;
 
   try {
@@ -448,65 +409,6 @@ export async function searchTrainingData(
     );
   }
 
-  // 4. Rank Q&A pairs using semantic similarity.
-  let rankedQa: Array<{
-    question: string;
-    answer: string;
-    score: number;
-  }> = [];
-
-  const compatibleQa = allQa.filter(
-    (qa) =>
-      Array.isArray(qa.embedding) &&
-      qa.embedding.length === GEMINI_EMBEDDING_DIMENSIONS,
-  );
-
-  if (queryEmbedding && compatibleQa.length > 0) {
-    rankedQa = compatibleQa
-      .map((qa) => ({
-        question: qa.question,
-        answer: qa.answer,
-        score: cosineSimilarity(queryEmbedding!, qa.embedding as number[]),
-      }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3);
-
-    // 5. Return a high-confidence Q&A match directly.
-    const bestQa = rankedQa[0];
-
-    if (bestQa && bestQa.score >= QA_MATCH_THRESHOLD) {
-      return {
-        matchedQa: bestQa,
-        chunks: [],
-        qaPairs: [],
-      };
-    }
-  } else {
-    // Fallback when embeddings are unavailable.
-    const queryLower = normalizedQuery;
-
-    rankedQa = allQa
-      .map((qa) => {
-        const normalizedQuestion = normalizeQuestion(qa.question);
-
-        const score =
-          normalizedQuestion.includes(queryLower) ||
-          queryLower.includes(normalizedQuestion)
-            ? 1
-            : 0;
-
-        return {
-          question: qa.question,
-          answer: qa.answer,
-          score,
-        };
-      })
-      .filter((qa) => qa.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3);
-  }
-
-  // 6. No confident Q&A match. Search website training chunks.
   const allChunks = await db
     .select()
     .from(trainingChunks)
@@ -550,9 +452,59 @@ export async function searchTrainingData(
       .slice(0, topK);
   }
 
-  // 7. Return website context and lower-confidence Q&A context.
+  const allQa = await db
+    .select()
+    .from(trainingQaPairs)
+    .where(
+      and(
+        eq(trainingQaPairs.siteId, siteId),
+        eq(trainingQaPairs.isActive, true),
+      ),
+    );
+
+  let rankedQa: Array<{
+    question: string;
+    answer: string;
+    score: number;
+  }>;
+
+  const compatibleQa = allQa.filter(
+    (qa) =>
+      Array.isArray(qa.embedding) &&
+      qa.embedding.length === GEMINI_EMBEDDING_DIMENSIONS,
+  );
+
+  if (queryEmbedding && compatibleQa.length > 0) {
+    rankedQa = compatibleQa
+      .map((qa) => ({
+        question: qa.question,
+        answer: qa.answer,
+        score: cosineSimilarity(queryEmbedding!, qa.embedding as number[]),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+  } else {
+    const queryLower = query.toLowerCase();
+
+    rankedQa = allQa
+      .map((qa) => {
+        const score =
+          qa.question.toLowerCase().includes(queryLower) ||
+          queryLower.includes(qa.question.toLowerCase())
+            ? 1
+            : 0;
+
+        return {
+          question: qa.question,
+          answer: qa.answer,
+          score,
+        };
+      })
+      .filter((qa) => qa.score > 0)
+      .slice(0, 3);
+  }
+
   return {
-    matchedQa: null,
     chunks: rankedChunks.map((chunk) => chunk.content),
     qaPairs: rankedQa.map((qa) => ({
       question: qa.question,
