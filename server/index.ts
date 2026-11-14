@@ -67,6 +67,7 @@ import {
   csrfMiddleware,
   csrfTokenEndpoint,
 } from "./middlewares/csrf.middleware.ts";
+import { registerWidgetSocketHandlers } from "./realtime/widgetSocket";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -130,6 +131,42 @@ if (process.env.REDIS_URL) {
 }
 
 (global as any).io = io;
+
+registerWidgetSocketHandlers(io, async ({ siteId, origin }) => {
+  try {
+    const site = await storage.getSite(siteId);
+
+    if (!site || !origin || !site.domain) {
+      return false;
+    }
+
+    const originHost = new URL(origin).hostname
+      .toLowerCase()
+      .replace(/^www\./, "");
+
+    const siteHost = new URL(
+      site.domain.startsWith("http") ? site.domain : `https://${site.domain}`,
+    ).hostname
+      .toLowerCase()
+      .replace(/^www\./, "");
+
+    if (originHost === siteHost) {
+      return true;
+    }
+
+    // Allow localhost only in development.
+    if (
+      process.env.NODE_ENV !== "production" &&
+      ["localhost", "127.0.0.1"].includes(originHost)
+    ) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+});
 
 // Store connected users
 const connectedUsers = new Map();
@@ -298,43 +335,31 @@ io.on("connection", (socket) => {
   });
 
   // Agent sends message
-  socket.on(
-    "agent_send_message",
-    async ({ conversationId, content, agentId, agentName }) => {
-      console.log(`Agent message in ${conversationId}:`, content);
-
-      try {
-        // Message is already saved by API endpoint, just broadcast it
-        const message = {
-          id: `msg_${Date.now()}`, // This will be replaced by actual DB ID
-          conversationId,
-          content,
-          fromUser: false,
-          fromType: "agent",
-          fromName: agentName,
-          createdAt: new Date().toISOString(),
-          status: "sent",
-        };
-
-        // Broadcast to all participants in the conversation
-        io.to(`conversation:${conversationId}`).emit("new_message", {
-          conversationId,
-          message,
-        });
-
-        // Confirm to sender
-        socket.emit("message_sent", {
-          conversationId,
-          status: "delivered",
-        });
-      } catch (error) {
-        console.error("Error sending agent message:", error);
+  socket.on("agent_send_message", async ({ conversationId, message }) => {
+    try {
+      if (!conversationId || !message?.id) {
         socket.emit("message_error", {
-          error: "Failed to send message",
+          error: "Invalid message data",
         });
+        return;
       }
-    },
-  );
+
+      // The API endpoint has already saved and broadcast
+      // the actual database message.
+
+      socket.emit("message_sent", {
+        conversationId,
+        messageId: message.id,
+        status: "delivered",
+      });
+    } catch (error) {
+      console.error("Error confirming agent message:", error);
+
+      socket.emit("message_error", {
+        error: "Failed to confirm message",
+      });
+    }
+  });
 
   // Close conversation
   socket.on("close_conversation", async ({ conversationId, agentId }) => {
@@ -440,7 +465,7 @@ io.on("connection", (socket) => {
           status: "read",
         });
     } catch (error) {
-      console.error("Error updating message status:", error);
+      console.error("Error updating message status: ", error);
     }
   });
 

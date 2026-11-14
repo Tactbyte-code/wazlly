@@ -1,66 +1,69 @@
-/**
- * ============================================================
- * © 2025 Diploy — a brand of Bisht Technologies Private Limited
- * Original Author: BTPL Engineering Team
- * Website: https://diploy.in
- * Contact: cs@diploy.in
- *
- * Distributed under the Envato / CodeCanyon License Agreement.
- * Licensed to the purchaser for use as defined by the
- * Envato Market (CodeCanyon) Regular or Extended License.
- *
- * You are NOT permitted to redistribute, resell, sublicense,
- * or share this source code, in whole or in part.
- * Respect the author's rights and Envato licensing terms.
- * ============================================================
- */
-
 // ============================================
 // ENHANCED WIDGET ROUTES - With Agent Chat Support
 // ============================================
 
-import { Router } from 'express';
-import { diployLogger, HTTP_STATUS, DIPLOY_BRAND } from "@diploy/core";
 import type { Express } from "express";
-import { storage } from 'server/storage';
-import OpenAI from 'openai';
-import { requireAuth } from 'server/middlewares/auth.middleware';
-import { aiSettings, insertSiteSchema, panelConfig, sites, trainingQaPairs } from '@shared/schema';
-import { requireSubscription } from 'server/middlewares/requireSubscription';
-import { eq, and } from 'drizzle-orm';
-import { db } from 'server/db';
-import { searchTrainingData } from '../services/training.service';
-import multer from 'multer';
-import path from 'path';
-import { applyRateLimit } from '../middlewares/rate-limit.middleware';
+import { diployLogger, HTTP_STATUS, DIPLOY_BRAND } from "@diploy/core";
+import { storage } from "server/storage";
+import OpenAI from "openai";
+import { requireAuth } from "server/middlewares/auth.middleware";
+import {
+  aiSettings,
+  insertSiteSchema,
+  panelConfig,
+  trainingQaPairs,
+} from "@shared/schema";
+import { requireSubscription } from "server/middlewares/requireSubscription";
+import { eq, and } from "drizzle-orm";
+import { db } from "server/db";
+import { searchTrainingData } from "../services/training.service";
+import multer from "multer";
+import path from "path";
+import { applyRateLimit } from "../middlewares/rate-limit.middleware";
+import { broadcastNewMessage } from "server/realtime/messageBroadcaster";
 
 // Public widget rate limits: tighter per-IP / per-siteId buckets to protect
 // unauthenticated endpoints against scraping and abuse.
-const WIDGET_CONFIG_LIMIT_PER_MIN = parseInt(process.env.WIDGET_CONFIG_RATE_LIMIT || '60', 10);
-const WIDGET_CHAT_LIMIT_PER_MIN = parseInt(process.env.WIDGET_CHAT_RATE_LIMIT || '30', 10);
+const WIDGET_CONFIG_LIMIT_PER_MIN = parseInt(
+  process.env.WIDGET_CONFIG_RATE_LIMIT || "60",
+  10,
+);
+
+const WIDGET_CHAT_LIMIT_PER_MIN = parseInt(
+  process.env.WIDGET_CHAT_RATE_LIMIT || "30",
+  10,
+);
 
 function getClientIp(req: any): string {
-  const fwd = (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim();
-  return fwd || req.ip || 'unknown';
+  const fwd = (req.headers["x-forwarded-for"] as string | undefined)
+    ?.split(",")[0]
+    ?.trim();
+
+  return fwd || req.ip || "unknown";
 }
 
 function rateLimitWidget(limit: number, bucketScope: (req: any) => string) {
   return (req: any, res: any, next: any) => {
     const key = bucketScope(req);
     const result = applyRateLimit(key, limit);
-    res.setHeader('X-RateLimit-Limit', String(limit));
-    res.setHeader('X-RateLimit-Remaining', String(result.remaining));
-    res.setHeader('X-RateLimit-Reset', String(result.resetAt));
+
+    res.setHeader("X-RateLimit-Limit", String(limit));
+    res.setHeader("X-RateLimit-Remaining", String(result.remaining));
+    res.setHeader("X-RateLimit-Reset", String(result.resetAt));
+
     if (result.limited) {
-      res.setHeader('Retry-After', String(result.retryAfter));
-      return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+      res.setHeader("Retry-After", String(result.retryAfter));
+
+      return res
+        .status(429)
+        .json({ error: "Too many requests. Please try again later." });
     }
+
     next();
   };
 }
 
-
-function buildAIClient(aiSetting) {
+function buildAIClient(aiSetting: any) {
   if (aiSetting.provider === "openai") {
     return new OpenAI({
       apiKey: aiSetting.apiKey,
@@ -75,104 +78,158 @@ function buildAIClient(aiSetting) {
   });
 }
 
+// ============================================
+// REAL-TIME MESSAGE BROADCASTING
+// ============================================
+
+type WidgetBroadcastParams = {
+  siteId: string;
+  sessionId: string;
+  conversationId: string;
+  message: {
+    id: string;
+    content: string;
+    fromUser: boolean;
+    fromType: string;
+    status?: string | null;
+    createdAt: Date | string;
+  };
+};
+
+function broadcastWidgetMessage(
+  io: any,
+  params: WidgetBroadcastParams,
+) {
+  if (!io || !params.conversationId || !params.message?.id) {
+    return;
+  }
+
+  broadcastNewMessage(io, params);
+}
 
 export function registerWidgetRoutes(app: Express) {
-  
-  // CORS middleware
-  app.use('/api/widget', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    if (req.method === 'OPTIONS') {
+  // ============================================
+  // CORS
+  // ============================================
+
+  app.use("/api/widget", (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
       return res.sendStatus(200);
     }
+
     next();
   });
 
-  // Get widget configuration
+  // ============================================
+  // GET WIDGET CONFIGURATION
+  // ============================================
+
   app.get(
     "/api/widget/config/:siteId",
-    rateLimitWidget(WIDGET_CONFIG_LIMIT_PER_MIN, (req) =>
-      `widget-config:${getClientIp(req)}:${req.params.siteId || 'unknown'}`
+    rateLimitWidget(
+      WIDGET_CONFIG_LIMIT_PER_MIN,
+      (req) =>
+        `widget-config:${getClientIp(req)}:${req.params.siteId || "unknown"}`,
     ),
     async (req, res) => {
-    try {
-      const { siteId } = req.params;
-      const site = await storage.getSite(siteId);
-      
-      
-      if (!site) {
-        return res.status(404).json({ error: "Site not found" });
+      try {
+        const { siteId } = req.params;
+        const site = await storage.getSite(siteId);
+
+        if (!site) {
+          return res.status(404).json({ error: "Site not found" });
+        }
+
+        const [brandName] = await db
+          .select({
+            name: panelConfig.name,
+          })
+          .from(panelConfig);
+
+        const name = brandName?.name;
+
+        res.json({
+          config: {
+            ...(site.widgetConfig || {}),
+            brandName: name,
+          },
+          siteId: site.id,
+          siteName: site.name,
+          domain: site.domain,
+        });
+      } catch (error: any) {
+        res.status(500).json({
+          error: "Failed to fetch widget configuration",
+        });
       }
-      
+    },
+  );
 
-      const [brandName] = await db
-  .select({
-    name: panelConfig.name
-  })
-  .from(panelConfig);
+  // ============================================
+  // GET KNOWLEDGE BASE ARTICLES
+  // ============================================
 
-      
-      const name = brandName?.name;
-      
-
-res.json({
-  config: { ...(site.widgetConfig || {}), brandName: name },
-  siteId: site.id,
-  siteName: site.name,
-  domain: site.domain,
-});
-    } catch (error: any) {
-      res.status(500).json({ error: "Failed to fetch widget configuration" });
-    }
-  });
-
-
-  // Get knowledge base articles
   app.get("/api/widget/kb/:siteId", async (req, res) => {
     try {
       const site = await storage.getSite(req.params.siteId);
+
       if (!site || !site.widgetEnabled) {
         return res.status(404).json({ error: "Widget not available" });
       }
-      
-      const categoriesTree = await storage.getKnowledgeCategoriesTree(req.params.siteId);
-      const allCategories = await storage.getKnowledgeCategories(req.params.siteId);
+
+      const categoriesTree = await storage.getKnowledgeCategoriesTree(
+        req.params.siteId,
+      );
+
+      const allCategories = await storage.getKnowledgeCategories(
+        req.params.siteId,
+      );
+
       const articlesMap = new Map();
-      
+
       for (const category of allCategories) {
         const articles = await storage.getKnowledgeArticles(category.id);
         articlesMap.set(category.id, articles);
       }
-      
+
       const processCategoryTree = (categories: any[]): any[] => {
-        return categories.map(cat => ({
+        return categories.map((cat) => ({
           id: cat.id,
           name: cat.name,
           icon: cat.icon,
           articleCount: articlesMap.get(cat.id)?.length || 0,
-          articles: (articlesMap.get(cat.id) || []).map(article => ({
+          articles: (articlesMap.get(cat.id) || []).map((article) => ({
             id: article.id,
             title: article.title,
-            preview: article.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...',
+            preview:
+              article.content.replace(/<[^>]*>/g, "").substring(0, 150) + "...",
           })),
-          subcategories: processCategoryTree(cat.subcategories || [])
+          subcategories: processCategoryTree(cat.subcategories || []),
         }));
       };
-      
+
       const kbData = {
-        categories: processCategoryTree(categoriesTree)
+        categories: processCategoryTree(categoriesTree),
       };
-      
+
       res.json(kbData);
     } catch (error: any) {
       res.status(500).json({ error: "Failed to fetch knowledge base" });
     }
   });
 
+  // ============================================
+  // GET Q&A PAIRS
+  // ============================================
+
   app.get("/api/widget/qa/:siteId", async (req, res) => {
     try {
       const site = await storage.getSite(req.params.siteId);
+
       if (!site) {
         return res.status(404).json({ error: "Site not found" });
       }
@@ -188,14 +245,15 @@ res.json({
         .where(
           and(
             eq(trainingQaPairs.siteId, req.params.siteId),
-            eq(trainingQaPairs.isActive, true)
-          )
+            eq(trainingQaPairs.isActive, true),
+          ),
         );
 
-      const categories = [...new Set(qaPairs.map(q => q.category))];
-      const grouped = categories.map(cat => ({
+      const categories = [...new Set(qaPairs.map((q) => q.category))];
+
+      const grouped = categories.map((cat) => ({
         name: cat,
-        pairs: qaPairs.filter(q => q.category === cat),
+        pairs: qaPairs.filter((q) => q.category === cat),
       }));
 
       res.json({ qaPairs, categories: grouped });
@@ -204,24 +262,30 @@ res.json({
     }
   });
 
-  // Get article
+  // ============================================
+  // GET ARTICLE
+  // ============================================
+
   app.get("/api/widget/article/:articleId", async (req, res) => {
     try {
       const article = await storage.getKnowledgeArticle(req.params.articleId);
+
       if (!article) {
         return res.status(404).json({ error: "Article not found" });
       }
-      
+
       const category = await storage.getKnowledgeCategory(article.categoryId);
+
       if (!category) {
         return res.status(404).json({ error: "Category not found" });
       }
-      
+
       const site = await storage.getSite(category.siteId);
+
       if (!site || !site.widgetEnabled) {
         return res.status(404).json({ error: "Widget not available" });
       }
-      
+
       res.json({
         id: article.id,
         title: article.title,
@@ -232,555 +296,821 @@ res.json({
     }
   });
 
-  // Save contact
-  app.post("/api/widget/contacts",requireSubscription('contacts'), async (req, res) => {
-    try {
-      const { siteId, name, email, phone, source } = req.body;
-      const site = await storage.getSite(siteId);
-      if (!site) {
-        return res.status(404).json({ error: "Site not found" });
-      }
+  // ============================================
+  // SAVE CONTACT
+  // ============================================
 
-      const getCreated = await storage.getChannel(site.channelId!);
-      
-      // Check if contact exists
-      let [contact] = await storage.getContactByEmail(email);
-      // return  console.log("site", site ,contact)
-      
-      if (!contact) {
-        contact = await storage.createContact({
-          channelId: site?.channelId || null,
-          name,
-          email,
-          phone,
-          createdBy: getCreated?.createdBy || null,
-          source: source || 'chat_widget',
-          tags: ['widget-lead'],
-        });
-      }
-
-      res.json({ success: true, contactId: contact.id });
-    } catch (error: any) {
-      console.error('Failed to save contact:', error);
-      res.status(500).json({ error: "Failed to save contact" });
-    }
-  });
-
-app.post(
-  "/api/widget/chat",
-  rateLimitWidget(WIDGET_CHAT_LIMIT_PER_MIN, (req) =>
-    `widget-chat:${getClientIp(req)}:${(req.body?.siteId as string) || 'unknown'}`
-  ),
-  async (req, res) => {
-  const io = (global as any).io;
-
-  try {
-    const { siteId, channelId, sessionId, conversationId, message, visitorInfo, enableAiAutoReply } = req.body;
-
-    if (!message || !siteId || !sessionId) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const site = await storage.getSite(siteId);
-    if (!site || !site.widgetEnabled) {
-      return res.status(404).json({ error: "Widget not available" });
-    }
-
-    const humanKeywords = [
-      "human", "agent", "person", "support", "real person", "real human",
-      "representative", "talk to someone", "customer care", "customer support"
-    ];
-    const wantsHuman = humanKeywords.some((kw) =>
-      message.toLowerCase().includes(kw)
-    );
-
-    let contact = null;
-    if (visitorInfo?.email) {
-      const contacts = await storage.getContactByEmail(visitorInfo.email);
-      contact = contacts?.[0] || null;
-      if (!contact) {
-        contact = await storage.createContact({
-          tenantId: site.tenantId,
-          channelId: channelId || site.tenantId,
-          name: visitorInfo.name || "Anonymous",
-          email: visitorInfo.email,
-          phone: visitorInfo.mobile || "",
-          source: "chat_widget",
-          tags: ["widget-user"],
-        });
-      } else if (visitorInfo.name && contact.name !== visitorInfo.name) {
-        await storage.updateContact(contact.id, {
-          name: visitorInfo.name,
-          phone: visitorInfo.mobile || contact.phone,
-        });
-        contact = { ...contact, name: visitorInfo.name, phone: visitorInfo.mobile || contact.phone };
-      }
-    }
-
-    let conversation;
-    if (conversationId) {
-      conversation = await storage.getConversation(conversationId);
-    }
-
-    if (!conversation && contact) {
-      const contactConversations = await storage.getConversationsByContact(contact.id);
-      const existingChat = contactConversations.find(
-        (c: any) => c.type === "chatbot" && c.status !== "closed"
-      ) || contactConversations.find(
-        (c: any) => c.type === "chatbot"
-      );
-      if (existingChat) {
-        conversation = existingChat;
-      }
-    }
-
-    if (!conversation) {
-      conversation = await storage.createConversation({
-        channelId: channelId || null,
-        contactId: contact?.id || null,
-        contactName: visitorInfo?.name || "Anonymous",
-        contactPhone: visitorInfo?.mobile || "",
-        status: "open",
-        type: "chatbot",
-        sessionId: sessionId,
-        tags: ["widget-chat"],
-      });
-
-      if (io) {
-        io.to(`site:${channelId}`).emit("conversation_created");
-      }
-    } else {
-      const updates: any = { updatedAt: new Date() };
-      if (visitorInfo?.name && (!conversation.contactName || conversation.contactName === "Anonymous")) {
-        updates.contactName = visitorInfo.name;
-      }
-      if (visitorInfo?.mobile && !conversation.contactPhone) {
-        updates.contactPhone = visitorInfo.mobile;
-      }
-      if (contact && !conversation.contactId) {
-        updates.contactId = contact.id;
-      }
-      if (Object.keys(updates).length > 1) {
-        await storage.updateConversation(conversation.id, updates);
-        conversation = { ...conversation, ...updates };
-      }
-    }
-
-    const userMessage = await storage.createMessage({
-      conversationId: conversation.id,
-      content: message,
-      direction: "inbound",
-      fromUser: true,
-      fromType: "user",
-      type: "text",
-      status: "received",
-    });
-
-    async function assignToRandomAgent(conv: any, siteData: any) {
-      const teamMembers = siteData?.widgetConfig?.teamMembers || [];
-      if (teamMembers.length === 0) return null;
-      const validMembers = teamMembers.filter((m: any) => m.userId);
-      if (validMembers.length === 0) return null;
-      const randomAgent = validMembers[Math.floor(Math.random() * validMembers.length)];
-      await storage.updateConversation(conv.id, {
-        status: "assigned",
-        assignedTo: randomAgent.userId,
-        updatedAt: new Date(),
-      });
-      if (io) {
-        io.to(`site:${channelId}`).emit("conversation_assigned", {
-          conversationId: conv.id,
-          agent: { userId: randomAgent.userId, name: randomAgent.name },
-        });
-      }
-      return randomAgent;
-    }
-
-    let aiResponse: string | null = null;
-    let aiMessageId = null;
-
-    const isAssigned = conversation.status === "assigned" && conversation.assignedTo;
-
-    let hasHumanAgentReplied = false;
-    if (isAssigned) {
-      const rawConvMessages = await storage.getConversationMessages(conversation.id);
-      const convMessages = Array.isArray(rawConvMessages) 
-        ? rawConvMessages 
-        : (rawConvMessages && typeof rawConvMessages === 'object' && 'messages' in rawConvMessages && Array.isArray((rawConvMessages as any).messages) 
-          ? (rawConvMessages as any).messages 
-          : []);
-      hasHumanAgentReplied = convMessages.some((m: any) => m.fromType === "agent" || m.fromType === "human");
-    }
-
-    if (wantsHuman && !isAssigned) {
-      const assignedAgent = await assignToRandomAgent(conversation, site);
-      if (assignedAgent) {
-        aiResponse = `I've connected you with ${assignedAgent.name} from our ${assignedAgent.role || 'support'} team. They'll assist you shortly.`;
-      } else {
-        aiResponse = "All our agents are currently offline. Please wait while we connect you soon.";
-        await storage.updateConversation(conversation.id, {
-          status: "pending",
-          updatedAt: new Date(),
-        });
-      }
-
-      const botMessage = await storage.createMessage({
-        conversationId: conversation.id,
-        content: aiResponse,
-        direction: "outbound",
-        fromUser: false,
-        fromType: "bot",
-        type: "text",
-        status: "sent",
-      });
-
-      await storage.updateConversation(conversation.id, {
-        lastMessageAt: new Date(),
-        lastMessageText: aiResponse,
-        updatedAt: new Date(),
-      });
-
-      return res.json({
-        success: true,
-        response: aiResponse,
-        conversationId: conversation.id,
-        messageId: botMessage.id,
-        mode: "human",
-      });
-    }
-
-    const shouldAIReply = enableAiAutoReply !== false;
-
-    if (!isAssigned && !hasHumanAgentReplied && shouldAIReply) {
-
-      const rawAllMessages = await storage.getConversationMessages(conversation.id);
-      const allMessages = Array.isArray(rawAllMessages) 
-        ? rawAllMessages 
-        : (rawAllMessages && typeof rawAllMessages === 'object' && 'messages' in rawAllMessages && Array.isArray((rawAllMessages as any).messages) 
-          ? (rawAllMessages as any).messages 
-          : []);
-      const conversationHistory = allMessages.slice(-10).map((msg: any) => ({
-        role: msg.fromUser ? "user" as const : "assistant" as const,
-        content: msg.content,
-      }));
-
-      const aiSetting = await db
-        .select()
-        .from(aiSettings)
-        .where(eq(aiSettings.channelId, channelId || ""))
-        .limit(1);
-
-      let activeAI = aiSetting?.[0];
-
-      if (!activeAI || !activeAI.isActive) {
-        await storage.updateConversation(conversation.id, {
-          lastMessageAt: new Date(),
-          lastMessageText: message,
-          unreadCount: (conversation.unreadCount || 0) + 1,
-          updatedAt: new Date(),
-        });
-        return res.json({
-          success: true,
-          response: null,
-          conversationId: conversation.id,
-          messageId: userMessage.id,
-          mode: "no_ai",
-        });
-      }
-
-      let triggerWords: string[] = [];
-      if (Array.isArray(activeAI.words)) {
-        triggerWords = activeAI.words;
-      } else if (typeof activeAI.words === "string") {
-        try { triggerWords = JSON.parse(activeAI.words); } catch { triggerWords = []; }
-      }
-
-      const isFirstMessage = allMessages.length <= 1;
-      let triggerMatched = true;
-      if (triggerWords.length > 0 && isFirstMessage) {
-        const messageLower = message.toLowerCase().trim();
-        triggerMatched = triggerWords.some((word: string) =>
-          messageLower.includes(word.toLowerCase().trim())
-        );
-      }
-
-      if (!triggerMatched) {
-        await storage.updateConversation(conversation.id, {
-          lastMessageAt: new Date(),
-          lastMessageText: message,
-          unreadCount: (conversation.unreadCount || 0) + 1,
-          updatedAt: new Date(),
-        });
-        return res.json({
-          success: true,
-          response: null,
-          conversationId: conversation.id,
-          messageId: userMessage.id,
-          mode: "no_trigger_match",
-        });
-      }
-
-      let aiClient: OpenAI | null = null;
-      if (activeAI?.apiKey) {
-        aiClient = buildAIClient(activeAI);
-      }
-
-      const aiConfig = (site as any).aiTrainingConfig || {};
-      const widgetCfg = (site as any).widgetConfig || {};
-
-      const finalModel = activeAI?.model || aiConfig.model || "gpt-4o-mini";
-      const finalTemp = parseFloat(activeAI?.temperature || aiConfig.temperature || "0.7");
-      const finalMaxTokens = parseInt(activeAI?.maxTokens || aiConfig.maxTokens || "500");
-
-      let trainingContext = "";
+  app.post(
+    "/api/widget/contacts",
+    requireSubscription("contacts"),
+    async (req, res) => {
       try {
-        const trainingResults = await searchTrainingData(
-          site.id,
-          channelId || "",
-          message
+        const { siteId, name, email, phone, source } = req.body;
+
+        const site = await storage.getSite(siteId);
+
+        if (!site) {
+          return res.status(404).json({ error: "Site not found" });
+        }
+
+        const getCreated = await storage.getChannel(site.channelId!);
+
+        let [contact] = await storage.getContactByEmail(email);
+
+        if (!contact) {
+          contact = await storage.createContact({
+            channelId: site?.channelId || null,
+            name,
+            email,
+            phone,
+            createdBy: getCreated?.createdBy || null,
+            source: source || "chat_widget",
+            tags: ["widget-lead"],
+          });
+        }
+
+        res.json({ success: true, contactId: contact.id });
+      } catch (error: any) {
+        console.error("Failed to save contact:", error);
+        res.status(500).json({ error: "Failed to save contact" });
+      }
+    },
+  );
+
+  // ============================================
+  // WIDGET CHAT
+  // ============================================
+
+  app.post(
+    "/api/widget/chat",
+    rateLimitWidget(
+      WIDGET_CHAT_LIMIT_PER_MIN,
+      (req) =>
+        `widget-chat:${getClientIp(req)}:${(req.body?.siteId as string) || "unknown"}`,
+    ),
+    async (req, res) => {
+      const io = (global as any).io;
+
+      try {
+        const {
+          siteId,
+          channelId,
+          sessionId,
+          conversationId,
+          message,
+          visitorInfo,
+          enableAiAutoReply,
+        } = req.body;
+
+        if (!message || !siteId || !sessionId) {
+          return res.status(400).json({
+            error: "Missing required fields",
+          });
+        }
+
+        const site = await storage.getSite(siteId);
+
+        if (!site || !site.widgetEnabled) {
+          return res.status(404).json({
+            error: "Widget not available",
+          });
+        }
+
+        const humanKeywords = [
+          "human",
+          "agent",
+          "person",
+          "support",
+          "real person",
+          "real human",
+          "representative",
+          "talk to someone",
+          "customer care",
+          "customer support",
+        ];
+
+        const wantsHuman = humanKeywords.some((kw) =>
+          message.toLowerCase().includes(kw),
         );
 
-        if (trainingResults.chunks.length > 0) {
-          trainingContext += "\n\n--- RELEVANT KNOWLEDGE BASE & TRAINING DATA ---\n";
-          trainingContext += trainingResults.chunks.join("\n\n");
-        }
-        if (trainingResults.qaPairs.length > 0) {
-          trainingContext += "\n\n--- RELEVANT FAQ PAIRS ---\n";
-          for (const qa of trainingResults.qaPairs) {
-            trainingContext += `Q: ${qa.question}\nA: ${qa.answer}\n\n`;
+        // ============================================
+        // CONTACT
+        // ============================================
+
+        let contact = null;
+
+        if (visitorInfo?.email) {
+          const contacts = await storage.getContactByEmail(visitorInfo.email);
+
+          contact = contacts?.[0] || null;
+
+          if (!contact) {
+            contact = await storage.createContact({
+              tenantId: site.tenantId,
+              channelId: channelId || site.tenantId,
+              name: visitorInfo.name || "Anonymous",
+              email: visitorInfo.email,
+              phone: visitorInfo.mobile || "",
+              source: "chat_widget",
+              tags: ["widget-user"],
+            });
+          } else if (visitorInfo.name && contact.name !== visitorInfo.name) {
+            await storage.updateContact(contact.id, {
+              name: visitorInfo.name,
+              phone: visitorInfo.mobile || contact.phone,
+            });
+
+            contact = {
+              ...contact,
+              name: visitorInfo.name,
+              phone: visitorInfo.mobile || contact.phone,
+            };
           }
         }
-      } catch (err) {
-        console.warn("Training data search failed:", err);
-      }
 
-      const unansweredCount = allMessages.filter((m: any) =>
-        !m.fromUser && m.fromType === "bot" &&
-        (m.content.includes("I don't have") || m.content.includes("I'm not sure") || m.content.includes("I cannot find"))
-      ).length;
+        // ============================================
+        // FIND OR CREATE CONVERSATION
+        // ============================================
 
-      const escalationConfig = widgetCfg.escalationRules || {};
-      const escalationEnabled = escalationConfig.enabled !== false;
-      const maxAttempts = escalationConfig.maxAttempts || 3;
+        let conversation;
 
-      let escalationInstruction = "";
-      if (escalationEnabled) {
-        const triggerPhrases = escalationConfig.triggerPhrases || [];
-        escalationInstruction = `\n\nESCALATION RULES:
+        if (conversationId) {
+          conversation = await storage.getConversation(conversationId);
+        }
+
+        if (!conversation && contact) {
+          const contactConversations = await storage.getConversationsByContact(
+            contact.id,
+          );
+
+          const existingChat =
+            contactConversations.find(
+              (c: any) => c.type === "chatbot" && c.status !== "closed",
+            ) || contactConversations.find((c: any) => c.type === "chatbot");
+
+          if (existingChat) {
+            conversation = existingChat;
+          }
+        }
+
+        if (!conversation) {
+          conversation = await storage.createConversation({
+            channelId: channelId || null,
+            contactId: contact?.id || null,
+            contactName: visitorInfo?.name || "Anonymous",
+            contactPhone: visitorInfo?.mobile || "",
+            status: "open",
+            type: "chatbot",
+            sessionId,
+            tags: ["widget-chat"],
+          });
+
+          if (io) {
+            io.to(`site:${channelId || site.channelId}`).emit(
+              "conversation_created",
+            );
+          }
+        } else {
+          const updates: any = {
+            updatedAt: new Date(),
+          };
+
+          if (
+            visitorInfo?.name &&
+            (!conversation.contactName ||
+              conversation.contactName === "Anonymous")
+          ) {
+            updates.contactName = visitorInfo.name;
+          }
+
+          if (visitorInfo?.mobile && !conversation.contactPhone) {
+            updates.contactPhone = visitorInfo.mobile;
+          }
+
+          if (contact && !conversation.contactId) {
+            updates.contactId = contact.id;
+          }
+
+          if (Object.keys(updates).length > 1) {
+            await storage.updateConversation(conversation.id, updates);
+            conversation = { ...conversation, ...updates };
+          }
+        }
+
+        // ============================================
+        // SAVE VISITOR MESSAGE
+        // ============================================
+
+        const userMessage = await storage.createMessage({
+          conversationId: conversation.id,
+          content: message,
+          direction: "inbound",
+          fromUser: true,
+          fromType: "user",
+          type: "text",
+          status: "received",
+        });
+
+        // Broadcast the persisted visitor message immediately.
+        // The widget can deduplicate this against its optimistic message.
+        broadcastWidgetMessage(io, {
+          siteId,
+          sessionId,
+          conversationId: conversation.id,
+          message: {
+            id: userMessage.id,
+            content: userMessage.content,
+            fromUser: true,
+            fromType: "user",
+            status: userMessage.status,
+            createdAt: userMessage.createdAt,
+          },
+        });
+
+        // ============================================
+        // ASSIGN AGENT
+        // ============================================
+
+        async function assignToRandomAgent(conv: any, siteData: any) {
+          const teamMembers = siteData?.widgetConfig?.teamMembers || [];
+
+          if (teamMembers.length === 0) return null;
+
+          const validMembers = teamMembers.filter((m: any) => m.userId);
+
+          if (validMembers.length === 0) return null;
+
+          const randomAgent =
+            validMembers[Math.floor(Math.random() * validMembers.length)];
+
+          await storage.updateConversation(conv.id, {
+            status: "assigned",
+            assignedTo: randomAgent.userId,
+            updatedAt: new Date(),
+          });
+
+          if (io) {
+            io.to(`site:${channelId || site.channelId}`).emit(
+              "conversation_assigned",
+              {
+                conversationId: conv.id,
+                agent: {
+                  userId: randomAgent.userId,
+                  name: randomAgent.name,
+                },
+              },
+            );
+          }
+
+          return randomAgent;
+        }
+
+        // ============================================
+        // CHECK ASSIGNMENT / HUMAN REPLIES
+        // ============================================
+
+        let aiResponse: string | null = null;
+        let aiMessageId = null;
+
+        const isAssigned =
+          conversation.status === "assigned" && conversation.assignedTo;
+
+        let hasHumanAgentReplied = false;
+
+        if (isAssigned) {
+          const rawConvMessages = await storage.getConversationMessages(
+            conversation.id,
+          );
+
+          const convMessages = Array.isArray(rawConvMessages)
+            ? rawConvMessages
+            : rawConvMessages &&
+                typeof rawConvMessages === "object" &&
+                "messages" in rawConvMessages &&
+                Array.isArray((rawConvMessages as any).messages)
+              ? (rawConvMessages as any).messages
+              : [];
+
+          hasHumanAgentReplied = convMessages.some(
+            (m: any) => m.fromType === "agent" || m.fromType === "human",
+          );
+        }
+
+        // ============================================
+        // EXPLICIT HUMAN HANDOFF
+        // ============================================
+
+        if (wantsHuman && !isAssigned) {
+          const assignedAgent = await assignToRandomAgent(conversation, site);
+
+          if (assignedAgent) {
+            aiResponse = `I've connected you with ${assignedAgent.name} from our ${assignedAgent.role || "support"} team. They'll assist you shortly.`;
+          } else {
+            aiResponse =
+              "All our agents are currently offline. Please wait while we connect you soon.";
+
+            await storage.updateConversation(conversation.id, {
+              status: "pending",
+              updatedAt: new Date(),
+            });
+          }
+
+          const botMessage = await storage.createMessage({
+            conversationId: conversation.id,
+            content: aiResponse,
+            direction: "outbound",
+            fromUser: false,
+            fromType: "bot",
+            type: "text",
+            status: "sent",
+          });
+
+          // Broadcast once, after persistence.
+          broadcastWidgetMessage(io, {
+            siteId,
+            sessionId,
+            conversationId: conversation.id,
+            message: {
+              id: botMessage.id,
+              content: botMessage.content,
+              fromUser: false,
+              fromType: "bot",
+              createdAt: botMessage.createdAt,
+              status: botMessage.status,
+            },
+          });
+
+          await storage.updateConversation(conversation.id, {
+            lastMessageAt: new Date(),
+            lastMessageText: aiResponse,
+            updatedAt: new Date(),
+          });
+
+          return res.json({
+            success: true,
+            response: aiResponse,
+            conversationId: conversation.id,
+            messageId: botMessage.id,
+            mode: "human",
+          });
+        }
+
+        // ============================================
+        // AI REPLY
+        // ============================================
+
+        const shouldAIReply = enableAiAutoReply !== false;
+
+        if (!isAssigned && !hasHumanAgentReplied && shouldAIReply) {
+          const rawAllMessages = await storage.getConversationMessages(
+            conversation.id,
+          );
+
+          const allMessages = Array.isArray(rawAllMessages)
+            ? rawAllMessages
+            : rawAllMessages &&
+                typeof rawAllMessages === "object" &&
+                "messages" in rawAllMessages &&
+                Array.isArray((rawAllMessages as any).messages)
+              ? (rawAllMessages as any).messages
+              : [];
+
+          const conversationHistory = allMessages
+            .slice(-10)
+            .map((msg: any) => ({
+              role: msg.fromUser ? ("user" as const) : ("assistant" as const),
+              content: msg.content,
+            }));
+
+          const aiSetting = await db
+            .select()
+            .from(aiSettings)
+            .where(eq(aiSettings.channelId, channelId || ""))
+            .limit(1);
+
+          let activeAI = aiSetting?.[0];
+
+          if (!activeAI || !activeAI.isActive) {
+            await storage.updateConversation(conversation.id, {
+              lastMessageAt: new Date(),
+              lastMessageText: message,
+              unreadCount: (conversation.unreadCount || 0) + 1,
+              updatedAt: new Date(),
+            });
+
+            return res.json({
+              success: true,
+              response: null,
+              conversationId: conversation.id,
+              messageId: userMessage.id,
+              mode: "no_ai",
+            });
+          }
+
+          // ============================================
+          // TRIGGER WORDS
+          // ============================================
+
+          let triggerWords: string[] = [];
+
+          if (Array.isArray(activeAI.words)) {
+            triggerWords = activeAI.words;
+          } else if (typeof activeAI.words === "string") {
+            try {
+              triggerWords = JSON.parse(activeAI.words);
+            } catch {
+              triggerWords = [];
+            }
+          }
+
+          const isFirstMessage = allMessages.length <= 1;
+
+          let triggerMatched = true;
+
+          if (triggerWords.length > 0 && isFirstMessage) {
+            const messageLower = message.toLowerCase().trim();
+
+            triggerMatched = triggerWords.some((word: string) =>
+              messageLower.includes(word.toLowerCase().trim()),
+            );
+          }
+
+          if (!triggerMatched) {
+            await storage.updateConversation(conversation.id, {
+              lastMessageAt: new Date(),
+              lastMessageText: message,
+              unreadCount: (conversation.unreadCount || 0) + 1,
+              updatedAt: new Date(),
+            });
+
+            return res.json({
+              success: true,
+              response: null,
+              conversationId: conversation.id,
+              messageId: userMessage.id,
+              mode: "no_trigger_match",
+            });
+          }
+
+          // ============================================
+          // AI CONFIGURATION
+          // ============================================
+
+          let aiClient: OpenAI | null = null;
+
+          if (activeAI?.apiKey) {
+            aiClient = buildAIClient(activeAI);
+          }
+
+          const aiConfig = (site as any).aiTrainingConfig || {};
+          const widgetCfg = (site as any).widgetConfig || {};
+
+          const finalModel = activeAI?.model || aiConfig.model || "gpt-4o-mini";
+
+          const finalTemp = parseFloat(
+            activeAI?.temperature || aiConfig.temperature || "0.7",
+          );
+
+          const finalMaxTokens = parseInt(
+            activeAI?.maxTokens || aiConfig.maxTokens || "500",
+          );
+
+          // ============================================
+          // TRAINING CONTEXT
+          // ============================================
+
+          let trainingContext = "";
+
+          try {
+            const trainingResults = await searchTrainingData(
+              site.id,
+              channelId || "",
+              message,
+            );
+
+            if (trainingResults.chunks.length > 0) {
+              trainingContext +=
+                "\n\n--- RELEVANT KNOWLEDGE BASE & TRAINING DATA ---\n";
+
+              trainingContext += trainingResults.chunks.join("\n\n");
+            }
+
+            if (trainingResults.qaPairs.length > 0) {
+              trainingContext += "\n\n--- RELEVANT FAQ PAIRS ---\n";
+
+              for (const qa of trainingResults.qaPairs) {
+                trainingContext += `Q: ${qa.question}\nA: ${qa.answer}\n\n`;
+              }
+            }
+          } catch (err) {
+            console.warn("Training data search failed:", err);
+          }
+
+          // ============================================
+          // ESCALATION RULES
+          // ============================================
+
+          const unansweredCount = allMessages.filter(
+            (m: any) =>
+              !m.fromUser &&
+              m.fromType === "bot" &&
+              (m.content.includes("I don't have") ||
+                m.content.includes("I'm not sure") ||
+                m.content.includes("I cannot find")),
+          ).length;
+
+          const escalationConfig = widgetCfg.escalationRules || {};
+
+          const escalationEnabled = escalationConfig.enabled !== false;
+
+          const maxAttempts = escalationConfig.maxAttempts || 3;
+
+          let escalationInstruction = "";
+
+          if (escalationEnabled) {
+            const triggerPhrases = escalationConfig.triggerPhrases || [];
+
+            escalationInstruction = `\n\nESCALATION RULES:
 - If you cannot answer the user's question from the provided knowledge base/training data, you MUST start your response with "[ESCALATE_TO_AGENT]" and then provide a brief helpful message explaining you're transferring them.
 - If you are unsure or the question is outside your trained knowledge, use "[ESCALATE_TO_AGENT]".
 ${unansweredCount >= maxAttempts - 1 ? `- The user has had ${unansweredCount} unanswered questions. If you cannot answer this one confidently, you MUST escalate with "[ESCALATE_TO_AGENT]".` : ""}
 ${triggerPhrases.length > 0 ? `- If the user mentions any of these phrases, escalate immediately: ${triggerPhrases.join(", ")}` : ""}
 - Always try to answer from the provided knowledge base first before escalating.
 - When escalating, be polite and tell the user you are transferring them to a human agent.`;
-      }
-
-      const basePrompt = widgetCfg.systemPrompt ||
-        aiConfig.systemPrompt ||
-        `You are a helpful, friendly support assistant for ${site.name}. Answer questions using the provided knowledge base. Be conversational and helpful. If you don't know the answer, be honest about it.`;
-
-      const systemPrompt = basePrompt + trainingContext + escalationInstruction;
-
-      try {
-        if (!aiClient) {
-          throw new Error("AI client is not initialized. Missing API key.");
-        }
-
-        const completion = await aiClient.chat.completions.create({
-          model: finalModel,
-          messages: [
-            { role: "system", content: systemPrompt.substring(0, 128000) },
-            ...conversationHistory,
-            { role: "user", content: message },
-          ],
-          temperature: finalTemp,
-          max_tokens: finalMaxTokens,
-        });
-
-        aiResponse =
-          completion.choices?.[0]?.message?.content ||
-          "I'm here, but unable to generate a response right now.";
-
-        let escalated = false;
-        if (aiResponse.includes("[ESCALATE_TO_AGENT]")) {
-          aiResponse = aiResponse.replace(/\[ESCALATE_TO_AGENT\]/g, "").trim();
-          escalated = true;
-        }
-
-        if (escalated && escalationEnabled) {
-          const assignedAgent = await assignToRandomAgent(conversation, site);
-          if (assignedAgent) {
-            if (!aiResponse.toLowerCase().includes("transfer") && !aiResponse.toLowerCase().includes("connect")) {
-              aiResponse += `\n\nI'm transferring you to ${assignedAgent.name} from our ${assignedAgent.role || 'support'} team. They'll be with you shortly.`;
-            }
-          } else {
-            if (!aiResponse.toLowerCase().includes("transfer") && !aiResponse.toLowerCase().includes("connect")) {
-              aiResponse += "\n\nI'm transferring you to a human agent. Someone will be with you shortly.";
-            }
-            await storage.updateConversation(conversation.id, {
-              status: "pending",
-              updatedAt: new Date(),
-            });
           }
-        }
 
-        const botMessage = await storage.createMessage({
-          conversationId: conversation.id,
-          content: aiResponse,
-          direction: "outbound",
-          fromUser: false,
-          fromType: "bot",
-          type: "text",
-          status: "sent",
-        });
+          // ============================================
+          // SYSTEM PROMPT
+          // ============================================
 
-        aiMessageId = botMessage.id;
+          const basePrompt =
+            widgetCfg.systemPrompt ||
+            aiConfig.systemPrompt ||
+            `You are a helpful, friendly support assistant for ${site.name}. Answer questions using the provided knowledge base. Be conversational and helpful. If you don't know the answer, be honest about it.`;
 
-        if (io && aiResponse) {
-          io.to(`widget:${conversation.id}`).emit("new_message", {
-            message: {
-              id: botMessage.id,
+          const systemPrompt =
+            basePrompt + trainingContext + escalationInstruction;
+
+          // ============================================
+          // GENERATE AI RESPONSE
+          // ============================================
+
+          try {
+            if (!aiClient) {
+              throw new Error("AI client is not initialized. Missing API key.");
+            }
+
+            const completion = await aiClient.chat.completions.create({
+              model: finalModel,
+              messages: [
+                {
+                  role: "system",
+                  content: systemPrompt.substring(0, 128000),
+                },
+                ...conversationHistory,
+                {
+                  role: "user",
+                  content: message,
+                },
+              ],
+              temperature: finalTemp,
+              max_tokens: finalMaxTokens,
+            });
+
+            aiResponse =
+              completion.choices?.[0]?.message?.content ||
+              "I'm here, but unable to generate a response right now.";
+
+            let escalated = false;
+
+            if (aiResponse.includes("[ESCALATE_TO_AGENT]")) {
+              aiResponse = aiResponse
+                .replace(/\[ESCALATE_TO_AGENT\]/g, "")
+                .trim();
+
+              escalated = true;
+            }
+
+            if (escalated && escalationEnabled) {
+              const assignedAgent = await assignToRandomAgent(
+                conversation,
+                site,
+              );
+
+              if (assignedAgent) {
+                if (
+                  !aiResponse.toLowerCase().includes("transfer") &&
+                  !aiResponse.toLowerCase().includes("connect")
+                ) {
+                  aiResponse += `\n\nI'm transferring you to ${assignedAgent.name} from our ${assignedAgent.role || "support"} team. They'll be with you shortly.`;
+                }
+              } else {
+                if (
+                  !aiResponse.toLowerCase().includes("transfer") &&
+                  !aiResponse.toLowerCase().includes("connect")
+                ) {
+                  aiResponse +=
+                    "\n\nI'm transferring you to a human agent. Someone will be with you shortly.";
+                }
+
+                await storage.updateConversation(conversation.id, {
+                  status: "pending",
+                  updatedAt: new Date(),
+                });
+              }
+            }
+
+            // ============================================
+            // SAVE AND BROADCAST AI MESSAGE
+            // ============================================
+
+            const botMessage = await storage.createMessage({
+              conversationId: conversation.id,
               content: aiResponse,
+              direction: "outbound",
               fromUser: false,
               fromType: "bot",
-              createdAt: new Date(),
-            },
-          });
+              type: "text",
+              status: "sent",
+            });
+
+            aiMessageId = botMessage.id;
+
+            // Broadcast only after the message has been persisted.
+            broadcastWidgetMessage(io, {
+              siteId,
+              sessionId,
+              conversationId: conversation.id,
+              message: {
+                id: botMessage.id,
+                content: botMessage.content,
+                fromUser: false,
+                fromType: "bot",
+                status: botMessage.status,
+                createdAt: botMessage.createdAt,
+              },
+            });
+          } catch (error: any) {
+            // Classify the AI provider failure so admins get an actionable
+            // reason while end users still see a friendly fallback.
+            const status = error?.status || error?.response?.status;
+
+            const providerMessage: string =
+              error?.response?.data?.error?.message ||
+              error?.error?.message ||
+              error?.message ||
+              "Unknown AI provider error";
+
+            let providerErrorCode = "ai_provider_error";
+
+            if (status === 401 || /api key|unauthor/i.test(providerMessage)) {
+              providerErrorCode = "ai_invalid_api_key";
+            } else if (
+              status === 429 ||
+              /rate limit|quota/i.test(providerMessage)
+            ) {
+              providerErrorCode = "ai_rate_limited";
+            } else if (status === 404 || /model/i.test(providerMessage)) {
+              providerErrorCode = "ai_model_unavailable";
+            } else if (status && status >= 500) {
+              providerErrorCode = "ai_provider_unavailable";
+            } else if (
+              /timeout|timed out|ETIMEDOUT|ECONNREFUSED/i.test(providerMessage)
+            ) {
+              providerErrorCode = "ai_network_error";
+            }
+
+            const keySuffix =
+              typeof activeAI?.apiKey === "string" &&
+              activeAI.apiKey.length >= 4
+                ? `****${activeAI.apiKey.slice(-4)}`
+                : "****";
+
+            console.error(
+              "AI provider error:",
+              JSON.stringify({
+                code: providerErrorCode,
+                status: status ?? null,
+                message: providerMessage,
+                model: finalModel,
+                provider: activeAI?.provider || "openai",
+                apiKeySuffix: keySuffix,
+                channelId: channelId || null,
+                siteId: site.id,
+              }),
+            );
+
+            const assignedAgent = await assignToRandomAgent(conversation, site);
+
+            aiResponse = assignedAgent
+              ? `I'm having some difficulty right now. I've transferred you to ${assignedAgent.name} who will be able to help you.`
+              : "I'm experiencing some issues right now. I've notified our team and someone will get back to you shortly.";
+
+            const botMessage = await storage.createMessage({
+              conversationId: conversation.id,
+              content: aiResponse,
+              direction: "outbound",
+              fromUser: false,
+              fromType: "bot",
+              type: "text",
+              status: "sent",
+            });
+
+            aiMessageId = botMessage.id;
+
+            if (!assignedAgent) {
+              await storage.updateConversation(conversation.id, {
+                status: "pending",
+                updatedAt: new Date(),
+              });
+            }
+
+            await storage.updateConversation(conversation.id, {
+              lastMessageAt: new Date(),
+              lastMessageText: aiResponse,
+              unreadCount: (conversation.unreadCount || 0) + 1,
+              updatedAt: new Date(),
+            });
+
+            // Broadcast the persisted fallback message as well.
+            broadcastWidgetMessage(io, {
+              siteId,
+              sessionId,
+              conversationId: conversation.id,
+              message: {
+                id: botMessage.id,
+                content: botMessage.content,
+                fromUser: false,
+                fromType: "bot",
+                status: botMessage.status,
+                createdAt: botMessage.createdAt,
+              },
+            });
+
+            return res.json({
+              success: true,
+              response: aiResponse,
+              conversationId: conversation.id,
+              messageId: aiMessageId,
+              mode: isAssigned ? "human" : "ai_fallback",
+              providerError: {
+                code: providerErrorCode,
+              },
+            });
+          }
+        } else {
+          aiResponse = null;
         }
 
-      } catch (error: any) {
-        // Classify the AI provider failure so admins get an actionable
-        // reason while end users still see a friendly fallback. The raw
-        // provider message is NEVER returned to the public widget
-        // response; we only expose a short error code. A structured log
-        // with a masked API-key suffix is written server-side so that
-        // operators can debug from the console/dashboards.
-        const status = error?.status || error?.response?.status;
-        const providerMessage: string =
-          error?.response?.data?.error?.message ||
-          error?.error?.message ||
-          error?.message ||
-          "Unknown AI provider error";
-
-        let providerErrorCode: string = "ai_provider_error";
-        if (status === 401 || /api key|unauthor/i.test(providerMessage)) {
-          providerErrorCode = "ai_invalid_api_key";
-        } else if (status === 429 || /rate limit|quota/i.test(providerMessage)) {
-          providerErrorCode = "ai_rate_limited";
-        } else if (status === 404 || /model/i.test(providerMessage)) {
-          providerErrorCode = "ai_model_unavailable";
-        } else if (status && status >= 500) {
-          providerErrorCode = "ai_provider_unavailable";
-        } else if (/timeout|timed out|ETIMEDOUT|ECONNREFUSED/i.test(providerMessage)) {
-          providerErrorCode = "ai_network_error";
-        }
-
-        const keySuffix =
-          typeof activeAI?.apiKey === "string" && activeAI.apiKey.length >= 4
-            ? `****${activeAI.apiKey.slice(-4)}`
-            : "****";
-
-        console.error(
-          "AI provider error:",
-          JSON.stringify({
-            code: providerErrorCode,
-            status: status ?? null,
-            message: providerMessage,
-            model: finalModel,
-            provider: activeAI?.provider || "openai",
-            apiKeySuffix: keySuffix,
-            channelId: channelId || null,
-            siteId: site.id,
-          })
-        );
-
-        const assignedAgent = await assignToRandomAgent(conversation, site);
-
-        aiResponse = assignedAgent
-          ? `I'm having some difficulty right now. I've transferred you to ${assignedAgent.name} who will be able to help you.`
-          : "I'm experiencing some issues right now. I've notified our team and someone will get back to you shortly.";
-
-        const botMessage = await storage.createMessage({
-          conversationId: conversation.id,
-          content: aiResponse,
-          direction: "outbound",
-          fromUser: false,
-          fromType: "bot",
-          type: "text",
-          status: "sent",
-        });
-
-        aiMessageId = botMessage.id;
-
-        if (!assignedAgent) {
-          await storage.updateConversation(conversation.id, {
-            status: "pending",
-            updatedAt: new Date(),
-          });
-        }
+        // ============================================
+        // UPDATE CONVERSATION
+        // ============================================
 
         await storage.updateConversation(conversation.id, {
           lastMessageAt: new Date(),
-          lastMessageText: aiResponse,
+          lastMessageText: aiResponse || message,
           unreadCount: (conversation.unreadCount || 0) + 1,
           updatedAt: new Date(),
         });
 
-        // The public response only carries the error CODE (never the raw
-        // provider message). Admin UIs can look up the full diagnostic
-        // detail through an authenticated superadmin endpoint / logs.
         return res.json({
           success: true,
           response: aiResponse,
           conversationId: conversation.id,
           messageId: aiMessageId,
-          mode: isAssigned ? "human" : "ai_fallback",
-          providerError: {
-            code: providerErrorCode,
-          },
+          mode: isAssigned ? "human" : "ai",
+        });
+      } catch (error: any) {
+        console.error("Widget chat error:", error);
+
+        return res.status(500).json({
+          error: "Failed to process message",
+          message: error.message,
         });
       }
-    } else {
-      aiResponse = null;
-    }
+    },
+  );
 
-    await storage.updateConversation(conversation.id, {
-      lastMessageAt: new Date(),
-      lastMessageText: aiResponse || message,
-      unreadCount: (conversation.unreadCount || 0) + 1,
-      updatedAt: new Date(),
-    });
+  // ============================================
+  // GET CONVERSATION HISTORY
+  // ============================================
 
-    res.json({
-      success: true,
-      response: aiResponse,
-      conversationId: conversation.id,
-      messageId: aiMessageId,
-      mode: isAssigned ? "human" : "ai",
-    });
-  } catch (error: any) {
-    console.error("Widget chat error:", error);
-    res.status(500).json({
-      error: "Failed to process message",
-      message: error.message,
-    });
-  }
-});
-
-
-
-  // Get conversation history
   app.get("/api/widget/conversation/:conversationId", async (req, res) => {
     try {
       const { conversationId } = req.params;
+
       const rawMessages = await storage.getConversationMessages(conversationId);
-      const messages = Array.isArray(rawMessages) 
-        ? rawMessages 
-        : (rawMessages && typeof rawMessages === 'object' && 'messages' in rawMessages && Array.isArray((rawMessages as any).messages) 
-          ? (rawMessages as any).messages 
-          : []);
-      
-      const formattedMessages = messages.map(msg => ({
+
+      const messages = Array.isArray(rawMessages)
+        ? rawMessages
+        : rawMessages &&
+            typeof rawMessages === "object" &&
+            "messages" in rawMessages &&
+            Array.isArray((rawMessages as any).messages)
+          ? (rawMessages as any).messages
+          : [];
+
+      const formattedMessages = messages.map((msg) => ({
         id: msg.id,
         content: msg.content,
         fromUser: msg.fromUser,
@@ -789,261 +1119,367 @@ ${triggerPhrases.length > 0 ? `- If the user mentions any of these phrases, esca
         createdAt: msg.createdAt,
       }));
 
-      res.json({ messages: formattedMessages });
+      return res.json({
+        messages: formattedMessages,
+      });
     } catch (error: any) {
-      res.status(500).json({ error: "Failed to fetch conversation" });
+      return res.status(500).json({
+        error: "Failed to fetch conversation",
+      });
     }
   });
 
-  // Request human agent
+  // ============================================
+  // REQUEST HUMAN AGENT
+  // ============================================
+
   app.post("/api/widget/request-agent", async (req, res) => {
+    const io = (global as any).io;
+
     try {
       const { conversationId, siteId } = req.body;
 
       if (!conversationId) {
-        return res.status(400).json({ error: "Conversation ID required" });
+        return res.status(400).json({
+          error: "Conversation ID required",
+        });
       }
 
       const conversation = await storage.getConversation(conversationId);
+
       if (!conversation) {
-        return res.status(404).json({ error: "Conversation not found" });
+        return res.status(404).json({
+          error: "Conversation not found",
+        });
       }
 
-      // Check for available agents
+      const site = siteId ? await storage.getSite(siteId) : null;
+
       const onlineAgents = io?.getOnlineAgents?.(siteId);
-      
+
       if (!onlineAgents || onlineAgents.length === 0) {
-        // No agents online - update status to pending
         await storage.updateConversation(conversationId, {
-          status: 'pending',
-          updatedAt: new Date()
+          status: "pending",
+          updatedAt: new Date(),
         });
 
-        // Create system message
-        await storage.createMessage({
+        const systemMessage = await storage.createMessage({
           conversationId,
-          content: "All agents are currently busy. You'll be connected with the next available agent.",
-          direction: 'outbound',
+          content:
+            "All agents are currently busy. You'll be connected with the next available agent.",
+          direction: "outbound",
           fromUser: false,
-          fromType: 'system',
-          type: 'text',
-          status: 'sent'
+          fromType: "system",
+          type: "text",
+          status: "sent",
+        });
+
+        broadcastWidgetMessage(io, {
+          siteId: siteId || "",
+          sessionId: conversation.sessionId,
+          conversationId,
+          message: {
+            id: systemMessage.id,
+            content: systemMessage.content,
+            fromUser: false,
+            fromType: "system",
+            status: systemMessage.status,
+            createdAt: systemMessage.createdAt,
+          },
         });
 
         return res.json({
           success: true,
-          status: 'pending',
-          message: 'No agents available. You are in queue.'
+          status: "pending",
+          message: "No agents available. You are in queue.",
         });
       }
 
-      // Assign to first available agent
+      // Assign to first available agent.
       const agent = onlineAgents[0];
+
       await storage.updateConversation(conversationId, {
-        status: 'assigned',
+        status: "assigned",
         assignedTo: agent.userId,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
 
-      // Create system message
-      await storage.createMessage({
+      const systemMessage = await storage.createMessage({
         conversationId,
-        content: `${agent.name || 'An agent'} has joined the conversation.`,
-        direction: 'outbound',
+        content: `${agent.name || "An agent"} has joined the conversation.`,
+        direction: "outbound",
         fromUser: false,
-        fromType: 'system',
-        type: 'text',
-        status: 'sent'
+        fromType: "system",
+        type: "text",
+        status: "sent",
       });
 
-      // Notify agent via Socket.io
+      // Broadcast the persisted system message.
+      broadcastWidgetMessage(io, {
+        siteId: siteId || "",
+        sessionId: conversation.sessionId,
+        conversationId,
+        message: {
+          id: systemMessage.id,
+          content: systemMessage.content,
+          fromUser: false,
+          fromType: "system",
+          status: systemMessage.status,
+          createdAt: systemMessage.createdAt,
+        },
+      });
+
       if (io) {
-        io.to(`site:${siteId}`).emit('new_conversation_assigned', {
+        io.to(`site:${siteId}`).emit("new_conversation_assigned", {
           conversationId,
-          agentId: agent.userId
+          agentId: agent.userId,
         });
       }
 
-      res.json({
+      return res.json({
         success: true,
-        status: 'assigned',
+        status: "assigned",
         agent: {
           id: agent.userId,
-          name: agent.name
-        }
+          name: agent.name,
+        },
       });
-
     } catch (error: any) {
-      console.error('Request agent error:', error);
-      res.status(500).json({ error: "Failed to request agent" });
+      console.error("Request agent error:", error);
+
+      return res.status(500).json({
+        error: "Failed to request agent",
+      });
     }
   });
 
-  // Site management routes (authenticated)
-
+  // ============================================
+  // SITE MANAGEMENT ROUTES
+  // ============================================
 
   app.get("/api/active-site", async (req, res) => {
     try {
-      // Use authenticated user's tenantId
-      // console.log("active-site-channelId" , req)
-      const { channelId } = req.query; 
-      // console.log("active-site-channelId" , channelId)
+      const { channelId } = req.query;
 
       if (!channelId) {
-        return res.status(400).json({ message: "No Channel fount" });
+        return res.status(400).json({
+          message: "No Channel fount",
+        });
       }
 
       const [site] = await storage.getSitesByChannel(channelId);
-      // console.log("site" , site)
-      res.json(site);
+
+      return res.json(site);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        message: error.message,
+      });
     }
   });
 
   app.get("/api/sites", async (req, res) => {
     try {
-      // Use authenticated user's tenantId
-      // const tenantId = req.user?.id;
-      // if (!tenantId) {
-      //   return res.status(400).json({ message: "No associated with user" });
-      // }
       const sites = await storage.getSites();
-      res.json(sites);
+      return res.json(sites);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        message: error.message,
+      });
     }
   });
 
   app.post("/api/sites", requireAuth, async (req, res) => {
     try {
       const validated = insertSiteSchema.parse(req.body);
-      // Ensure site belongs to user's tenant
-      if (validated.tenantId !== req.user?.tenantId && req.user?.role !== "super_admin") {
-        return res.status(403).json({ message: "Access denied" });
+
+      if (
+        validated.tenantId !== req.user?.tenantId &&
+        req.user?.role !== "super_admin"
+      ) {
+        return res.status(403).json({
+          message: "Access denied",
+        });
       }
+
       const site = await storage.createSite(validated);
-      res.json(site);
+
+      return res.json(site);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return res.status(400).json({
+        message: error.message,
+      });
     }
   });
 
   app.patch("/api/sites/:id", requireAuth, async (req, res) => {
     try {
-      // Verify site belongs to user's tenant
       const site = await storage.getSite(req.params.id);
+
       if (!site) {
-        return res.status(404).json({ message: "Site not found" });
+        return res.status(404).json({
+          message: "Site not found",
+        });
       }
+
       if (site.tenantId !== req.user?.tenantId && req.user?.role !== "admin") {
-        return res.status(403).json({ message: "Access denied" });
+        return res.status(403).json({
+          message: "Access denied",
+        });
       }
-      
-      // Whitelist only safe fields to prevent tenantId/id manipulation
+
+      // Whitelist only safe fields.
       const safeData: any = {};
-      if (req.body.name !== undefined) safeData.name = req.body.name;
-      if (req.body.domain !== undefined) safeData.domain = req.body.domain;
-      if (req.body.widgetEnabled !== undefined) safeData.widgetEnabled = req.body.widgetEnabled;
-      if (req.body.widgetConfig !== undefined) safeData.widgetConfig = req.body.widgetConfig;
-      if (req.body.aiTrainingConfig !== undefined) safeData.aiTrainingConfig = req.body.aiTrainingConfig;
-      
+
+      if (req.body.name !== undefined) {
+        safeData.name = req.body.name;
+      }
+
+      if (req.body.domain !== undefined) {
+        safeData.domain = req.body.domain;
+      }
+
+      if (req.body.widgetEnabled !== undefined) {
+        safeData.widgetEnabled = req.body.widgetEnabled;
+      }
+
+      if (req.body.widgetConfig !== undefined) {
+        safeData.widgetConfig = req.body.widgetConfig;
+      }
+
+      if (req.body.aiTrainingConfig !== undefined) {
+        safeData.aiTrainingConfig = req.body.aiTrainingConfig;
+      }
+
       const updatedSite = await storage.updateSite(req.params.id, safeData);
-      res.json(updatedSite);
+
+      return res.json(updatedSite);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return res.status(400).json({
+        message: error.message,
+      });
     }
   });
-
-
 
   app.get("/api/get_sites", requireAuth, async (req, res) => {
     try {
       const sites = await storage.getSites();
-      res.status(200).json({success: true, message: 'getting sites successfully',sites});
+
+      return res.status(200).json({
+        success: true,
+        message: "getting sites successfully",
+        sites,
+      });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        message: error.message,
+      });
     }
   });
 
+  // ============================================
+  // LOGO UPLOAD
+  // ============================================
 
-const logoUpload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 2 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed'));
+  const logoUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 2 * 1024 * 1024,
+    },
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only image files are allowed"));
+      }
+    },
+  });
+
+  app.post(
+    "/api/widget/upload-logo",
+    requireAuth,
+    logoUpload.single("logo"),
+    async (req, res) => {
+      try {
+        if (!req.file) {
+          return res.status(400).json({
+            error: "No file uploaded",
+          });
+        }
+
+        const filename = `logo_${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}.${req.file.originalname.split(".").pop()}`;
+
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
+
+        const fs = await import("fs");
+
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        fs.writeFileSync(path.join(uploadDir, filename), req.file.buffer);
+
+        return res.json({
+          url: `/uploads/${filename}`,
+        });
+      } catch (error: any) {
+        return res.status(500).json({
+          error: error.message || "Upload failed",
+        });
+      }
+    },
+  );
+
+  // ============================================
+  // CREATE OR UPDATE SITE
+  // ============================================
+
+  app.post("/api/sites/create_or_update", requireAuth, async (req, res) => {
+    try {
+      const validated = insertSiteSchema.parse(req.body);
+
+      const [existingSite]: any | undefined = await storage.getSitesByChannel(
+        req.body.channelId,
+      );
+
+      let site: any;
+
+      if (existingSite) {
+        const safeData: any = {};
+
+        if (validated.name !== undefined) {
+          safeData.name = validated.name;
+        }
+
+        if (validated.domain !== undefined) {
+          safeData.domain = validated.domain;
+        }
+
+        if (validated.widgetEnabled !== undefined) {
+          safeData.widgetEnabled = validated.widgetEnabled;
+        }
+
+        if (validated.widgetConfig !== undefined) {
+          safeData.widgetConfig = validated.widgetConfig;
+        }
+
+        if (validated.aiTrainingConfig !== undefined) {
+          safeData.aiTrainingConfig = validated.aiTrainingConfig;
+        }
+
+        site = await storage.updateSite(existingSite.id, safeData);
+      } else {
+        site = await storage.createSite(validated);
+      }
+
+      return res.status(200).json(site);
+    } catch (error: any) {
+      return res.status(400).json({
+        message: error.message,
+      });
     }
-  }
-});
-
-app.post('/api/widget/upload-logo', requireAuth, logoUpload.single('logo'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-    const filename = `logo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${req.file.originalname.split('.').pop()}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    
-    const fs = await import('fs');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    
-    fs.writeFileSync(path.join(uploadDir, filename), req.file.buffer);
-    
-    res.json({ url: `/uploads/${filename}` });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message || 'Upload failed' });
-  }
-});
-
-app.post('/api/sites/create_or_update', requireAuth, async (req, res) => {
-  try {
-    const validated = insertSiteSchema.parse(req.body);
-    const userRole     = req.user?.role;
-    // console.log("userRoleee", userRole)
-    // console.log("body-site", req.body)
-
-    // if (validated.tenantId !== userTenantId && userRole !== 'super_admin') {
-    //   return res.status(403).json({ message: 'Access denied: invalid tenant' });
-    // }
-
-    const [existingSite]: any | undefined = await storage.getSitesByChannel(req.body.channelId);
-
-    let site: any;
-
-    if (existingSite) {
-      // if (existingSite.tenantId !== userTenantId && userRole !== 'admin') {
-      //   return res.status(403).json({ message: 'Access denied: cannot update' });
-      // }
-
-      const safeData: any = {};
-      if (validated.name              !== undefined) safeData.name              = validated.name;
-      if (validated.domain            !== undefined) safeData.domain            = validated.domain;
-      if (validated.widgetEnabled     !== undefined) safeData.widgetEnabled     = validated.widgetEnabled;
-      if (validated.widgetConfig      !== undefined) safeData.widgetConfig      = validated.widgetConfig;
-      if (validated.aiTrainingConfig  !== undefined) safeData.aiTrainingConfig  = validated.aiTrainingConfig;
-      // if (validated.systemPrompt      !== undefined) safeData.systemPrompt      = validated.systemPrompt;
-      
-      site = await storage.updateSite(existingSite.id, safeData);
-    } else {
-      site = await storage.createSite(validated);
-    }
-
-    return res.status(200).json(site);
-
-  } catch (error: any) {
-    return res.status(400).json({ message: error.message });
-  }
-});
+  });
 
   // new api for api sites create end
 }
-
-
-
-
-

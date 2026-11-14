@@ -29,9 +29,9 @@ import { WebhookConfigRepository } from "./repositories/webhook-config.repositor
 import { MessageQueueRepository } from "./repositories/message-queue.repository";
 import { ApiLogRepository } from "./repositories/api-log.repository";
 import { WhatsappChannelRepository } from "./repositories/whatsapp-channel.repository";
-import {getActivePaidUsersCount} from "./controllers/subscriptions.controller";
+import { getActivePaidUsersCount } from "./controllers/subscriptions.controller";
 
-import { templates as templatesTable} from "@shared/schema";
+import { templates as templatesTable } from "@shared/schema";
 import { and } from "drizzle-orm";
 import {
   type User,
@@ -83,22 +83,17 @@ export class DatabaseStorage implements IStorage {
   private messageQueueRepo = new MessageQueueRepository();
   private apiLogRepo = new ApiLogRepository();
   private whatsappChannelRepo = new WhatsappChannelRepository();
- 
-
-
-
-  
 
   // Sites
-  
+
   async getSite(id: string): Promise<Site | undefined> {
     const [site] = await db.select().from(sites).where(eq(sites.id, id));
     return site || undefined;
   }
 
   async getScheduledCampaigns(now: Date): Promise<Campaign[]> {
-  return this.campaignRepo.getScheduledCampaigns(now);
-}
+    return this.campaignRepo.getScheduledCampaigns(now);
+  }
 
   async getSites(): Promise<Site[]> {
     return await db.select().from(sites);
@@ -119,42 +114,47 @@ export class DatabaseStorage implements IStorage {
         .returning();
 
       const defaultFaqs = [
-      {
-        siteId: site.id,
-        channelId: insertSite.channelId || null,
-        question: "How do I get started with your platform?",
-        answer: "Getting started is easy! Simply create an account, connect your WhatsApp Business API, and you'll be ready to send messages and manage conversations within minutes. Our setup wizard will guide you through each step.",
-        category: "Getting Started",
-      },
-      {
-        siteId: site.id,
-        channelId: insertSite.channelId || null,
-        question: "What are your support hours?",
-        answer: "Our support team is available Monday through Friday, 9 AM to 6 PM (EST). For urgent issues outside business hours, you can reach us via email and we'll respond within 24 hours.",
-        category: "Support",
-      },
-      {
-        siteId: site.id,
-        channelId: insertSite.channelId || null,
-        question: "How can I track my campaign performance?",
-        answer: "Navigate to the Analytics dashboard to view real-time metrics including delivery rates, open rates, click-through rates, and customer engagement. You can filter by date range, campaign type, and audience segments.",
-        category: "Analytics",
-      },
-      {
-        siteId: site.id,
-        channelId: insertSite.channelId || null,
-        question: "Can I automate my WhatsApp messages?",
-        answer: "Yes! Our automation engine lets you create message flows with triggers, conditions, and actions. Set up welcome messages, follow-ups, appointment reminders, and more using our visual flow builder.",
-        category: "Automation",
-      },
-      {
-        siteId: site.id,
-        channelId: insertSite.channelId || null,
-        question: "How do I manage my contact lists?",
-        answer: "You can import contacts via CSV, add them manually, or sync from your CRM. Organize contacts into groups, apply tags, and segment your audience for targeted campaigns.",
-        category: "Contacts",
-      },
-    ];
+        {
+          siteId: site.id,
+          channelId: insertSite.channelId || null,
+          question: "How do I get started with your platform?",
+          answer:
+            "Getting started is easy! Simply create an account, connect your WhatsApp Business API, and you'll be ready to send messages and manage conversations within minutes. Our setup wizard will guide you through each step.",
+          category: "Getting Started",
+        },
+        {
+          siteId: site.id,
+          channelId: insertSite.channelId || null,
+          question: "What are your support hours?",
+          answer:
+            "Our support team is available Monday through Friday, 9 AM to 6 PM (EST). For urgent issues outside business hours, you can reach us via email and we'll respond within 24 hours.",
+          category: "Support",
+        },
+        {
+          siteId: site.id,
+          channelId: insertSite.channelId || null,
+          question: "How can I track my campaign performance?",
+          answer:
+            "Navigate to the Analytics dashboard to view real-time metrics including delivery rates, open rates, click-through rates, and customer engagement. You can filter by date range, campaign type, and audience segments.",
+          category: "Analytics",
+        },
+        {
+          siteId: site.id,
+          channelId: insertSite.channelId || null,
+          question: "Can I automate my WhatsApp messages?",
+          answer:
+            "Yes! Our automation engine lets you create message flows with triggers, conditions, and actions. Set up welcome messages, follow-ups, appointment reminders, and more using our visual flow builder.",
+          category: "Automation",
+        },
+        {
+          siteId: site.id,
+          channelId: insertSite.channelId || null,
+          question: "How do I manage my contact lists?",
+          answer:
+            "You can import contacts via CSV, add them manually, or sync from your CRM. Organize contacts into groups, apply tags, and segment your audience for targeted campaigns.",
+          category: "Contacts",
+        },
+      ];
 
       await tx.insert(trainingQaPairs).values(defaultFaqs);
 
@@ -163,36 +163,55 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateSite(id: string, data: Partial<InsertSite>): Promise<Site> {
-    const [site] = await db.update(sites).set(data).where(eq(sites.id, id)).returning();
+    const [site] = await db
+      .update(sites)
+      .set(data)
+      .where(eq(sites.id, id))
+      .returning();
     return site;
   }
 
-
   // Returns statistics of message queue
-async getMessageQueueStats(): Promise<Record<string, number>> {
-  return { queued: 0, processing: 0, sent: 0, delivered: 0, failed: 0 };
-}
+  async getMessageQueueStats(): Promise<Record<string, number>> {
+    return { queued: 0, processing: 0, sent: 0, delivered: 0, failed: 0 };
+  }
 
-// Returns queued messages
-async getQueuedMessages(limit: number = 10): Promise<MessageQueue[]> {
-  return [];
-}
+  // Returns queued messages
+  async getQueuedMessages(limit: number = 10): Promise<MessageQueue[]> {
+    return [];
+  }
 
-// Returns message queue object (stub)
-async getMessageQueue(): Promise<MessageQueue> {
-  return {} as MessageQueue;
-}
+  // Returns message queue object (stub)
+  async getMessageQueue(): Promise<MessageQueue> {
+    return {} as MessageQueue;
+  }
 
-// Logs API request
-async logApiRequest(log: InsertApiLog): Promise<ApiLog | null> {
-  return null;
-}
+  // Logs API request
+  async logApiRequest(log: InsertApiLog): Promise<ApiLog | null> {
+    return null;
+  }
 
- async getAutomationByChannel(channelId: string): Promise<{ id: string; name: string; createdAt: Date | null; updatedAt: Date | null; channelId: string | null; description: string | null; trigger: string; triggerConfig: unknown; status: string | null; executionCount: number | null; lastExecutedAt: Date | null; createdBy: string | null; }[]> {
+  async getAutomationByChannel(
+    channelId: string,
+  ): Promise<
+    {
+      id: string;
+      name: string;
+      createdAt: Date | null;
+      updatedAt: Date | null;
+      channelId: string | null;
+      description: string | null;
+      trigger: string;
+      triggerConfig: unknown;
+      status: string | null;
+      executionCount: number | null;
+      lastExecutedAt: Date | null;
+      createdBy: string | null;
+    }[]
+  > {
     // implement your logic
     return [];
-}
-
+  }
 
   async getWhatsappChannels(): Promise<WhatsappChannel[]> {
     // implement your logic
@@ -202,7 +221,6 @@ async logApiRequest(log: InsertApiLog): Promise<ApiLog | null> {
   async deleteWhatsappChannel(id: string): Promise<void> {
     await this.whatsappChannelRepo.delete(id);
   }
-  
 
   // Users
   async getUser(id: string): Promise<User | undefined> {
@@ -212,7 +230,6 @@ async logApiRequest(log: InsertApiLog): Promise<ApiLog | null> {
   async getPermissions(id: string): Promise<string[] | undefined> {
     return this.userRepo.getByPermissions(id); // this now makes sense
   }
-  
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return this.userRepo.getByUsername(username);
@@ -231,23 +248,20 @@ async logApiRequest(log: InsertApiLog): Promise<ApiLog | null> {
     return this.contactRepo.getAll();
   }
 
- 
-async getContactsByUser(
-  userId: string,
-  page: number = 1,
-  limit: number = 10,
-  filters: { group?: string; channelId?: string } = {}
-): Promise<{
-  data: Contact[];
-  total: number;
-  totalPages: number;
-  page: number;
-  limit: number;
-}> {
-  return this.contactRepo.getContactsByUserId(userId, page, limit, filters);
-}
-
-
+  async getContactsByUser(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+    filters: { group?: string; channelId?: string } = {},
+  ): Promise<{
+    data: Contact[];
+    total: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }> {
+    return this.contactRepo.getContactsByUserId(userId, page, limit, filters);
+  }
 
   async getContactsByChannel(channelId: string): Promise<Contact[]> {
     return this.contactRepo.getByChannel(channelId);
@@ -266,7 +280,6 @@ async getContactsByUser(
     return this.contactRepo.getByChannel(channelId);
   }
 
-
   async getContact(id: string): Promise<Contact | undefined> {
     return this.contactRepo.getById(id);
   }
@@ -279,7 +292,10 @@ async getContactsByUser(
     return this.contactRepo.getByPhone(phone);
   }
 
-  async getContactByPhoneAndChannel(phone: string, channelId: string): Promise<Contact | undefined> {
+  async getContactByPhoneAndChannel(
+    phone: string,
+    channelId: string,
+  ): Promise<Contact | undefined> {
     return this.contactRepo.getByPhoneAndChannel(phone, channelId);
   }
 
@@ -287,19 +303,21 @@ async getContactsByUser(
   //   return this.contactRepo.create(insertContact);
   // }
 
+  async createContact(
+    insertContact: InsertContact & { channelId?: string },
+  ): Promise<Contact> {
+    if (!insertContact.channelId) {
+      throw new Error(
+        "Cannot create contact without a channel. Please create a channel first.",
+      );
+    }
 
-  async createContact(insertContact: InsertContact & { channelId?: string }): Promise<Contact> {
-  if (!insertContact.channelId) {
-    throw new Error("Cannot create contact without a channel. Please create a channel first.");
+    return this.contactRepo.create(insertContact);
   }
-
-  return this.contactRepo.create(insertContact);
-}
-
 
   async updateContact(
     id: string,
-    contact: Partial<Contact>
+    contact: Partial<Contact>,
   ): Promise<Contact | undefined> {
     return this.contactRepo.update(id, contact);
   }
@@ -313,58 +331,60 @@ async getContactsByUser(
   }
 
   async createBulkContacts(
-    insertContacts: InsertContact[]
+    insertContacts: InsertContact[],
   ): Promise<Contact[]> {
     return this.contactRepo.createBulk(insertContacts);
   }
 
   async checkExistingPhones(
     phones: string[],
-    channelId: string
+    channelId: string,
   ): Promise<string[]> {
     return this.contactRepo.checkExistingPhones(phones, channelId);
   }
 
   // Campaigns
   async getCampaigns(
-  page: number = 1,
-  limit: number = 10
-): Promise<{
-  data: Campaign[];
-  total: number;
-  page: number;
-  limit: number;
-}> {
-  return this.campaignRepo.getAll(page, limit);
-}
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    data: Campaign[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    return this.campaignRepo.getAll(page, limit);
+  }
 
-
-
-
- async getCampaignsByChannel(
-  channelId: string,
-  page: number = 1,
-  limit: number = 10
-) {
-  return this.campaignRepo.getByChannel(channelId, page, limit);
-}
-
+  async getCampaignsByChannel(
+    channelId: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
+    return this.campaignRepo.getByChannel(channelId, page, limit);
+  }
 
   async getCampaign(id: string): Promise<Campaign | undefined> {
     return this.campaignRepo.getById(id);
   }
 
-  async getCampaignByUserId(userId: string, page: number = 1, limit: number = 10): Promise<Campaign | undefined> {
+  async getCampaignByUserId(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<Campaign | undefined> {
     return this.campaignRepo.getCampaignByUserId(userId, page, limit);
   }
 
-  async createCampaign(insertCampaign: InsertCampaign & { createdBy: string }): Promise<Campaign> {
+  async createCampaign(
+    insertCampaign: InsertCampaign & { createdBy: string },
+  ): Promise<Campaign> {
     return this.campaignRepo.create(insertCampaign);
   }
 
   async updateCampaign(
     id: string,
-    campaign: Partial<Campaign>
+    campaign: Partial<Campaign>,
   ): Promise<Campaign | undefined> {
     return this.campaignRepo.update(id, campaign);
   }
@@ -378,15 +398,12 @@ async getContactsByUser(
   }
 
   async deleteCampaign(id: string): Promise<boolean> {
+    // delete dependent queue records first
+    await db.delete(messageQueue).where(eq(messageQueue.campaignId, id));
 
-  // delete dependent queue records first
-  await db
-    .delete(messageQueue)
-    .where(eq(messageQueue.campaignId, id));
-
-  // then delete campaign
-  return this.campaignRepo.delete(id);
-}
+    // then delete campaign
+    return this.campaignRepo.delete(id);
+  }
   // Channels
   async getChannels(): Promise<Channel[]> {
     return this.channelRepo.getAll();
@@ -396,32 +413,32 @@ async getContactsByUser(
     return this.channelRepo.getById(id);
   }
 
-  
-async getChannelsByUserId(userId: string): Promise<Channel[]> {
-  return this.channelRepo.getAllByUserId(userId);
-}
+  async getChannelsByUserId(userId: string): Promise<Channel[]> {
+    return this.channelRepo.getAllByUserId(userId);
+  }
 
+  async getActiveChannelByUserId(userId: string): Promise<Channel | undefined> {
+    return this.channelRepo.getActiveByUserId(userId);
+  }
 
-async getActiveChannelByUserId(userId: string): Promise<Channel | undefined> {
-  return this.channelRepo.getActiveByUserId(userId);
-}
-
-   async getChannelsByUser(
-  userId: string,
-  page: number = 1,
-  limit: number = 10
-): Promise<{
-  data: Channel[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
-}> {
-  return this.channelRepo.getByUser(userId, page, limit);
-}
-
-
-
+  async getChannelsByUser(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    data: Channel[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> {
+    return this.channelRepo.getByUser(userId, page, limit);
+  }
 
   async getChannelByPhoneNumberId(
-    phoneNumberId: string
+    phoneNumberId: string,
   ): Promise<Channel | undefined> {
     return this.channelRepo.getByPhoneNumberId(phoneNumberId);
   }
@@ -436,7 +453,7 @@ async getActiveChannelByUserId(userId: string): Promise<Channel | undefined> {
 
   async updateChannel(
     id: string,
-    channel: Partial<Channel>
+    channel: Partial<Channel>,
   ): Promise<Channel | undefined> {
     return this.channelRepo.update(id, channel);
   }
@@ -456,79 +473,91 @@ async getActiveChannelByUserId(userId: string): Promise<Channel | undefined> {
 
   // database-storage.ts
 
-async getTemplates(page = 1, limit = 10): Promise<{
-  data: Template[];
-  pagination: { total: number; totalPages: number; page: number; limit: number };
-}> {
-  const result = await this.templateRepo.getAll(page, limit);
-  return {
-    data: result.data,
-    pagination: result.pagination,
-  };
-}
-
-
-  async getTemplatesByUserId(
-  userId: string,
-  page: number = 1,
-  limit: number = 10
-): Promise<{ data: Template[]; total: number; page: number; limit: number }> {
-  return this.templateRepo.getTemplateByUserID(userId, page, limit);
-}
-
-
-  
-async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<Template[]> {
-  const channel = await this.getChannel(channelId);
-  if (!channel || channel.createdBy !== userId) {
-    return [];
+  async getTemplates(
+    page = 1,
+    limit = 10,
+  ): Promise<{
+    data: Template[];
+    pagination: {
+      total: number;
+      totalPages: number;
+      page: number;
+      limit: number;
+    };
+  }> {
+    const result = await this.templateRepo.getAll(page, limit);
+    return {
+      data: result.data,
+      pagination: result.pagination,
+    };
   }
 
-  return await db
-    .select()
-    .from(templatesTable)
-    .where(eq(templatesTable.channelId, channelId))
-    .orderBy(desc(templatesTable.createdAt));
-}
+  async getTemplatesByUserId(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ data: Template[]; total: number; page: number; limit: number }> {
+    return this.templateRepo.getTemplateByUserID(userId, page, limit);
+  }
 
+  async getTemplatesByChannelAndUser(
+    channelId: string,
+    userId: string,
+  ): Promise<Template[]> {
+    const channel = await this.getChannel(channelId);
+    if (!channel || channel.createdBy !== userId) {
+      return [];
+    }
 
-  
+    return await db
+      .select()
+      .from(templatesTable)
+      .where(eq(templatesTable.channelId, channelId))
+      .orderBy(desc(templatesTable.createdAt));
+  }
 
   async getTemplatesByChannelOLd(channelId: string): Promise<Template[]> {
     return this.templateRepo.getByChannel(channelId);
   }
 
   async getTemplatesByChannel(
-  channelId: string,
-  page: number = 1,
-  limit: number = 10
-): Promise<{ data: Template[]; total: number }> {
-  return this.templateRepo.getByChannel(channelId, page, limit);
-}
-
+    channelId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ data: Template[]; total: number }> {
+    return this.templateRepo.getByChannel(channelId, page, limit);
+  }
 
   async getTemplatesByName(name: string): Promise<Template[]> {
     const templates = await this.templateRepo.getByName(name);
-  
-    return templates ? (Array.isArray(templates) ? templates : [templates]) : [];
+
+    return templates
+      ? Array.isArray(templates)
+        ? templates
+        : [templates]
+      : [];
   }
 
-  async getTemplateByNameAndChannel(name: string, channelId: string): Promise<Template | undefined> {
+  async getTemplateByNameAndChannel(
+    name: string,
+    channelId: string,
+  ): Promise<Template | undefined> {
     return this.templateRepo.getByNameAndChannel(name, channelId);
   }
-  
 
   async getTemplate(id: string): Promise<Template | undefined> {
     return this.templateRepo.getById(id);
   }
 
-  async createTemplate(insertTemplate: InsertTemplate & { createdBy: string }): Promise<Template> {
+  async createTemplate(
+    insertTemplate: InsertTemplate & { createdBy: string },
+  ): Promise<Template> {
     return this.templateRepo.create(insertTemplate);
   }
 
   async updateTemplate(
     id: string,
-    template: Partial<Template>
+    template: Partial<Template>,
   ): Promise<Template | undefined> {
     return this.templateRepo.update(id, template);
   }
@@ -557,7 +586,7 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   }
 
   async getConversationsByChannelNew(
-    channelId: string
+    channelId: string,
   ): Promise<Conversation[]> {
     return this.conversationRepo.getByChannelNew(channelId);
   }
@@ -566,26 +595,28 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
     return this.conversationRepo.getById(id);
   }
 
-
   async getConversationByPhone(
-    phone: string
+    phone: string,
   ): Promise<Conversation | undefined> {
     return this.conversationRepo.getByPhone(phone);
   }
 
-  async getConversationByPhoneAndChannel(phone: string, channelId: string): Promise<Conversation | undefined> {
+  async getConversationByPhoneAndChannel(
+    phone: string,
+    channelId: string,
+  ): Promise<Conversation | undefined> {
     return this.conversationRepo.getByPhoneAndChannel(phone, channelId);
   }
 
   async createConversation(
-    insertConversation: InsertConversation
+    insertConversation: InsertConversation,
   ): Promise<Conversation> {
     return this.conversationRepo.create(insertConversation);
   }
 
   async updateConversation(
     id: string,
-    conversation: Partial<Conversation>
+    conversation: Partial<Conversation>,
   ): Promise<Conversation | undefined> {
     return this.conversationRepo.update(id, conversation);
   }
@@ -599,8 +630,18 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   }
 
   // Messages
-  async getMessages(conversationId: string, limit = 100, beforeTs?: string, beforeId?: string): Promise<{ messages: Message[]; hasMore: boolean }> {
-    return this.messageRepo.getByConversation(conversationId, limit, beforeTs, beforeId);
+  async getMessages(
+    conversationId: string,
+    limit = 100,
+    beforeTs?: string,
+    beforeId?: string,
+  ): Promise<{ messages: Message[]; hasMore: boolean }> {
+    return this.messageRepo.getByConversation(
+      conversationId,
+      limit,
+      beforeTs,
+      beforeId,
+    );
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
@@ -609,13 +650,13 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
 
   async updateMessage(
     id: string,
-    message: Partial<Message>
+    message: Partial<Message>,
   ): Promise<Message | undefined> {
     return this.messageRepo.update(id, message);
   }
 
   async getMessageByWhatsAppId(
-    whatsappMessageId: string
+    whatsappMessageId: string,
   ): Promise<Message | undefined> {
     return this.messageRepo.getByWhatsAppId(whatsappMessageId);
   }
@@ -643,14 +684,14 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   }
 
   async createAutomation(
-    insertAutomation: InsertAutomation
+    insertAutomation: InsertAutomation,
   ): Promise<Automation> {
     return this.automationRepo.create(insertAutomation);
   }
 
   async updateAutomation(
     id: string,
-    automation: Partial<InsertAutomation>
+    automation: Partial<InsertAutomation>,
   ): Promise<Automation | undefined> {
     const result = await this.automationRepo.update(id, automation);
     return result || undefined;
@@ -667,7 +708,7 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   // }
 
   async createOrUpdateAnalytics(
-    insertAnalytics: InsertAnalytics
+    insertAnalytics: InsertAnalytics,
   ): Promise<Analytics> {
     return this.analyticsRepo.createOrUpdate(insertAnalytics);
   }
@@ -678,20 +719,20 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
 
   // WhatsApp Channels
   async getWhatsappChannel(
-    channelId: string
+    channelId: string,
   ): Promise<WhatsappChannel | undefined> {
     return this.whatsappChannelRepo.getByChannelId(channelId);
   }
 
   async createWhatsappChannel(
-    insertChannel: InsertWhatsappChannel
+    insertChannel: InsertWhatsappChannel,
   ): Promise<WhatsappChannel> {
     return this.whatsappChannelRepo.create(insertChannel);
   }
 
   async updateWhatsappChannel(
     id: string,
-    channel: Partial<WhatsappChannel>
+    channel: Partial<WhatsappChannel>,
   ): Promise<WhatsappChannel | undefined> {
     return this.whatsappChannelRepo.update(id, channel);
   }
@@ -706,14 +747,14 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   }
 
   async createWebhookConfig(
-    insertConfig: InsertWebhookConfig
+    insertConfig: InsertWebhookConfig,
   ): Promise<WebhookConfig> {
     return this.webhookConfigRepo.create(insertConfig);
   }
 
   async updateWebhookConfig(
     id: string,
-    config: Partial<WebhookConfig>
+    config: Partial<WebhookConfig>,
   ): Promise<WebhookConfig | undefined> {
     return this.webhookConfigRepo.update(id, config);
   }
@@ -736,27 +777,27 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   // }
 
   async createMessageQueueItem(
-    insertMessage: InsertMessageQueue
+    insertMessage: InsertMessageQueue,
   ): Promise<MessageQueue> {
     return this.messageQueueRepo.create(insertMessage);
   }
 
   async createBulkMessageQueue(
-    insertMessages: InsertMessageQueue[]
+    insertMessages: InsertMessageQueue[],
   ): Promise<MessageQueue[]> {
     return this.messageQueueRepo.createBulk(insertMessages);
   }
 
   async updateMessageQueueItem(
     id: string,
-    message: Partial<MessageQueue>
+    message: Partial<MessageQueue>,
   ): Promise<MessageQueue | undefined> {
     return this.messageQueueRepo.update(id, message);
   }
 
   async updateMessageQueueByWhatsAppId(
     whatsappMessageId: string,
-    updates: Partial<MessageQueue>
+    updates: Partial<MessageQueue>,
   ): Promise<boolean> {
     return this.messageQueueRepo.updateByWhatsAppId(whatsappMessageId, updates);
   }
@@ -780,7 +821,7 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   // Analytics
   async getAnalyticsByChannel(
     channelId: string,
-    days?: number
+    days?: number,
   ): Promise<Analytics[]> {
     return this.analyticsRepo.getAnalyticsByChannel(channelId, days);
   }
@@ -797,37 +838,51 @@ async getTemplatesByChannelAndUser(channelId: string, userId: string): Promise<T
   async getDashboardStats(): Promise<any> {
     const { totalCount, todayCount, weekCount, lastWeekCount } =
       await this.contactRepo.getContactStats();
-    const totalCampaigns = await this.campaignRepo
-      .getAllCampaignCount()
+    const totalCampaigns = await this.campaignRepo.getAllCampaignCount();
     const totalTemplates = await this.templateRepo
       .getAll()
       .then((t) => t.length);
     const messageStats = await this.messageQueueRepo.getMessageStats();
 
-    const totalUsers = await this.userRepo.getAll().then(users => users.filter(user => user.role === "admin").length);
+    const totalUsers = await this.userRepo
+      .getAll()
+      .then((users) => users.filter((user) => user.role === "admin").length);
 
+    const totalActiveUsers = (
+      await this.userRepo
+        .getAll()
+        .then((users) =>
+          users.filter(
+            (user) => user.role === "admin" && user.status === "active",
+          ),
+        )
+    ).length;
 
-    const totalActiveUsers = ((await this.userRepo.getAll().then(users => users.filter(user => user.role === "admin" && user.status === 'active'))).length)
-
-    const totalBlockedUsers = ((await this.userRepo.getAll().then(users => users.filter(user => user.role === "admin" && user.status === 'blocked'))).length)
+    const totalBlockedUsers = (
+      await this.userRepo
+        .getAll()
+        .then((users) =>
+          users.filter(
+            (user) => user.role === "admin" && user.status === "blocked",
+          ),
+        )
+    ).length;
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1); 
+    tomorrow.setDate(today.getDate() + 1);
 
     const users = await this.userRepo.getAll();
-    const todaySignups = users.filter(user =>
-  user.role === "admin" &&
-  new Date(user.createdAt) >= today &&
-  new Date(user.createdAt) < tomorrow
-).length;
+    const todaySignups = users.filter(
+      (user) =>
+        user.role === "admin" &&
+        new Date(user.createdAt) >= today &&
+        new Date(user.createdAt) < tomorrow,
+    ).length;
 
-const totalChannels = await this.channelRepo.getAll()
-      .then((c) => c.length);
+    const totalChannels = await this.channelRepo.getAll().then((c) => c.length);
 
-    const totalPaidUsers = await getActivePaidUsersCount()
-
-
+    const totalPaidUsers = await getActivePaidUsersCount();
 
     return {
       totalContacts: totalCount,
@@ -846,22 +901,28 @@ const totalChannels = await this.channelRepo.getAll()
     };
   }
 
-  async getDashboardStatsByChannel(channelId: string, userId: string): Promise<any> {
+  async getDashboardStatsByChannel(
+    channelId: string,
+    userId: string,
+  ): Promise<any> {
     const { totalCount, todayCount, weekCount, lastWeekCount } =
       await this.contactRepo.getContactStats(channelId);
     const totalCampaigns = await this.campaignRepo
       .getByChannel(channelId)
       .then((c) => c.total ?? 0);
 
-    const totalTemplates = await this.templateRepo.getByChannel(channelId).then((t) => t.total ?? 0);
-    const totalTemplatesByUserId = await this.templateRepo.getTemplateByUserID(userId);
-    const messageStats = await this.messageQueueRepo.getMessageStatsByChannel(
-      channelId
-    );
+    const totalTemplates = await this.templateRepo
+      .getByChannel(channelId)
+      .then((t) => t.total ?? 0);
+    const totalTemplatesByUserId =
+      await this.templateRepo.getTemplateByUserID(userId);
+    const messageStats =
+      await this.messageQueueRepo.getMessageStatsByChannel(channelId);
 
     const totalChannels = await this.channelRepo.getTotalChannelsByUser(userId);
 
-    const totalTeamMembers = await this.userRepo.getTeamUsersCountByCreator(userId)
+    const totalTeamMembers =
+      await this.userRepo.getTeamUsersCountByCreator(userId);
 
     return {
       totalContacts: Number(totalCount),
@@ -872,7 +933,7 @@ const totalChannels = await this.channelRepo.getAll()
       totalTemplates,
       totalChannels,
       totalTeamMembers,
-      totalTemplatesByUserId:totalTemplatesByUserId.total,
+      totalTemplatesByUserId: totalTemplatesByUserId.total,
       ...messageStats,
     };
   }
