@@ -431,8 +431,10 @@ export function registerTrainingRoutes(app: Express) {
   app.post("/api/training/:siteId/test-chat", requireAuth, async (req, res) => {
     try {
       const { message, channelId, widgetConfig } = req.body;
-      if (!message)
+
+      if (!message) {
         return res.status(400).json({ error: "Message is required" });
+      }
 
       const trainingData = await searchTrainingData(
         req.params.siteId,
@@ -440,26 +442,16 @@ export function registerTrainingRoutes(app: Express) {
         message,
       );
 
-      // Direct Q&A match: bypass AI generation.
-      if (trainingData.matchedQa) {
-        return res.json({
-          response: trainingData.matchedQa.answer,
-          source: "qa",
-          contextUsed: {
-            chunksFound: 0,
-            qaPairsFound: 1,
-          },
-        });
-      }
-
       let contextBlock = "";
 
       if (trainingData.chunks.length > 0) {
         contextBlock += "\n\n--- TRAINING DATA CONTEXT ---\n";
         contextBlock += trainingData.chunks.join("\n\n");
       }
+
       if (trainingData.qaPairs.length > 0) {
         contextBlock += "\n\n--- FAQ PAIRS ---\n";
+
         for (const qa of trainingData.qaPairs) {
           contextBlock += `Q: ${qa.question}\nA: ${qa.answer}\n\n`;
         }
@@ -481,6 +473,7 @@ export function registerTrainingRoutes(app: Express) {
         .limit(1);
 
       const activeSetting = aiSettingResult?.[0];
+
       if (!activeSetting?.apiKey) {
         return res.status(400).json({
           error:
@@ -510,7 +503,7 @@ export function registerTrainingRoutes(app: Express) {
       const response =
         completion.choices?.[0]?.message?.content || "No response generated.";
 
-      res.json({
+      return res.json({
         response,
         contextUsed: {
           chunksFound: trainingData.chunks.length,
@@ -519,7 +512,10 @@ export function registerTrainingRoutes(app: Express) {
       });
     } catch (error: any) {
       console.error("Test chat error:", error);
-      res.status(500).json({ error: error.message });
+
+      return res.status(500).json({
+        error: error.message,
+      });
     }
   });
 }
