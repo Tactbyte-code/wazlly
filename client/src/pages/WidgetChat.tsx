@@ -1,18 +1,10 @@
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import {
-  useQuery,
-  useMutation,
-} from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Send,
-  ArrowLeft,
-  Clock,
-} from "lucide-react";
+import { Send, ArrowLeft, Clock } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -55,7 +47,9 @@ export default function WidgetChat() {
   const [chatInput, setChatInput] = useState("");
   const [sessionId] = useState(() => crypto.randomUUID());
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isBotTyping, setIsBotTyping] = useState(false);
 
+  const lastMessageSentAt = useRef(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const configQuery = useQuery({
@@ -70,10 +64,9 @@ export default function WidgetChat() {
   const config = configQuery.data?.config || {};
   const primaryColor = config.primaryColor || "#3b82f6";
 
-  const {
-    data: messages = [],
-    refetch: refetchMessages,
-  } = useQuery<WidgetMessage[]>({
+  const { data: messages = [], refetch: refetchMessages } = useQuery<
+    WidgetMessage[]
+  >({
     queryKey: getMessagesQueryKey(conversationId || ""),
     queryFn: async () => {
       if (!conversationId) return [];
@@ -94,12 +87,13 @@ export default function WidgetChat() {
   // Message IDs are used to avoid duplicates between Socket.IO and REST.
   const handleIncomingMessage = useCallback(
     (payload: IncomingMessagePayload) => {
-      const {
-        conversationId: incomingConversationId,
-        message,
-      } = payload;
+      const { conversationId: incomingConversationId, message } = payload;
 
       if (!incomingConversationId || !message?.id) return;
+
+      if (message.fromType !== "user") {
+        setIsBotTyping(false);
+      }
 
       setConversationId((currentId) => {
         if (currentId !== incomingConversationId) {
@@ -112,9 +106,7 @@ export default function WidgetChat() {
       queryClient.setQueryData<WidgetMessage[]>(
         getMessagesQueryKey(incomingConversationId),
         (oldMessages = []) => {
-          const exists = oldMessages.some(
-            (item) => item.id === message.id,
-          );
+          const exists = oldMessages.some((item) => item.id === message.id);
 
           if (exists) return oldMessages;
 
@@ -125,10 +117,7 @@ export default function WidgetChat() {
     [],
   );
 
-  const {
-    connected,
-    joined,
-  } = useWidgetSocket({
+  const { connected, joined } = useWidgetSocket({
     siteId,
     sessionId,
     onMessage: handleIncomingMessage,
@@ -168,10 +157,10 @@ export default function WidgetChat() {
         optimistic: true,
       };
 
-      queryClient.setQueryData<WidgetMessage[]>(
-        queryKey,
-        [...previousMessages, optimisticMessage],
-      );
+      queryClient.setQueryData<WidgetMessage[]>(queryKey, [
+        ...previousMessages,
+        optimisticMessage,
+      ]);
 
       return {
         queryKey,
@@ -180,11 +169,10 @@ export default function WidgetChat() {
     },
 
     onError: (_error, _text, context) => {
+      setIsBotTyping(false);
+
       if (context?.queryKey) {
-        queryClient.setQueryData(
-          context.queryKey,
-          context.previousMessages,
-        );
+        queryClient.setQueryData(context.queryKey, context.previousMessages);
       }
     },
 
@@ -214,6 +202,9 @@ export default function WidgetChat() {
 
     setChatInput("");
 
+    lastMessageSentAt.current = Date.now();
+    setIsBotTyping(true);
+
     sendMessageMutation.mutate(text);
   };
 
@@ -231,12 +222,23 @@ export default function WidgetChat() {
     }
 
     previousConnectionState.current = connected && joined;
-  }, [
-    connected,
-    joined,
-    conversationId,
-    refetchMessages,
-  ]);
+  }, [connected, joined, conversationId, refetchMessages]);
+
+  useEffect(() => {
+    if (!isBotTyping || !lastMessageSentAt.current) return;
+
+    const hasBotResponded = messages.some((message) => {
+      if (message.fromType === "user") return false;
+
+      const messageTime = new Date(message.createdAt).getTime();
+
+      return messageTime >= lastMessageSentAt.current;
+    });
+
+    if (hasBotResponded) {
+      setIsBotTyping(false);
+    }
+  }, [messages, isBotTyping]);
 
   // Scroll to the latest message when messages change.
   useEffect(() => {
@@ -258,10 +260,7 @@ export default function WidgetChat() {
   return (
     <div className="flex flex-col h-screen bg-white max-w-md mx-auto border-x shadow-xl overflow-hidden">
       {/* Header */}
-      <div
-        className="p-4 text-white"
-        style={{ backgroundColor: primaryColor }}
-      >
+      <div className="p-4 text-white" style={{ backgroundColor: primaryColor }}>
         <div className="flex items-center gap-3">
           {screen !== "home" && (
             <button
@@ -273,9 +272,7 @@ export default function WidgetChat() {
           )}
 
           <div className="flex-1">
-            <h3 className="font-semibold">
-              {config.title || "Chat Support"}
-            </h3>
+            <h3 className="font-semibold">{config.title || "Chat Support"}</h3>
 
             <p className="text-xs opacity-90">
               {config.subtitle || "We're online"}
@@ -289,9 +286,7 @@ export default function WidgetChat() {
         {screen === "home" && (
           <div className="p-6 space-y-6">
             <div className="bg-white rounded-xl shadow-sm p-6 space-y-4 border">
-              <h2 className="text-xl font-bold">
-                Hello! 👋
-              </h2>
+              <h2 className="text-xl font-bold">Hello! 👋</h2>
 
               <p className="text-slate-600">
                 {config.greeting || "How can we help you today?"}
@@ -314,9 +309,7 @@ export default function WidgetChat() {
               <div className="flex items-center gap-2 text-slate-700">
                 <Clock className="h-4 w-4" />
 
-                <span>
-                  {config.responseTime || "Under a few minutes"}
-                </span>
+                <span>{config.responseTime || "Under a few minutes"}</span>
               </div>
             </div>
           </div>
@@ -328,9 +321,7 @@ export default function WidgetChat() {
               <div
                 key={msg.id}
                 className={`flex ${
-                  msg.fromType === "user"
-                    ? "justify-end"
-                    : "justify-start"
+                  msg.fromType === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
@@ -360,6 +351,16 @@ export default function WidgetChat() {
               </div>
             ))}
 
+            {isBotTyping && (
+              <div className="flex justify-start">
+                <div className="bg-white border shadow-sm rounded-2xl px-4 py-3 flex items-center gap-1.5">
+                  <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" />
+                </div>
+              </div>
+            )}
+
             <div ref={scrollRef} />
           </div>
         )}
@@ -373,9 +374,7 @@ export default function WidgetChat() {
               placeholder="Type a message..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && handleSendMessage()
-              }
+              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               disabled={sendMessageMutation.isPending}
             />
 
@@ -383,10 +382,7 @@ export default function WidgetChat() {
               size="icon"
               onClick={handleSendMessage}
               style={{ backgroundColor: primaryColor }}
-              disabled={
-                sendMessageMutation.isPending ||
-                !chatInput.trim()
-              }
+              disabled={sendMessageMutation.isPending || !chatInput.trim()}
             >
               <Send className="h-4 w-4" />
             </Button>
