@@ -64,6 +64,14 @@ export default function WidgetChat() {
   const config = configQuery.data?.config || {};
   const primaryColor = config.primaryColor || "#3b82f6";
 
+  const welcomeMessage = {
+    id: "welcome-message",
+    content:
+      config.greeting || "Hi there! 👋 Welcome! How can I help you today?",
+    fromType: "bot",
+    createdAt: new Date().toISOString(),
+  };
+
   const { data: messages = [], refetch: refetchMessages } = useQuery<
     WidgetMessage[]
   >({
@@ -317,7 +325,7 @@ export default function WidgetChat() {
 
         {screen === "chat" && (
           <div className="p-4 space-y-4">
-            {messages.map((msg) => (
+            {[welcomeMessage, ...messages].map((msg) => (
               <div
                 key={msg.id}
                 className={`flex ${
