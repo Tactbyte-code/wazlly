@@ -51,13 +51,16 @@ const upload = multer({
     if (allowed.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Unsupported file type. Use PDF, TXT, CSV, DOCX, or MD files."));
+      cb(
+        new Error(
+          "Unsupported file type. Use PDF, TXT, CSV, DOCX, or MD files.",
+        ),
+      );
     }
   },
 });
 
 export function registerTrainingRoutes(app: Express) {
-
   app.get("/api/training/:siteId/sources", requireAuth, async (req, res) => {
     try {
       const sources = await db
@@ -90,7 +93,7 @@ export function registerTrainingRoutes(app: Express) {
         .returning();
 
       processTrainingSource(source.id).catch((err) =>
-        console.error("Background URL processing error:", err)
+        console.error("Background URL processing error:", err),
       );
 
       res.json(source);
@@ -112,12 +115,19 @@ export function registerTrainingRoutes(app: Express) {
         let content = "";
 
         if (file.mimetype === "application/pdf") {
-          const uint8Array = new Uint8Array(file.buffer.buffer, file.buffer.byteOffset, file.buffer.byteLength);
+          const uint8Array = new Uint8Array(
+            file.buffer.buffer,
+            file.buffer.byteOffset,
+            file.buffer.byteLength,
+          );
           const parser = new PDFParse(uint8Array);
           await parser.load();
           const result = await parser.getText();
-          content = typeof result === "string" ? result : (result?.text || "");
-        } else if (file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+          content = typeof result === "string" ? result : result?.text || "";
+        } else if (
+          file.mimetype ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ) {
           const result = await mammoth.extractRawText({ buffer: file.buffer });
           content = result.value;
         } else {
@@ -125,7 +135,9 @@ export function registerTrainingRoutes(app: Express) {
         }
 
         if (!content.trim()) {
-          return res.status(400).json({ error: "No text content found in file" });
+          return res
+            .status(400)
+            .json({ error: "No text content found in file" });
         }
 
         const [source] = await db
@@ -141,20 +153,21 @@ export function registerTrainingRoutes(app: Express) {
           .returning();
 
         processTrainingSource(source.id).catch((err) =>
-          console.error("Background document processing error:", err)
+          console.error("Background document processing error:", err),
         );
 
         res.json(source);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
       }
-    }
+    },
   );
 
   app.post("/api/training/:siteId/text", requireAuth, async (req, res) => {
     try {
       const { content, name, channelId } = req.body;
-      if (!content) return res.status(400).json({ error: "Content is required" });
+      if (!content)
+        return res.status(400).json({ error: "Content is required" });
 
       const [source] = await db
         .insert(trainingSources)
@@ -169,7 +182,7 @@ export function registerTrainingRoutes(app: Express) {
         .returning();
 
       processTrainingSource(source.id).catch((err) =>
-        console.error("Background text processing error:", err)
+        console.error("Background text processing error:", err),
       );
 
       res.json(source);
@@ -191,8 +204,8 @@ export function registerTrainingRoutes(app: Express) {
         .where(
           and(
             eq(trainingSources.siteId, req.params.siteId),
-            eq(trainingSources.type, "knowledge_base")
-          )
+            eq(trainingSources.type, "knowledge_base"),
+          ),
         );
 
       for (const existing of existingKbSources) {
@@ -205,14 +218,14 @@ export function registerTrainingRoutes(app: Express) {
         .where(
           and(
             eq(trainingSources.siteId, req.params.siteId),
-            eq(trainingSources.type, "knowledge_base")
-          )
+            eq(trainingSources.type, "knowledge_base"),
+          ),
         );
 
       const kbContent = articles
         .map(
           (a: any) =>
-            `## ${a.title}\n${(a.content || "").replace(/<[^>]*>/g, "")}`
+            `## ${a.title}\n${(a.content || "").replace(/<[^>]*>/g, "")}`,
         )
         .join("\n\n");
 
@@ -233,40 +246,52 @@ export function registerTrainingRoutes(app: Express) {
         .returning();
 
       processTrainingSource(source.id).catch((err) =>
-        console.error("Background KB sync error:", err)
+        console.error("Background KB sync error:", err),
       );
 
-      res.json({ message: "KB sync started", sourceId: source.id, articleCount: articles.length });
+      res.json({
+        message: "KB sync started",
+        sourceId: source.id,
+        articleCount: articles.length,
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.delete("/api/training/source/:sourceId", requireAuth, async (req, res) => {
-    try {
-      await db
-        .delete(trainingChunks)
-        .where(eq(trainingChunks.sourceId, req.params.sourceId));
-      await db
-        .delete(trainingSources)
-        .where(eq(trainingSources.id, req.params.sourceId));
+  app.delete(
+    "/api/training/source/:sourceId",
+    requireAuth,
+    async (req, res) => {
+      try {
+        await db
+          .delete(trainingChunks)
+          .where(eq(trainingChunks.sourceId, req.params.sourceId));
+        await db
+          .delete(trainingSources)
+          .where(eq(trainingSources.id, req.params.sourceId));
 
-      res.json({ success: true });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+        res.json({ success: true });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+  );
 
-  app.post("/api/training/source/:sourceId/reprocess", requireAuth, async (req, res) => {
-    try {
-      processTrainingSource(req.params.sourceId).catch((err) =>
-        console.error("Reprocessing error:", err)
-      );
-      res.json({ message: "Reprocessing started" });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+  app.post(
+    "/api/training/source/:sourceId/reprocess",
+    requireAuth,
+    async (req, res) => {
+      try {
+        processTrainingSource(req.params.sourceId).catch((err) =>
+          console.error("Reprocessing error:", err),
+        );
+        res.json({ message: "Reprocessing started" });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+  );
 
   app.get("/api/training/:siteId/qa", requireAuth, async (req, res) => {
     try {
@@ -286,7 +311,9 @@ export function registerTrainingRoutes(app: Express) {
     try {
       const { question, answer, category, channelId } = req.body;
       if (!question || !answer) {
-        return res.status(400).json({ error: "Question and answer are required" });
+        return res
+          .status(400)
+          .json({ error: "Question and answer are required" });
       }
 
       const [qa] = await db
@@ -302,7 +329,7 @@ export function registerTrainingRoutes(app: Express) {
 
       if (channelId) {
         generateQaEmbedding(qa.id, channelId).catch((err) =>
-          console.warn("Q&A embedding error:", err)
+          console.warn("Q&A embedding error:", err),
         );
       }
 
@@ -330,7 +357,7 @@ export function registerTrainingRoutes(app: Express) {
 
       if (channelId && (question || answer)) {
         generateQaEmbedding(updated.id, channelId).catch((err) =>
-          console.warn("Q&A embedding update error:", err)
+          console.warn("Q&A embedding update error:", err),
         );
       }
 
@@ -391,7 +418,8 @@ export function registerTrainingRoutes(app: Express) {
         chunks: chunks.map((c) => ({
           ...c,
           hasEmbedding: !!c.hasEmbedding,
-          contentPreview: c.content.substring(0, 200) + (c.content.length > 200 ? "..." : ""),
+          contentPreview:
+            c.content.substring(0, 200) + (c.content.length > 200 ? "..." : ""),
         })),
         qaPairs,
       });
@@ -403,15 +431,29 @@ export function registerTrainingRoutes(app: Express) {
   app.post("/api/training/:siteId/test-chat", requireAuth, async (req, res) => {
     try {
       const { message, channelId, widgetConfig } = req.body;
-      if (!message) return res.status(400).json({ error: "Message is required" });
+      if (!message)
+        return res.status(400).json({ error: "Message is required" });
 
       const trainingData = await searchTrainingData(
         req.params.siteId,
         channelId || "",
-        message
+        message,
       );
 
+      // Direct Q&A match: bypass AI generation.
+      if (trainingData.matchedQa) {
+        return res.json({
+          response: trainingData.matchedQa.answer,
+          source: "qa",
+          contextUsed: {
+            chunksFound: 0,
+            qaPairsFound: 1,
+          },
+        });
+      }
+
       let contextBlock = "";
+
       if (trainingData.chunks.length > 0) {
         contextBlock += "\n\n--- TRAINING DATA CONTEXT ---\n";
         contextBlock += trainingData.chunks.join("\n\n");
@@ -429,21 +471,20 @@ export function registerTrainingRoutes(app: Express) {
 
       const aiSettingResult = await db
         .select()
-        .from(
-          (await import("@shared/schema")).aiSettings
-        )
+        .from((await import("@shared/schema")).aiSettings)
         .where(
           eq(
             (await import("@shared/schema")).aiSettings.channelId,
-            channelId || ""
-          )
+            channelId || "",
+          ),
         )
         .limit(1);
 
       const activeSetting = aiSettingResult?.[0];
       if (!activeSetting?.apiKey) {
         return res.status(400).json({
-          error: "No AI provider configured. Add an API key in AI Settings first.",
+          error:
+            "No AI provider configured. Add an API key in AI Settings first.",
         });
       }
 
